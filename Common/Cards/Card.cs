@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 
-using Centuriin.CardGame.Core.Cards;
-
 namespace Centuriin.CardGame.Core.Common.Cards;
 
 /// <summary>
