@@ -13,60 +13,60 @@ public enum CardType : byte
     /// <summary>
     /// Тройка.
     /// </summary>
-    Three,
+    Three = 3,
 
     /// <summary>
     /// Четверка.
     /// </summary>
-    Four,
+    Four = 4,
 
     /// <summary>
     /// Пятерка.
     /// </summary>
-    Five,
+    Five = 5,
 
     /// <summary>
     /// Шестерка.
     /// </summary>
-    Six,
+    Six = 6,
 
     /// <summary>
     /// Семерка.
     /// </summary>
-    Seven,
+    Seven = 7,
 
     /// <summary>
     /// Восьмерка.
     /// </summary>
-    Eight,
+    Eight = 8,
 
     /// <summary>
     /// Девятка.
     /// </summary>
-    Nine,
+    Nine = 9,
 
     /// <summary>
     /// Десятка.
     /// </summary>
-    Ten,
+    Ten = 10,
 
     /// <summary>
     /// Валет.
     /// </summary>
-    Jack,
+    Jack = 11,
 
     /// <summary>
     /// Дама.
     /// </summary>
-    Queen,
+    Queen = 12,
 
     /// <summary>
     /// Король.
     /// </summary>
-    King,
+    King = 13,
 
     /// <summary>
     /// Туз.
     /// </summary>
-    Ace
+    Ace = 14
 }

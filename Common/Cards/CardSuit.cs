@@ -8,20 +8,20 @@ public enum CardSuit : byte
     /// <summary>
     /// Трефы.
     /// </summary>
-    Clubs,
+    Clubs = 1,
 
     /// <summary>
     /// Буби.
     /// </summary>
-    Diamonds,
+    Diamonds = 2,
 
     /// <summary>
     /// Червы.
     /// </summary>
-    Hearts,
+    Hearts = 3,
 
     /// <summary>
     /// Пики.
     /// </summary>
-    Spades
+    Spades = 4
 }

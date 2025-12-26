@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+	
+	<PropertyGroup>
+		<RootNamespace>Centuriin.CardGame.Core.Common</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+	</PropertyGroup>
+	
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeCoverage" Version="18.0.1" />
+        <PackageReference Include="xunit.v3" Version="3.2.1" />
+    </ItemGroup>
+	
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+    </ItemGroup>
+
+</Project>
