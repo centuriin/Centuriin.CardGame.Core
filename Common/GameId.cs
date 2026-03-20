@@ -1,3 +1,9 @@
 ﻿namespace Centuriin.Centuriin.Core.Common;
 
-public readonly record struct GameId(long Value);
+/// <summary>
+/// Instance game identifier.
+/// </summary>
+/// <param name="Value">
+/// Value.
+/// </param>
+public readonly record struct GameId(Guid Value);

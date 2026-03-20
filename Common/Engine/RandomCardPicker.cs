@@ -6,7 +6,7 @@ public sealed class RandomCardPicker : ICardPicker
 {
     private readonly Random _random = Random.Shared;
 
-    public ICard PickFrom(IReadOnlyList<ICard> source)
+    public Card PickFrom(IReadOnlyList<Card> source)
     {
         ArgumentNullException.ThrowIfNull(source);
 

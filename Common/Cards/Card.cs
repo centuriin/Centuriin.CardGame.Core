@@ -3,46 +3,90 @@
 namespace Centuriin.CardGame.Core.Common.Cards;
 
 /// <summary>
-/// Представляет обычную игральную карту.
+/// Card entity.
 /// </summary>
-public sealed class Card : ICard
+public sealed class Card : IEquatable<Card>
 {
-    /// <summary>
-    /// Масть карты.
-    /// </summary>
-    public CardSuit Suit { get; }
+    private readonly Dictionary<Type, IComponent> _components = [];
 
     /// <summary>
-    /// Тип карты.
+    /// Instance id.
     /// </summary>
-    public CardType Type { get; }
+    public CardId Id { get; }
 
     /// <summary>
-    /// Создает новый объект типа <see cref="Card"/>.
+    /// Creates new instance of <see cref="Card"/>.
     /// </summary>
-    /// <param name="suit">
-    /// Масть карты.
+    /// <param name="id">
+    /// Instance identifier.
     /// </param>
-    /// <param name="type">
-    /// Тип карты.
-    /// </param>
-    /// <exception cref="InvalidEnumArgumentException">
-    /// Если перечисления имели неверные значения.
-    /// </exception>
-    public Card(CardSuit suit, CardType type)
+    public Card(CardId id)
     {
-        if (!Enum.IsDefined(suit))
-            throw new InvalidEnumArgumentException(nameof(suit), (byte)suit, typeof(CardSuit));
-        Suit = suit;
-
-        if (!Enum.IsDefined(type))
-            throw new InvalidEnumArgumentException(nameof(type), (byte)type, typeof(CardType));
-        Type = type;
+        Id = id;
     }
 
+    /// <summary>
+    /// Adds component to card.
+    /// </summary>
+    /// <typeparam name="T">
+    /// Concrete component type.
+    /// </typeparam>
+    /// <param name="component">
+    /// Component.
+    /// </param>
+    public void Add<T>(T component) 
+        where T : class, IComponent => _components[typeof(T)] = component;
+
+    /// <summary>
+    /// Gets component by type.
+    /// </summary>
+    /// <typeparam name="T">
+    /// Concrete component type.
+    /// </typeparam>
+    /// <returns>
+    /// Component of <typeparamref name="T"/>.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// When component not found.
+    /// </exception>
+    public T Get<T>() 
+        where T : class, IComponent
+    {
+        if (!_components.TryGetValue(typeof(T), out var component))
+            throw new InvalidOperationException($"Component {typeof(T).Name} not found.");
+
+        return (T)component;
+    }
+
+    /// <summary>
+    /// Checks component contains.
+    /// </summary>
+    /// <typeparam name="T">
+    /// Concrete type of component.
+    /// </typeparam>
+    /// <returns>
+    /// <see langword="true"/> if exists, otherwise - <see langword="false"/>.
+    /// </returns>
+    public bool Has<T>() 
+        where T : class, IComponent => _components.ContainsKey(typeof(T));
+
+    /// <summary>
+    /// Removes component by type.
+    /// </summary>
+    /// <typeparam name="T">
+    /// Concrete type.
+    /// </typeparam>
+    public void Remove<T>() 
+        where T : class, IComponent => _components.Remove(typeof(T));
+
     /// <inheritdoc/>
-    public bool Equals(ICard? other) =>
-        other is Card card
-        && Suit == card.Suit
-        && Type == card.Type;
+    public bool Equals(Card? other) =>
+        other is not null
+        && other.Id == Id;
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => Equals(obj as Card);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => Id.GetHashCode();
 }

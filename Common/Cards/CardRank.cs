@@ -3,7 +3,7 @@
 /// <summary>
 /// Тип карты.
 /// </summary>
-public enum CardType : byte
+public enum CardRank : byte
 {
     /// <summary>
     /// Двойка.
