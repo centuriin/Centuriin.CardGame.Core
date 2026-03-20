@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using Centuriin.CardGame.Core.Common.Components;
 
 namespace Centuriin.CardGame.Core.Common.Cards;
 
@@ -28,14 +28,10 @@ public sealed class Card : IEquatable<Card>
     /// <summary>
     /// Adds component to card.
     /// </summary>
-    /// <typeparam name="T">
-    /// Concrete component type.
-    /// </typeparam>
     /// <param name="component">
     /// Component.
     /// </param>
-    public void Add<T>(T component) 
-        where T : class, IComponent => _components[typeof(T)] = component;
+    public void Add(IComponent component) => _components[component.GetType()] = component;
 
     /// <summary>
     /// Gets component by type.
@@ -49,8 +45,7 @@ public sealed class Card : IEquatable<Card>
     /// <exception cref="InvalidOperationException">
     /// When component not found.
     /// </exception>
-    public T Get<T>() 
-        where T : class, IComponent
+    public T Get<T>()
     {
         if (!_components.TryGetValue(typeof(T), out var component))
             throw new InvalidOperationException($"Component {typeof(T).Name} not found.");
