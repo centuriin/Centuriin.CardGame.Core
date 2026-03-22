@@ -72,7 +72,7 @@ public sealed class EventDispatcher : IEventDispatcher
         var type = @event.GetType();
 
         var tasks = _handlersMap
-            .Where(x => x.Key.IsAssignableTo(type))
+            .Where(x => x.Key.IsAssignableFrom(type))
             .SelectMany(x => x.Value.GetInvocationList())
             .Cast<Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>>()
             .ToList();
