@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Centuriin.CardGame.Core.Common.Cards;
+﻿using Centuriin.CardGame.Core.Common.Cards;
 using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common;
@@ -13,19 +9,18 @@ public sealed class CardFactory
 
     public CardFactory(ICardTemplateRepository repository)
     {
+        ArgumentNullException.ThrowIfNull(repository);
         _repository = repository;
     }
 
-    public static Card Create(TemplateId templateId, int instanceId)
+    public async Task<Card> CreateAsync(TemplateId templateId, CardId instanceId, CancellationToken token)
     {
-        //var template = _repository.GetById(templateId);
-        var template = DefaultCardTemplatesRepository.Templates36[templateId];
+        var template = await _repository.GetByIdAsync(templateId, token);
 
-        var card = new Card(new CardId(instanceId));
+        var card = new Card(instanceId);
 
         foreach (var component in template.Components)
         {
-            // Используем твой метод Copy/Clone
             card.Add(component.Copy());
         }
 
