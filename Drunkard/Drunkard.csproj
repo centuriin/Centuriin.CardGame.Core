@@ -11,4 +11,8 @@
 		<RootNamespace>Centuriin.CardGame.Core.Drunkard</RootNamespace>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
+
 </Project>
