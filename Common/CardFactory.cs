@@ -1,13 +1,15 @@
 ﻿using Centuriin.CardGame.Core.Common.Cards;
+using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common;
 
-public sealed class CardFactory
+public sealed class CardFactory : ICardFactory
 {
     private readonly ICardTemplateRepository _repository;
 
-    public CardFactory(ICardTemplateRepository repository)
+    public CardFactory(
+        ICardTemplateRepository repository)
     {
         ArgumentNullException.ThrowIfNull(repository);
         _repository = repository;
@@ -15,6 +17,8 @@ public sealed class CardFactory
 
     public async Task<Card> CreateAsync(TemplateId templateId, CardId instanceId, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
+
         var template = await _repository.GetByIdAsync(templateId, token);
 
         var card = new Card(instanceId);
@@ -23,6 +27,8 @@ public sealed class CardFactory
         {
             card.Add(component.Copy());
         }
+
+        card.Add(new TemplateComponent(templateId));
 
         return card;
     }

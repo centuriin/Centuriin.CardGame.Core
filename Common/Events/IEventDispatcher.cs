@@ -1,16 +1,14 @@
-﻿using Centuriin.CardGame.Core.Common.Events.System;
+﻿namespace Centuriin.CardGame.Core.Common.Events;
 
-namespace Centuriin.CardGame.Core.Common.Events;
-
-public interface IEventDispatcher
+public interface IEventDispatcher<TEventBase>
 {
-    public Task PublishAsync(ISystemEvent @event, CancellationToken token);
+    public Task PublishAsync(TEventBase @event, CancellationToken token);
 
     public void Register<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>> func)
-        where TEvent : ISystemEvent;
+        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<TEventBase>>> func)
+        where TEvent : TEventBase;
 
     public void Unregister<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>> func)
-        where TEvent: ISystemEvent;
+        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<TEventBase>>> func)
+        where TEvent : TEventBase;
 }

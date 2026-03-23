@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Events;
 
-public sealed class EventDispatcher : IEventDispatcher
+public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
 {
     private readonly Dictionary<Type, Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>> _handlersMap = [];
     private readonly Dictionary<Delegate, Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>> _wrappedDelegatesMap = [];

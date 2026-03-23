@@ -15,7 +15,6 @@ public sealed class DefaultCardTemplatesRepository : ICardTemplateRepository
                         new CardTemplate(
                             new TemplateId(14 * suit + rank),
                             [
-                                new TemplateComponent(new TemplateId(14*suit + rank)),
                                 new SuitComponent((CardSuit)suit),
                                 new RankComponent((CardRank)rank),
                             ])))

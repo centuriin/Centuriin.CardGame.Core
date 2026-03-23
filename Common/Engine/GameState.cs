@@ -1,43 +1,49 @@
-﻿using System.Runtime.InteropServices;
-
-using Centuriin.CardGame.Core.Common.Cards;
+﻿using Centuriin.CardGame.Core.Common.Cards;
+using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.System;
+using Centuriin.Centuriin.Core.Common;
 
 namespace Centuriin.CardGame.Core.Common.Engine;
 
 public sealed class GameState
 {
-    private readonly Random _random = Random.Shared;
+    private readonly GameId _gameId;
+    private readonly Dictionary<CardId, Card> _cards = [];
 
-    private readonly IReadOnlyDictionary<SpaceId, List<Card>> _cardSpaces;
-    private readonly ICardPicker _picker;
+    private readonly IEventDispatcher<ISystemEvent> _dispatcher;
+    private readonly ICardFactory _cardFactory;
 
     public GameState(
-        IReadOnlyDictionary<SpaceId, List<Card>> cardSpaces,
-        ICardPicker picker)
+        GameId gameId,
+        IEventDispatcher<ISystemEvent> dispatcher,
+        ICardFactory cardFactory)
     {
-        ArgumentNullException.ThrowIfNull(cardSpaces);
-        _cardSpaces = cardSpaces;
+        _gameId = gameId;
 
-        ArgumentNullException.ThrowIfNull(picker);
-        _picker = picker;
+        ArgumentNullException.ThrowIfNull(dispatcher);
+        _dispatcher = dispatcher;
+
+        ArgumentNullException.ThrowIfNull(cardFactory);
+        _cardFactory = cardFactory;
+
+        Register();
     }
 
-    public Card GetCardFromSpace(SpaceId spaceId)
+    private void Register() => _dispatcher.Register<CardInstanceCreated>(OnCardInstanceCreatedAsync);
+
+    private async Task<IReadOnlyCollection<ISystemEvent>> OnCardInstanceCreatedAsync(
+        CardInstanceCreated @event,
+        CancellationToken token)
     {
-        var card = _picker.PickFrom(_cardSpaces[spaceId]);
+        if (@event.GameId != _gameId)
+        {
+            return [];
+        }
 
-        _ = _cardSpaces[spaceId].Remove(card);
+        var card = await _cardFactory.CreateAsync(@event.TemplateId, @event.CardId, token);
 
-        return card;
-    }
+        _cards[@event.CardId] = card;
 
-    public void AddCardToSpace(SpaceId spaceId, Card card, bool isShuffleEnabled = false)
-    {
-        var space = _cardSpaces[spaceId];
-
-        space.Add(card);
-
-        if (isShuffleEnabled)
-            _random.Shuffle(CollectionsMarshal.AsSpan(space));
+        return [];
     }
 }
