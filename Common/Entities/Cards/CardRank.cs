@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.Cards;
+﻿namespace Centuriin.CardGame.Core.Common.Entities.Cards;
 
 /// <summary>
 /// Тип карты.

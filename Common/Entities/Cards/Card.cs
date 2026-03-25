@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 
-namespace Centuriin.CardGame.Core.Common.Cards;
+namespace Centuriin.CardGame.Core.Common.Entities.Cards;
 
 /// <summary>
 /// Card entity.
@@ -31,7 +31,15 @@ public sealed class Card : IEquatable<Card>
     /// <param name="component">
     /// Component.
     /// </param>
-    public void Add(IComponent component) => _components[component.GetType()] = component;
+    /// <exception cref="ArgumentNullException">
+    /// When <paramref name="component"/> is <see langword="null"/>.
+    /// </exception>
+    public void Add(IComponent component)
+    {
+        ArgumentNullException.ThrowIfNull(component);
+
+        _components[component.GetType()] = component;
+    }
 
     /// <summary>
     /// Gets component by type.

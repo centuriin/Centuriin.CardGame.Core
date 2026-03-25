@@ -1,9 +1,9 @@
 ﻿namespace Centuriin.CardGame.Core.Common;
 
 /// <summary>
-/// Space (for cards) identifier.
+/// Zone (for cards) identifier.
 /// </summary>
 /// <param name="Value">
 /// Value.
 /// </param>
-public readonly record struct SpaceId(int Value);
+public readonly record struct ZoneId(int Value);

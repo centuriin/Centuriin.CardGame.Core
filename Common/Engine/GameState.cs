@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Cards;
+﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.System;
 using Centuriin.Centuriin.Core.Common;

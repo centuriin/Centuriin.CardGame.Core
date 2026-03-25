@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Cards;
+﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 
 using Xunit;
 

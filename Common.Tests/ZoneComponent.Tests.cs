@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Centuriin.CardGame.Core.Common;
 
-public sealed class SpaceComponentTests
+public sealed class ZoneComponentTests
 {
     [Fact]
     public void CanCopy()
     {
         // Arrange
-        var component = new SpaceComponent(new SpaceId(2));
+        var component = new ZoneComponent(new ZoneId(2));
 
         // Act
         var copy = component.Copy();
@@ -25,11 +25,11 @@ public sealed class SpaceComponentTests
     public void CopyCanNotChangeOriginal()
     {
         // Arrange
-        var component = new SpaceComponent(new SpaceId(2));
-        var copy = (SpaceComponent)component.Copy();
+        var component = new ZoneComponent(new ZoneId(2));
+        var copy = (ZoneComponent)component.Copy();
 
         // Act
-        copy.ChangeSpaceId(new SpaceId(999));
+        copy.ChangeSpaceId(new ZoneId(999));
 
         // Assert
         copy.Should().NotBeEquivalentTo(component);

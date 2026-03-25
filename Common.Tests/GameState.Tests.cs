@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Cards;
-using Centuriin.CardGame.Core.Common.Engine;
-using Centuriin.CardGame.Core.Common.Repositories;
+﻿using Centuriin.CardGame.Core.Common.Repositories;
 
 using Xunit;
 
@@ -12,7 +10,7 @@ public sealed class GameStateTests
     public void Test()
     {
         // Arrange
-        var spaceId = new SpaceId(1);
+        var spaceId = new ZoneId(1);
         var cards = DefaultCardTemplatesRepository.Templates36;
 
         // Act

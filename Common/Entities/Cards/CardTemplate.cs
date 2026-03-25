@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 
-namespace Centuriin.CardGame.Core.Common.Cards;
+namespace Centuriin.CardGame.Core.Common.Entities.Cards;
 
 public sealed class CardTemplate
 {
