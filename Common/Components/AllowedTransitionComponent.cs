@@ -14,6 +14,6 @@ public sealed record class AllowedTransitionComponent<TFromId> : ComponentBase
     private AllowedTransitionComponent(AllowedTransitionComponent<TFromId> other)
         : base(other)
     {
-        AllowedFrom = other.AllowedFrom.ToHashSet();
+        AllowedFrom = [.. other.AllowedFrom];
     }
 }

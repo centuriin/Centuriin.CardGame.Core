@@ -4,5 +4,5 @@ namespace Centuriin.CardGame.Core.Common;
 
 public interface ICardFactory
 {
-    Task<Card> CreateAsync(TemplateId templateId, CardId instanceId, CancellationToken token);
+    public Task<Card> CreateAsync(TemplateId templateId, CardId instanceId, CancellationToken token);
 }

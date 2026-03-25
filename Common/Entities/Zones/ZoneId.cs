@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common;
+﻿namespace Centuriin.CardGame.Core.Common.Entities.Zones;
 
 /// <summary>
 /// Zone (for cards) identifier.

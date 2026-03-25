@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
+
+namespace Centuriin.CardGame.Core.Common.Components;
 
 /// <summary>
 /// Space component.
@@ -8,7 +10,7 @@ public sealed record class ZoneComponent : ComponentBase
     /// <summary>
     /// Current space id.
     /// </summary>
-    public ZoneId CurrentSpaceId { get; private set; }
+    public ZoneId CurrentZoneId { get; private set; }
 
     /// <summary>
     /// Creates new instance of <see cref="ZoneComponent"/>.
@@ -18,7 +20,7 @@ public sealed record class ZoneComponent : ComponentBase
     /// </param>
     public ZoneComponent(ZoneId spaceId)
     {
-        CurrentSpaceId = spaceId;
+        CurrentZoneId = spaceId;
     }
 
     /// <summary>
@@ -27,5 +29,5 @@ public sealed record class ZoneComponent : ComponentBase
     /// <param name="newSpaceId">
     /// New space id.
     /// </param>
-    public void ChangeSpaceId(ZoneId newSpaceId) => CurrentSpaceId = newSpaceId;
+    public void ChangeSpaceId(ZoneId newSpaceId) => CurrentZoneId = newSpaceId;
 }

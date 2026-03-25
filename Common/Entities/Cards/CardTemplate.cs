@@ -2,15 +2,11 @@
 
 namespace Centuriin.CardGame.Core.Common.Entities.Cards;
 
-public sealed class CardTemplate
+public sealed class CardTemplate : TemplateBase
 {
-    public TemplateId Id { get; }
-
-    public IReadOnlyCollection<IComponent> Components { get; }
-
-    public CardTemplate(TemplateId id, IReadOnlyCollection<IComponent> components)
+    public CardTemplate(
+        TemplateId id, 
+        IReadOnlyCollection<IComponent> components) : base(id, components)
     {
-        Id = id;
-        Components = components;
     }
 }

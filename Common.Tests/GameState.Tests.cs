@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Repositories;
+﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Repositories;
 
 using Xunit;
 

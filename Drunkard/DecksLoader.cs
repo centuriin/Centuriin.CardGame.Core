@@ -7,14 +7,10 @@ namespace Centuriin.CardGame.Core.Drunkard;
 
 public sealed class DecksLoader : IDecksLoader
 {
-    private readonly IEventDispatcher _dispatcher;
     private readonly ICardTemplateRepository _templateRepository;
 
-    public DecksLoader(IEventDispatcher dispatcher, ICardTemplateRepository templateRepository)
+    public DecksLoader(ICardTemplateRepository templateRepository)
     {
-        ArgumentNullException.ThrowIfNull(dispatcher);
-        _dispatcher = dispatcher;
-
         ArgumentNullException.ThrowIfNull(templateRepository);
         _templateRepository = templateRepository;
     }
@@ -34,7 +30,7 @@ public sealed class DecksLoader : IDecksLoader
                 new(index),
                 id);
 
-            await _dispatcher.PublishAsync(@event, token);
+            //await _dispatcher.PublishAsync(@event, token);
 
             index++;
         }
