@@ -7,6 +7,11 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
     /// </summary>
     public ZoneId Id { get; }
 
+    public Zone(ZoneId id)
+    {
+        Id = id;
+    }
+
     /// <inheritdoc/>
     public bool Equals(Zone? other) =>
         other is not null

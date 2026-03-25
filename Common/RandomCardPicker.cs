@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 
-namespace Centuriin.CardGame.Core.Common.Engine;
+namespace Centuriin.CardGame.Core.Common;
 
 public sealed class RandomCardPicker : ICardPicker
 {

@@ -2,9 +2,11 @@
 
 namespace Centuriin.CardGame.Core.Common.Repositories;
 
-public interface ICardTemplateRepository
+public interface ICardTemplatesRepository
 {
     public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token);
 
-    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsAsync(CancellationToken token);
+    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+        GameTypeId gameTypeId,
+        CancellationToken token);
 }

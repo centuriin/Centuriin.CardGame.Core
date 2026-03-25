@@ -1,0 +1,55 @@
+﻿using System.Collections.Frozen;
+
+using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Entities.Zones;
+
+namespace Centuriin.CardGame.Core.Common.Repositories;
+
+public sealed class ZoneTemplatesRepository : IZoneTemplatesRepository
+{
+    // For drunkard
+    private static FrozenDictionary<TemplateId, ZoneTemplate> DrunkardZones { get; } =
+        new Dictionary<TemplateId, ZoneTemplate>()
+        {
+                {
+                    new(1),
+                    new ZoneTemplate(
+                        new(1),
+                        [
+                            new ZoneRoleComponent(ZoneRole.Deck),
+                        ])
+                },
+                {
+                    new(2),
+                    new ZoneTemplate(
+                        new(2),
+                        [
+                            new ZoneRoleComponent(ZoneRole.Hand),
+                        ])
+                },
+                {
+                    new(3),
+                    new ZoneTemplate(
+                        new(3),
+                        [
+                            new ZoneRoleComponent(ZoneRole.Hand),
+                        ])
+                },
+                {
+                    new(4),
+                    new ZoneTemplate(
+                        new(4),
+                        [
+                            new ZoneRoleComponent(ZoneRole.Slot),
+                        ])
+                },
+        }
+        .ToFrozenDictionary();
+
+    public Task<ZoneTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) =>
+        Task.FromResult(DrunkardZones[templateId]);
+    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+        GameTypeId gameTypeId,
+        CancellationToken token)
+        => Task.FromResult<IReadOnlyCollection<TemplateId>>(DrunkardZones.Keys);
+}

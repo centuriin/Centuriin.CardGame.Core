@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Centuriin.CardGame.Core.Common.Engine;
+namespace Centuriin.CardGame.Core.Common;
 
 public sealed class GameStateSettings
 {

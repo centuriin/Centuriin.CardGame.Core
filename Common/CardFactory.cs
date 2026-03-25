@@ -6,10 +6,10 @@ namespace Centuriin.CardGame.Core.Common;
 
 public sealed class CardFactory : ICardFactory
 {
-    private readonly ICardTemplateRepository _repository;
+    private readonly ICardTemplatesRepository _repository;
 
     public CardFactory(
-        ICardTemplateRepository repository)
+        ICardTemplatesRepository repository)
     {
         ArgumentNullException.ThrowIfNull(repository);
         _repository = repository;

@@ -3,7 +3,7 @@ using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.System;
 using Centuriin.Centuriin.Core.Common;
 
-namespace Centuriin.CardGame.Core.Common.Engine;
+namespace Centuriin.CardGame.Core.Common;
 
 public sealed class GameState
 {

@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Engine;
+﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.System;
 using Centuriin.CardGame.Core.Common.Repositories;
@@ -7,19 +7,21 @@ namespace Centuriin.CardGame.Core.Drunkard;
 
 public sealed class DecksLoader : IDecksLoader
 {
-    private readonly ICardTemplateRepository _templateRepository;
+    private readonly ICardTemplatesRepository _templateRepository;
 
-    public DecksLoader(ICardTemplateRepository templateRepository)
+    public DecksLoader(ICardTemplatesRepository templateRepository)
     {
         ArgumentNullException.ThrowIfNull(templateRepository);
         _templateRepository = templateRepository;
     }
 
-    public async Task LoadDecksAsync(CancellationToken token)
+    public async Task LoadAsync(CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        var templateIds = await _templateRepository.GetTemplateIdsAsync(token);
+        var templateIds = await _templateRepository.GetTemplateIdsByGameTypeAsync(
+            default,
+            token);
 
         var gameId = Guid.CreateVersion7();
         var index = 0;
