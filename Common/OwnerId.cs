@@ -6,4 +6,4 @@
 /// <param name="Value">
 /// Value.
 /// </param>
-public readonly record struct OwnerId(int Value);
+public readonly record struct OwnerId(Guid Value);
