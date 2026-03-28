@@ -2,5 +2,5 @@
 
 public interface IDecksLoader
 {
-    public Task LoadAsync(CancellationToken token);
+    public Task LoadAsync(GameTypeId gameTypeId, CancellationToken token);
 }

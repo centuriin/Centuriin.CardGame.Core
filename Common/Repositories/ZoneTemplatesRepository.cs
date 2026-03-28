@@ -48,8 +48,8 @@ public sealed class ZoneTemplatesRepository : IZoneTemplatesRepository
 
     public Task<ZoneTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) =>
         Task.FromResult(DrunkardZones[templateId]);
-    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+    public Task<IReadOnlyCollection<ZoneTemplate>> GetTemplatesByGameTypeAsync(
         GameTypeId gameTypeId,
         CancellationToken token)
-        => Task.FromResult<IReadOnlyCollection<TemplateId>>(DrunkardZones.Keys);
+        => Task.FromResult<IReadOnlyCollection<ZoneTemplate>>(DrunkardZones.Values);
 }

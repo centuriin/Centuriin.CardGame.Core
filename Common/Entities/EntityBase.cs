@@ -2,9 +2,20 @@
 
 namespace Centuriin.CardGame.Core.Common.Entities;
 
-public abstract class EntityBase
+public abstract class EntityBase<TId>
+    where TId : struct, IEquatable<TId>
 {
-    private Dictionary<Type, IComponent> Components { get; } = [];
+    /// <summary>
+    /// Instance id.
+    /// </summary>
+    public TId Id { get; }
+
+    protected Dictionary<Type, IGameComponent> Components { get; } = [];
+
+    protected EntityBase(TId id)
+    {
+        Id = id;
+    }
 
     /// <summary>
     /// Adds component.
@@ -15,7 +26,7 @@ public abstract class EntityBase
     /// <exception cref="ArgumentNullException">
     /// When <paramref name="component"/> is <see langword="null"/>.
     /// </exception>
-    public void Add(IComponent component)
+    public void Add(IGameComponent component)
     {
         ArgumentNullException.ThrowIfNull(component);
 
@@ -52,7 +63,7 @@ public abstract class EntityBase
     /// <see langword="true"/> if exists, otherwise - <see langword="false"/>.
     /// </returns>
     public bool Has<T>()
-        where T : class, IComponent => Components.ContainsKey(typeof(T));
+        where T : class, IGameComponent => Components.ContainsKey(typeof(T));
 
     /// <summary>
     /// Removes component by type.
@@ -61,5 +72,5 @@ public abstract class EntityBase
     /// Concrete type.
     /// </typeparam>
     public void Remove<T>()
-        where T : class, IComponent => Components.Remove(typeof(T));
+        where T : class, IGameComponent => Components.Remove(typeof(T));
 }

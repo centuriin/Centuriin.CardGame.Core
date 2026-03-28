@@ -3,22 +3,16 @@
 /// <summary>
 /// Card entity.
 /// </summary>
-public sealed class Card : EntityBase, IEquatable<Card>
+public sealed class Card : EntityBase<CardId>, IEquatable<Card>
 {
-    /// <summary>
-    /// Instance id.
-    /// </summary>
-    public CardId Id { get; }
-
     /// <summary>
     /// Creates new instance of <see cref="Card"/>.
     /// </summary>
     /// <param name="id">
     /// Instance identifier.
     /// </param>
-    public Card(CardId id)
+    public Card(CardId id) : base(id)
     {
-        Id = id;
     }
 
     /// <inheritdoc/>

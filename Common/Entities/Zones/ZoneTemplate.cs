@@ -6,7 +6,7 @@ public sealed class ZoneTemplate : TemplateBase
 {
     public ZoneTemplate(
         TemplateId id,
-        IReadOnlyCollection<IComponent> components) : base(id, components)
+        IReadOnlyCollection<IGameComponent> components) : base(id, components)
     {
     }
 }

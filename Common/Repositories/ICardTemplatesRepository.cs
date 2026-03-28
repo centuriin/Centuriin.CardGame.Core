@@ -6,7 +6,7 @@ public interface ICardTemplatesRepository
 {
     public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token);
 
-    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+    public Task<IReadOnlyCollection<CardTemplate>> GetTemplatesByGameTypeAsync(
         GameTypeId gameTypeId,
         CancellationToken token);
 }

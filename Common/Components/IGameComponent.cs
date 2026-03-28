@@ -1,15 +1,15 @@
 ﻿namespace Centuriin.CardGame.Core.Common.Components;
 
 /// <summary>
-/// Card component.
+/// Game component.
 /// </summary>
-public interface IComponent
+public interface IGameComponent
 {
     /// <summary>
     /// Creates a clone.
     /// </summary>
     /// <returns>
-    /// Cloned component <see cref="IComponent"/>.
+    /// Cloned component <see cref="IGameComponent"/>.
     /// </returns>
-    public IComponent Copy();
+    public IGameComponent Copy();
 }

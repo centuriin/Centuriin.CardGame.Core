@@ -1,15 +1,11 @@
 ﻿namespace Centuriin.CardGame.Core.Common.Entities.Zones;
 
-public sealed class Zone : EntityBase, IEquatable<Zone>
+public sealed class Zone : EntityBase<ZoneId>, IEquatable<Zone>
 {
-    /// <summary>
-    /// Instance id.
-    /// </summary>
-    public ZoneId Id { get; }
+    public bool IsEmpty => Components.Any();
 
-    public Zone(ZoneId id)
+    public Zone(ZoneId id) : base(id)
     {
-        Id = id;
     }
 
     /// <inheritdoc/>

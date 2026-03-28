@@ -6,7 +6,7 @@ public interface IZoneTemplatesRepository
 {
     public Task<ZoneTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token);
 
-    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+    public Task<IReadOnlyCollection<ZoneTemplate>> GetTemplatesByGameTypeAsync(
         GameTypeId gameTypeId,
         CancellationToken token);
 }

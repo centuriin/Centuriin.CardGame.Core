@@ -3,8 +3,8 @@
 /// <summary>
 /// Base class for components.
 /// </summary>
-public abstract record class ComponentBase : IComponent
+public abstract record class ComponentBase : IGameComponent
 {
     /// <inheritdoc/>
-    public IComponent Copy() => this with { };
+    public IGameComponent Copy() => this with { };
 }

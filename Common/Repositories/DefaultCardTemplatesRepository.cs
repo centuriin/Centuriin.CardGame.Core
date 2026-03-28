@@ -23,8 +23,8 @@ public sealed class DefaultCardTemplatesRepository : ICardTemplatesRepository
 
     public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) => 
         Task.FromResult(Templates36[templateId]);
-    public Task<IReadOnlyCollection<TemplateId>> GetTemplateIdsByGameTypeAsync(
+    public Task<IReadOnlyCollection<CardTemplate>> GetTemplatesByGameTypeAsync(
         GameTypeId gameTypeId,
         CancellationToken token) => 
-        Task.FromResult<IReadOnlyCollection<TemplateId>>(Templates36.Keys);
+        Task.FromResult<IReadOnlyCollection<CardTemplate>>(Templates36.Values);
 }
