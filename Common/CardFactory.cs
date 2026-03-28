@@ -4,31 +4,49 @@ using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common;
 
-public sealed class CardFactory : ICardFactory
+public sealed class CardsFactory : ICardsFactory
 {
-    private readonly ICardTemplatesRepository _repository;
+    private readonly ICardTemplatesRepository _templatesRepository;
 
-    public CardFactory(
-        ICardTemplatesRepository repository)
+    public CardsFactory(ICardTemplatesRepository templatesRepository)
     {
-        ArgumentNullException.ThrowIfNull(repository);
-        _repository = repository;
+        ArgumentNullException.ThrowIfNull(templatesRepository);
+        _templatesRepository = templatesRepository;
     }
 
-    public async Task<Card> CreateAsync(TemplateId templateId, CardId instanceId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Card>> CreateAsync(
+        IReadOnlyCollection<TemplateId> templateIds,
+        CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        var template = await _repository.GetByIdAsync(templateId, token);
+        var uniqueIds = templateIds.ToHashSet();
 
-        var card = new Card(instanceId);
+        var templates = await _templatesRepository.GetTemplatesByIdsAsync(uniqueIds, token);
+
+        var cards = new List<Card>(templateIds.Count);
+
+        var index = 0;
+        foreach (var templateId in templateIds)
+        {
+            var template = templates[templateId];
+
+            cards.Add(CreateCard(template, ++index));
+        }
+
+        return cards;
+    }
+
+    private static Card CreateCard(CardTemplate template, int cardId)
+    {
+        var card = new Card(new CardId(cardId));
 
         foreach (var component in template.Components)
         {
             card.Add(component.Copy());
         }
 
-        card.Add(new TemplateComponent(templateId));
+        card.Add(new TemplateComponent(template.Id));
 
         return card;
     }
