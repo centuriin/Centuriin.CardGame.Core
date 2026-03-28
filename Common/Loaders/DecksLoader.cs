@@ -1,9 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public sealed class DecksLoader : IDecksLoader
 {

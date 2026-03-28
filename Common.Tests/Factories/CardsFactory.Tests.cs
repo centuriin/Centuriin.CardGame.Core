@@ -8,7 +8,7 @@ using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Repositories;
 
-namespace Centuriin.CardGame.Core.Common.Tests;
+namespace Centuriin.CardGame.Core.Common.Factories;
 
 public sealed class CardsFactoryTests
 {

@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Factories;
 
 public interface IZonesFactory
 {

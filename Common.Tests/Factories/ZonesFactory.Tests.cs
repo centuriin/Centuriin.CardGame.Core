@@ -8,7 +8,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.Tests;
+namespace Centuriin.CardGame.Core.Common.Factories;
 
 public sealed class ZonesFactoryTests
 {

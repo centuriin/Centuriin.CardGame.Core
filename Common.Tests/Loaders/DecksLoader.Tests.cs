@@ -2,6 +2,7 @@
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
 
 using FluentAssertions;
@@ -10,7 +11,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.Tests;
+namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public sealed class DecksLoaderTests
 {

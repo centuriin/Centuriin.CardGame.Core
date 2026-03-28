@@ -7,8 +7,9 @@ using FluentAssertions;
 using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Factories;
 
-namespace Centuriin.CardGame.Core.Common.Tests;
+namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public sealed class ZonesLoaderTests
 {

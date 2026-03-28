@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common;
+﻿namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public interface IDecksLoader
 {

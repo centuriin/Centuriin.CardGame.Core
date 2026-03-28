@@ -1,11 +1,10 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Entities.Zones;
+﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
 
 using FluentAssertions;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Components;
 
 public sealed class AllowedTransitionComponentTests
 {

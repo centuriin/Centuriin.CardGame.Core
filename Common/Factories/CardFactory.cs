@@ -2,7 +2,7 @@
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Repositories;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Factories;
 
 public sealed class CardsFactory : ICardsFactory
 {

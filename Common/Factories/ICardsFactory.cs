@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Factories;
 
 public interface ICardsFactory
 {
