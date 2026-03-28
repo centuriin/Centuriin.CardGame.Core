@@ -49,7 +49,7 @@ public sealed class ZonesLoader : IZonesLoader
 
         foreach (var (zone, player) in suitableZones.Zip(suitablePlayers))
         {
-            var ownerId = new OwnerId(((Player)player).Id.Value);
+            var ownerId = ((Player)player).Id;
 
             zone.Add(new OwnerComponent(ownerId));
         }
