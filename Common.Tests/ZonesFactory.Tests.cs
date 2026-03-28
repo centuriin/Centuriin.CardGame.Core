@@ -23,26 +23,20 @@ public class ZonesFactoryTests
             new(new(102), [new FakeComponent()])
         };
 
-        var addedZones = new List<Zone>();
-        var gameState = new Mock<IGameState>(MockBehavior.Strict);
-        gameState
-            .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
-            .Callback<Zone>(addedZones.Add);
-
         var repository = new Mock<IZoneTemplatesRepository>(MockBehavior.Strict);
         repository
             .Setup(x => x.GetTemplatesByGameTypeAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync(templates);
 
-        var factory = new ZonesFactory(gameState.Object, repository.Object);
+        var factory = new ZonesFactory(repository.Object);
 
         // Act
-        await factory.CreateAsync(gameTypeId, TestContext.Current.CancellationToken);
+        var zones = await factory.CreateAsync(gameTypeId, TestContext.Current.CancellationToken);
 
         // Assert
-        addedZones.Should().HaveCount(2);
+        zones.Should().HaveCount(2);
 
-        addedZones.Should().SatisfyRespectively(
+        zones.Should().SatisfyRespectively(
             first =>
             {
                 first.Id.Value.Should().Be(1);
@@ -57,8 +51,5 @@ public class ZonesFactoryTests
             });
     }
 
-    public sealed record class FakeComponent() : IGameComponent
-    {
-        public IGameComponent Copy() => new FakeComponent();
-    }
+    public sealed record class FakeComponent() : ComponentBase;
 }

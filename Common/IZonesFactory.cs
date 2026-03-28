@@ -1,6 +1,8 @@
-﻿namespace Centuriin.CardGame.Core.Common;
+﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
+
+namespace Centuriin.CardGame.Core.Common;
 
 public interface IZonesFactory
 {
-    public Task CreateAsync(GameTypeId gameTypeId, CancellationToken token);
+    public Task<IReadOnlyCollection<Zone>> CreateAsync(GameTypeId gameTypeId, CancellationToken token);
 }

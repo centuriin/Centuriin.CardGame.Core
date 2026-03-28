@@ -6,34 +6,32 @@ namespace Centuriin.CardGame.Core.Common;
 
 public sealed class ZonesFactory : IZonesFactory
 {
-    private readonly IGameState _gameState;
     private readonly IZoneTemplatesRepository _templatesRepository;
 
-    public ZonesFactory(
-        IGameState gameState,
-        IZoneTemplatesRepository templatesRepository)
+    public ZonesFactory(IZoneTemplatesRepository templatesRepository)
     {
-        ArgumentNullException.ThrowIfNull(gameState);
-        _gameState = gameState;
-
         ArgumentNullException.ThrowIfNull(templatesRepository);
         _templatesRepository = templatesRepository;
     }
 
-    public async Task CreateAsync(GameTypeId gameTypeId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Zone>> CreateAsync(
+        GameTypeId gameTypeId,
+        CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
         var templates = await _templatesRepository
             .GetTemplatesByGameTypeAsync(gameTypeId, token);
 
+        var zones = new List<Zone>(templates.Count);
+
         var index = 0;
         foreach (var template in templates)
         {
-            var zone = CreateZone(template, ++index);
-
-            _gameState.AddEntity<Zone, ZoneId>(zone);
+            zones.Add(CreateZone(template, ++index));
         }
+
+        return zones;
     }
 
     private static Zone CreateZone(ZoneTemplate template, int zoneId)
