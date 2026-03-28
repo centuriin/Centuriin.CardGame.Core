@@ -8,53 +8,50 @@ namespace Centuriin.CardGame.Core.Common;
 public sealed class DecksLoader : IDecksLoader
 {
     private readonly IGameState _gameState;
-    private readonly ICardTemplatesRepository _templatesRepository;
+    private readonly IDecksRepository _decksRepository;
+    private readonly ICardsFactory _cardsFactory;
 
     public DecksLoader(
         IGameState gameState,
-        ICardTemplatesRepository templatesRepository)
+        IDecksRepository decksRepository,
+        ICardsFactory cardsRepository)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         _gameState = gameState;
 
-        ArgumentNullException.ThrowIfNull(templatesRepository);
-        _templatesRepository = templatesRepository;
+        ArgumentNullException.ThrowIfNull(decksRepository);
+        _decksRepository = decksRepository;
+
+        ArgumentNullException.ThrowIfNull(cardsRepository);
+        _cardsFactory = cardsRepository;
     }
 
     public async Task LoadAsync(GameTypeId gameTypeId, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        var templates = await _templatesRepository
-            .GetTemplatesByGameTypeAsync(gameTypeId, token);
+        var deckZones = _gameState
+            .Query<Zone>()
+            .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck)
+            .As<Zone>();
 
-        var zoneId = _gameState.Query<Zone, ZoneId>()
-            .Where(x =>
-                x.Get<ZoneRoleComponent>().Role == ZoneRole.Deck
-                && x.IsEmpty);
-
-        var index = 0;
-        foreach (var template in templates)
+        foreach (var zone in deckZones)
         {
-            var card = CreateCard(template, ++index);
+            var ownerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
-            _gameState.AddEntity<Card, CardId>(card);
+            var deckTemplateIds = await _decksRepository.GetDeckTemplateIdsAsync(
+                gameTypeId,
+                ownerId,
+                token);
+
+            var cards = await _cardsFactory.CreateAsync(deckTemplateIds, token);
+
+            foreach (var card in cards)
+            {
+                card.Add(new ZoneComponent(zone.Id));
+
+                _gameState.AddEntity<Card, CardId>(card);
+            }
         }
-    }
-
-    private static Card CreateCard(CardTemplate template, int cardId)
-    {
-        var card = new Card(new(cardId));
-
-        foreach (var component in template.Components)
-        {
-            card.Add(component.Copy());
-        }
-
-        card.Add(new TemplateComponent(template.Id));
-
-        card.Add(new ZoneComponent())
-
-        return card;
     }
 }
