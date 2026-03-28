@@ -26,7 +26,8 @@ public sealed class ZonesLoader : IZonesLoader
 
         var zones = await _zonesFactory.CreateAsync(gameTypeId, token);
 
-        AddOwnerComponents(zones);
+        AddLinksBeetwenPlayersAndZones(zones, PlayerRole.Participant, ZoneRole.Hand);
+        AddLinksBeetwenPlayersAndZones(zones, PlayerRole.Bank, ZoneRole.Deck);
 
         foreach (var zone in zones)
         {
@@ -34,28 +35,19 @@ public sealed class ZonesLoader : IZonesLoader
         }
     }
 
-    private void AddOwnerComponents(IReadOnlyCollection<Zone> zones)
+    private void AddLinksBeetwenPlayersAndZones(
+        IReadOnlyCollection<Zone> zones,
+        PlayerRole playerRole, 
+        ZoneRole zoneRole)
     {
-        var paticipantPlayers = _gameState
+        var suitablePlayers = _gameState
             .Query<Player>()
-            .WithComponent<PlayerRoleComponent>(x => x.Role == PlayerRole.Participant);
+            .WithComponent<PlayerRoleComponent>(x => x.Role.HasFlag(playerRole));
 
-        var handZones = zones.WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Hand);
+        var suitableZones = zones
+            .WithComponent<ZoneRoleComponent>(x => x.Role == zoneRole);
 
-        foreach (var (zone, player) in handZones.Zip(paticipantPlayers))
-        {
-            var ownerId = new OwnerId(((Player)player).Id.Value);
-
-            zone.Add(new OwnerComponent(ownerId));
-        }
-
-        var playersWithDeck = _gameState
-            .Query<Player>()
-            .WithComponent<HasDeckComponent>(x => x.HasDeck);
-
-        var deckZones = zones.WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck);
-
-        foreach (var (zone, player) in deckZones.Zip(playersWithDeck))
+        foreach (var (zone, player) in suitableZones.Zip(suitablePlayers))
         {
             var ownerId = new OwnerId(((Player)player).Id.Value);
 

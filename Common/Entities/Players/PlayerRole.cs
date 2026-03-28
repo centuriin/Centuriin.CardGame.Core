@@ -2,7 +2,7 @@
 
 public enum PlayerRole
 {
-    None,
-    System,
-    Participant
+    None = 0,
+    Bank = 1 << 0,
+    Participant = 1 << 1
 }

@@ -22,12 +22,15 @@ public class ZonesLoaderTests
         participant.Add(new PlayerRoleComponent(PlayerRole.Participant));
 
         var deckOwner = new Player(new PlayerId(Guid.NewGuid()));
-        deckOwner.Add(new HasDeckComponent(true));
+        deckOwner.Add(new PlayerRoleComponent(PlayerRole.Participant | PlayerRole.Bank));
 
-        var handZone = new Zone(new ZoneId(10));
-        handZone.Add(new ZoneRoleComponent(ZoneRole.Hand));
+        var handZone1 = new Zone(new ZoneId(10));
+        handZone1.Add(new ZoneRoleComponent(ZoneRole.Hand));
 
-        var deckZone = new Zone(new ZoneId(20));
+        var handZone2 = new Zone(new ZoneId(20));
+        handZone2.Add(new ZoneRoleComponent(ZoneRole.Hand));
+
+        var deckZone = new Zone(new ZoneId(30));
         deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck));
 
         var addedEntities = new List<Zone>();
@@ -42,7 +45,7 @@ public class ZonesLoaderTests
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock
             .Setup(x => x.CreateAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync([handZone, deckZone]);
+            .ReturnsAsync([handZone1, handZone2, deckZone]);
 
         var loader = new ZonesLoader(gameStateMock.Object, zonesFactoryMock.Object);
 
@@ -50,13 +53,16 @@ public class ZonesLoaderTests
         await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
 
         // Assert
-        addedEntities.Should().HaveCount(2);
+        addedEntities.Should().HaveCount(3);
 
         addedEntities.Should().SatisfyRespectively(
             first => first
                 .Get<OwnerComponent>().CurrentOwnerId
                 .Should().BeEquivalentTo(participant.Id),
             second => second
+                .Get<OwnerComponent>().CurrentOwnerId
+                .Should().BeEquivalentTo(deckOwner.Id),
+            third => third
                 .Get<OwnerComponent>().CurrentOwnerId
                 .Should().BeEquivalentTo(deckOwner.Id));
     }
