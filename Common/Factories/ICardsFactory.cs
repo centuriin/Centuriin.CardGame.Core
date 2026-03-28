@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
+﻿using Centuriin.CardGame.Core.Common.Entities;
+using Centuriin.CardGame.Core.Common.Entities.Cards;
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 

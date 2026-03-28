@@ -7,6 +7,7 @@ using FluentAssertions;
 using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Repositories;
+using Centuriin.CardGame.Core.Common.Entities;
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 

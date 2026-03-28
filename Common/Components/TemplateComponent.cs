@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Entities;
+
+namespace Centuriin.CardGame.Core.Common.Components;
 
 /// <summary>
 /// Template component.
