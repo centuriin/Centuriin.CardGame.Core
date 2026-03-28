@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Centuriin.CardGame.Core.Common.Tests;
 
-public class ZonesFactoryTests
+public sealed class ZonesFactoryTests
 {
     [Fact]
     public async Task CreateAsyncShouldAddCreatedZonesToGameStateAsync()

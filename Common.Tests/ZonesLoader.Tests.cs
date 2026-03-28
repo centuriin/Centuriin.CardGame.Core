@@ -10,7 +10,7 @@ using Centuriin.CardGame.Core.Common.Entities.Zones;
 
 namespace Centuriin.CardGame.Core.Common.Tests;
 
-public class ZonesLoaderTests
+public sealed class ZonesLoaderTests
 {
     [Fact]
     public async Task LoadAsyncShouldAssignOwnersToHandAndDeckZonesAndAddToGameStateAsync()
