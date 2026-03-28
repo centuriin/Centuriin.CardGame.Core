@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.Entities;
+﻿namespace Centuriin.CardGame.Core.Common;
 
 /// <summary>
 /// Template identifier.

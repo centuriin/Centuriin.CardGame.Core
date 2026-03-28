@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Entities;
-using Centuriin.CardGame.Core.Common.Entities.Zones;
+﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
 
 namespace Centuriin.CardGame.Core.Common.Repositories;
 
