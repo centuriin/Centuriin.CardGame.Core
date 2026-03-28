@@ -6,7 +6,7 @@ public sealed class CardTemplate : TemplateBase
 {
     public CardTemplate(
         TemplateId id, 
-        IReadOnlyCollection<IGameComponent> components) : base(id, components)
+        IReadOnlyCollection<ComponentBase> components) : base(id, components)
     {
     }
 }

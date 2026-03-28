@@ -6,9 +6,9 @@ public abstract class TemplateBase
 {
     public TemplateId Id { get; }
 
-    public IReadOnlyCollection<IGameComponent> Components { get; }
+    public IReadOnlyCollection<ComponentBase> Components { get; }
 
-    protected TemplateBase(TemplateId id, IReadOnlyCollection<IGameComponent> components)
+    protected TemplateBase(TemplateId id, IReadOnlyCollection<ComponentBase> components)
     {
         Id = id;
         Components = components;

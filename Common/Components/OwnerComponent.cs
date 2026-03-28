@@ -10,6 +10,11 @@ public sealed record class OwnerComponent : ComponentBase
     /// </summary>
     public OwnerId CurrentOwnerId { get; private set; }
 
+    public OwnerComponent(OwnerId ownerId)
+    {
+        CurrentOwnerId = ownerId;
+    }
+
     /// <summary>
     /// Changes current owner identifier.
     /// </summary>
