@@ -1,7 +1,17 @@
-﻿namespace Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Components;
+
+namespace Centuriin.CardGame.Core.Common.Entities.Players;
 
 public sealed class Player : EntityBase<PlayerId>, IEquatable<Player>
 {
+    public static Player System => new(PlayerId.System) 
+    { 
+        Components =
+        {
+            { typeof(PlayerRoleComponent), new PlayerRoleComponent(PlayerRole.Bank) }
+        }
+    };
+
     public Player(PlayerId id) : base(id)
     {
     }

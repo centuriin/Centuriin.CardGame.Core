@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Entities;
 
 public abstract class EntityBase
 {
-    protected Dictionary<Type, ComponentBase> Components { get; } = [];
+    protected Dictionary<Type, ComponentBase> Components { get; init; } = [];
 
     /// <summary>
     /// Adds component.
