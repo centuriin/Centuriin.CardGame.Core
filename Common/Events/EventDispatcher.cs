@@ -1,21 +1,21 @@
-﻿using Centuriin.CardGame.Core.Common.Events.System;
+﻿using System.Threading.Channels;
 
 namespace Centuriin.CardGame.Core.Common.Events;
 
-public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
+public sealed class EventDispatcher : IEventDispatcher<IGameEvent>
 {
-    private readonly Dictionary<Type, Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>> _handlersMap = [];
-    private readonly Dictionary<Delegate, Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>> _wrappedDelegatesMap = [];
+    private readonly Dictionary<Type, Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>> _handlersMap = [];
+    private readonly Dictionary<Delegate, Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>> _wrappedDelegatesMap = [];
 
     public void Register<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>> func)
-        where TEvent : ISystemEvent
+        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> func)
+        where TEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(func);
 
         var type = typeof(TEvent);
 
-        var wrapper = (ISystemEvent e, CancellationToken token) => func((TEvent)e, token);
+        var wrapper = (IGameEvent e, CancellationToken token) => func((TEvent)e, token);
 
         if (_handlersMap.TryGetValue(type, out var @delegate))
         {
@@ -32,8 +32,8 @@ public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
     }
 
     public void Unregister<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>> func)
-        where TEvent : ISystemEvent
+        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> func)
+        where TEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(func);
 
@@ -42,7 +42,7 @@ public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
         if (!_wrappedDelegatesMap.TryGetValue(func, out var wrapper))
         {
             throw new InvalidOperationException();
-        }  
+        }
 
         if (!_handlersMap.TryGetValue(type, out var @delegate))
         {
@@ -63,7 +63,10 @@ public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
         _wrappedDelegatesMap.Remove(func);
     }
 
-    public async Task PublishAsync(ISystemEvent @event, CancellationToken token)
+    public async Task PublishAsync(
+        IGameEvent @event, 
+        ChannelWriter<IGameEvent> writer,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -74,7 +77,7 @@ public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
         var tasks = _handlersMap
             .Where(x => x.Key.IsAssignableFrom(type))
             .SelectMany(x => x.Value.GetInvocationList())
-            .Cast<Func<ISystemEvent, CancellationToken, Task<IReadOnlyCollection<ISystemEvent>>>>()
+            .Cast<Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>>()
             .ToList();
 
         foreach (var task in tasks)
@@ -83,7 +86,7 @@ public sealed class EventDispatcher : IEventDispatcher<ISystemEvent>
 
             foreach (var e in @events)
             {
-                await PublishAsync(e, token);
+                await PublishAsync(e, writer, token);
             }
         }
     }

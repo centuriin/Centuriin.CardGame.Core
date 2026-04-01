@@ -3,7 +3,7 @@
 using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 
-namespace Centuriin.CardGame.Core.Common.Repositories;
+namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 
 public sealed class ZoneTemplatesRepository : IZoneTemplatesRepository
 {

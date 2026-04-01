@@ -3,7 +3,7 @@ using Centuriin.CardGame.Core.Common.Entities.Players;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
-public sealed class ClassicPlayersLoader
+public sealed class ClassicPlayersLoader : IPlayersLoader
 {
     private readonly IGameState _gameState;
 
