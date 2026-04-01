@@ -11,6 +11,10 @@ public interface IGameState
         where TEntity : EntityBase<TId>
         where TId : struct, IEquatable<TId>;
 
+    public TEntity Get<TEntity, TId>(TId id)
+        where TEntity : EntityBase<TId>
+        where TId : struct, IEquatable<TId>;
+
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
 }

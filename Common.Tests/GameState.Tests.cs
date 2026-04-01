@@ -100,4 +100,38 @@ public sealed class GameStateTests
         result.Should().HaveCount(2)
             .And.Contain([card1, card2]);
     }
+
+    [Fact]
+    public void GetShouldReturnCorrectEntityWhenIdExists()
+    {
+        // Arrange
+        var cardId = new CardId(1);
+        var card = new Card(cardId);
+
+        var gameState = new GameState(new(Guid.NewGuid()));
+
+        gameState.AddEntity<Card, CardId>(card);
+
+        // Act
+        var result = gameState.Get<Card, CardId>(cardId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(cardId);
+        result.Should().BeSameAs(card);
+    }
+
+    [Fact]
+    public void GetShouldThrowInvalidOperationExceptionWhenEntityTableDoesNotExist()
+    {
+        // Arrange
+        var gameState = new GameState(new(Guid.NewGuid()));
+        var anyId = new CardId(1);
+
+        // Act
+        var exception = Record.Exception(() => gameState.Get<Card, CardId>(anyId));
+
+        // Assert
+        exception.Should().BeOfType<InvalidOperationException>();
+    }
 }

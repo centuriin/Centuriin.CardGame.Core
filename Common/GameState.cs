@@ -31,6 +31,18 @@ public sealed class GameState : IGameState
         ((Dictionary<TId, TEntity>)dict)[entity.Id] = entity;
     }
 
+    public TEntity Get<TEntity, TId>(TId id)
+        where TEntity : EntityBase<TId>
+        where TId: struct, IEquatable<TId>
+    {
+        if (!_entities.TryGetValue(typeof(TEntity), out var dict))
+        {
+            throw new InvalidOperationException();
+        }
+
+        return ((IDictionary<TId, TEntity>)dict)[id];
+    }
+
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase
     {

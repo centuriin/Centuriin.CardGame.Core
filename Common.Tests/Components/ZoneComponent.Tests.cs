@@ -29,7 +29,7 @@ public sealed class ZoneComponentTests
         var copy = (ZoneComponent)component.Copy();
 
         // Act
-        copy.ChangeSpaceId(new ZoneId(999));
+        copy.ChangeZoneId(new ZoneId(999));
 
         // Assert
         copy.Should().NotBeEquivalentTo(component);

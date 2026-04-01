@@ -2,5 +2,5 @@
 
 public interface IClassicDealerService
 {
-    Task DealCardsAsync(int count, CancellationToken token);
+    public Task DealCardsAsync(int count, CancellationToken token);
 }
