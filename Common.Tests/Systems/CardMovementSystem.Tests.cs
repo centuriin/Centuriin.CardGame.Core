@@ -48,7 +48,7 @@ public sealed class CardMovementSystemTests
 
         // Act
         var exception = Record.Exception(() =>
-            system.OnEvent(@event, gameStateMock.Object, writer, TestContext.Current.CancellationToken));
+            system.OnEvent(@event, gameStateMock.Object, writer));
 
         // Assert
         exception.Should().BeNull();
@@ -80,7 +80,7 @@ public sealed class CardMovementSystemTests
 
         // Act
         var exception = Record.Exception(() =>
-            system.OnEvent(@event, gameStateMock.Object, writer, CancellationToken.None));
+            system.OnEvent(@event, gameStateMock.Object, writer));
 
         // Assert
         exception.Should().NotBeNull();

@@ -8,6 +8,5 @@ public interface ISubscriber<TEvent>
     public void OnEvent(
         TEvent @event, 
         IGameState gameState, 
-        ChannelWriter<IGameEvent> writer,
-        CancellationToken token);
+        ChannelWriter<IGameEvent> writer);
 }

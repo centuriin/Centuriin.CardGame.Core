@@ -1,168 +1,149 @@
-﻿//using Centuriin.CardGame.Core.Common.Events;
-//using Centuriin.Centuriin.Core.Common;
+﻿using System.Threading.Channels;
 
-//using FluentAssertions;
+using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.Centuriin.Core.Common;
 
-//using Xunit;
+using FluentAssertions;
 
-//namespace Centuriin.CardGame.Core.Common;
+using Moq;
 
-//public sealed class EventDispatcherTests
-//{
-//    [Fact]
-//    public async Task PublishShouldInvokeRegisteredHandlerAsync()
-//    {
-//        // Arrange        
-//        var invokeCalls = 0;
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> handler =
-//            async (e, ct) =>
-//            {
-//                invokeCalls++;
-//                return [];
-//            };
+using Xunit;
 
-//        var dispatcher = new EventDispatcher();
-//        dispatcher.Register(handler);
+namespace Centuriin.CardGame.Core.Common;
 
-//        // Act
-//        await dispatcher.PublishAsync(
-//            new FakeTestEvent(),
-//            TestContext.Current.CancellationToken);
+public sealed class EventDispatcherTests
+{
+    [Fact]
+    public void PublishShouldInvokeRegisteredSubscriber()
+    {
+        // Arrange        
+        var invokeCalls = 0;
+        var subscriberMock = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
+        subscriberMock
+            .Setup(x => x.OnEvent(
+                It.IsAny<FakeTestEvent>(), 
+                It.IsAny<IGameState>(), 
+                It.IsAny<ChannelWriter<IGameEvent>>()))
+            .Callback(() => invokeCalls++);
 
-//        // Assert
-//        invokeCalls.Should().Be(1);
-//    }
+        var dispatcher = new EventDispatcher();
+        dispatcher.Register(subscriberMock.Object);
 
-//    [Fact]
-//    public async Task PublishShouldHandleRecursiveEventsAsync()
-//    {
-//        // Arrange
-//        var firstEventHandlerCalls = 0;
-//        var secondEventHandlerCalls = 0;
+        // Act
+        dispatcher.Publish(
+            new FakeTestEvent(),
+            Mock.Of<IGameState>(MockBehavior.Strict),
+            Channel.CreateUnbounded<IGameEvent>().Writer);
 
-//        var dispatcher = new EventDispatcher();
+        // Assert
+        invokeCalls.Should().Be(1);
+    }
 
-//        dispatcher.Register<FakeTestEvent>(async (e, ct) =>
-//        {
-//            firstEventHandlerCalls++;
-//            return [new FakeChildEvent()];
-//        });
+    [Fact]
+    public void UnregisterShouldStopSubscriberInvocations()
+    {
+        // Arrange
+        var @event = new FakeTestEvent();
+        var invocationCount = 0;
 
-//        dispatcher.Register<FakeChildEvent>(async (e, ct) =>
-//        {
-//            secondEventHandlerCalls++;
-//            return [];
-//        });
+        var subscriberMock = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
+        subscriberMock
+            .Setup(x => x.OnEvent(
+                It.IsAny<FakeTestEvent>(), 
+                It.IsAny<IGameState>(), 
+                It.IsAny<ChannelWriter<IGameEvent>>()))
+            .Callback(() => invocationCount++);
 
-//        // Act
-//        await dispatcher.PublishAsync(
-//            new FakeTestEvent(),
-//            TestContext.Current.CancellationToken);
+        var dispatcher = new EventDispatcher();
+        dispatcher.Register(subscriberMock.Object);
 
-//        // Assert
-//        firstEventHandlerCalls.Should().Be(1);
-//        secondEventHandlerCalls.Should().Be(1);
-//    }
+        var gameState = Mock.Of<IGameState>(MockBehavior.Strict);
+        var writer = Channel.CreateUnbounded<IGameEvent>().Writer;
 
-//    [Fact]
-//    public async Task UnregisterShouldStopHandlerInvocationsAsync()
-//    {
-//        // Arrange
-//        var @event = new FakeTestEvent();
+        // Act
+        dispatcher.Publish(@event, gameState, writer);
+        dispatcher.Unregister(subscriberMock.Object);
 
-//        var invocationCount = 0;
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> handler =
-//            async (e, ct) => { invocationCount++; return []; };
+        var exception = Record.Exception(() =>
+            dispatcher.Publish(@event, gameState, writer));
 
-//        var dispatcher = new EventDispatcher();
+        // Assert
+        exception.Should().BeNull();
+        invocationCount.Should().Be(1);
+    }
 
-//        dispatcher.Register(handler);
+    [Fact]
+    public void UnregisterNonExistentSubscriberShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var subscriber = Mock.Of<ISubscriber<FakeTestEvent>>();
+        var dispatcher = new EventDispatcher();
 
-//        // Act
-//        await dispatcher.PublishAsync(
-//            @event,
-//            TestContext.Current.CancellationToken);
+        // Act
+        var exception = Record.Exception(() => dispatcher.Unregister(subscriber));
 
-//        dispatcher.Unregister(handler);
+        // Assert
+        exception.Should().NotBeNull();
+        exception.Should().BeOfType<InvalidOperationException>();
+    }
 
-//        await dispatcher.PublishAsync(
-//            @event,
-//            TestContext.Current.CancellationToken);
+    [Fact]
+    public void PublishShouldInvokeMultipleSubscribersForSameEvent()
+    {
+        // Arrange
+        var handlerCalls = 0;
+        var sub1 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
+        sub1.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>(), It.IsAny<IGameState>(), It.IsAny<ChannelWriter<IGameEvent>>()))
+            .Callback(() => handlerCalls++);
 
-//        // Assert
-//        invocationCount.Should().Be(1);
-//    }
+        var sub2 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
+        sub2.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>(), It.IsAny<IGameState>(), It.IsAny<ChannelWriter<IGameEvent>>()))
+            .Callback(() => handlerCalls++);
 
-//    [Fact]
-//    public void UnregisterNonExistentHandlerShouldThrowInvalidOperationException()
-//    {
-//        // Arrange
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> handler =
-//            async (e, ct) => [];
+        var dispatcher = new EventDispatcher();
+        dispatcher.Register(sub1.Object);
+        dispatcher.Register(sub2.Object);
 
-//        var dispatcher = new EventDispatcher();
+        // Act
+        dispatcher.Publish(
+            new FakeTestEvent(), 
+            Mock.Of<IGameState>(MockBehavior.Strict),
+            Channel.CreateUnbounded<IGameEvent>().Writer);
 
-//        // Act
-//        var exception = Record.Exception(() => dispatcher.Unregister(handler));
+        // Assert
+        handlerCalls.Should().Be(2);
+    }
 
-//        // Assert
-//        exception.Should().BeOfType<InvalidOperationException>();
-//    }
+    [Fact]
+    public void PublishShouldInvokeSubscribersForDerivedEvent()
+    {
+        // Arrange
+        var handlerCalls = 0;
+        var sub = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
+        sub.Setup(x => x.OnEvent(
+                It.IsAny<FakeTestEvent>(), 
+                It.IsAny<IGameState>(), 
+                It.IsAny<ChannelWriter<IGameEvent>>()))
+            .Callback(() => handlerCalls++);
 
-//    [Fact]
-//    public async Task PublishShouldInvokeMultipleHandlersForSameEventAsync()
-//    {
-//        // Arrange
-//        var handlerCalls = 0;
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> handler1 =
-//            async (e, ct) => { handlerCalls++; return []; };
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> handler2 =
-//            async (e, ct) => { handlerCalls++; return []; };
+        var dispatcher = new EventDispatcher();
+        dispatcher.Register(sub.Object);
 
-//        var dispatcher = new EventDispatcher();
+        // Act
+        dispatcher.Publish(
+            new DerivedTestEvent(), 
+            Mock.Of<IGameState>(MockBehavior.Strict),
+            Channel.CreateUnbounded<IGameEvent>().Writer);
 
-//        dispatcher.Register(handler1);
-//        dispatcher.Register(handler2);
+        // Assert
+        handlerCalls.Should().Be(1);
+    }
 
-//        // Act
-//        await dispatcher.PublishAsync(
-//            new FakeTestEvent(),
-//            TestContext.Current.CancellationToken);
+    // Вспомогательные классы
+    public record class FakeTestEvent : IGameEvent
+    {
+        public GameId GameId => new(Guid.NewGuid());
+    }
 
-//        // Assert
-//        handlerCalls.Should().Be(2);
-//    }
-
-//    [Fact]
-//    public async Task PublishShouldInvokeHandlersForDerivedEventAsync()
-//    {
-//        // Arrange
-//        var handlerCalls = 0;
-//        Func<FakeTestEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> h1 =
-//            async (e, ct) => { handlerCalls++; return []; };
-
-//        var dispatcher = new EventDispatcher();
-
-//        dispatcher.Register(h1);
-
-//        // Act
-//        await dispatcher.PublishAsync(
-//            new DerivedTestEvent(),
-//            TestContext.Current.CancellationToken);
-
-//        // Assert
-//        handlerCalls.Should().Be(1);
-//    }
-
-//    public record FakeTestEvent : IGameEvent
-//    {
-//        public GameId GameId => throw new NotImplementedException();
-//    }
-
-//    public record DerivedTestEvent : FakeTestEvent;
-
-//    public record FakeChildEvent : IGameEvent
-//    {
-//        public GameId GameId => throw new NotImplementedException();
-//    }
-//}
+    public sealed record class DerivedTestEvent : FakeTestEvent;
+}

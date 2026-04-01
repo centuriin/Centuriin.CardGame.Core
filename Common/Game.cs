@@ -14,14 +14,14 @@ public sealed class Game : IGame
     });
 
     private readonly IGameEventsRepository _eventsRepository;
-    private readonly IEventDispatcher<IGameEvent> _dispatcher;
+    private readonly IEventDispatcher _dispatcher;
 
     public IGameState State { get; }
 
     public Game(
         IGameState gameState,
         IGameEventsRepository eventsRepository,
-        IEventDispatcher<IGameEvent> dispatcher)
+        IEventDispatcher dispatcher)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
@@ -45,7 +45,7 @@ public sealed class Game : IGame
         {
             await _eventsRepository.AddAsync(nextEvent, token);
 
-            await _dispatcher.PublishAsync(nextEvent, _channel.Writer, token);
+            _dispatcher.Publish(nextEvent, State, _channel.Writer);
         }
     }
 }

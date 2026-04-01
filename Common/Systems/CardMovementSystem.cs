@@ -14,14 +14,11 @@ public sealed class CardMovementSystem :
     public void OnEvent(
         CardDealtEvent @event,
         IGameState gameState,
-        ChannelWriter<IGameEvent> writer,
-        CancellationToken token)
+        ChannelWriter<IGameEvent> writer)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(writer);
-
-        token.ThrowIfCancellationRequested();
 
         var card = gameState.Get<Card, CardId>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(@event.NewOwnerId);

@@ -2,92 +2,84 @@
 
 namespace Centuriin.CardGame.Core.Common.Events;
 
-public sealed class EventDispatcher : IEventDispatcher<IGameEvent>
+public sealed class EventDispatcher : IEventDispatcher
 {
-    private readonly Dictionary<Type, Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>> _handlersMap = [];
-    private readonly Dictionary<Delegate, Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>> _wrappedDelegatesMap = [];
+    private readonly Dictionary<Type, Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>> _handlersMap = [];
+    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>> _wrappersMap = [];
 
-    public void Register<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> func)
+    public void Register<TEvent>(ISubscriber<TEvent> subscriber)
         where TEvent : IGameEvent
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(subscriber);
 
-        var type = typeof(TEvent);
+        var eventType = typeof(TEvent);
 
-        var wrapper = (IGameEvent e, CancellationToken token) => func((TEvent)e, token);
+        var wrapper = (IGameEvent e, IGameState s, ChannelWriter<IGameEvent> w) =>
+            subscriber.OnEvent((TEvent)e, s, w);
 
-        if (_handlersMap.TryGetValue(type, out var @delegate))
+        if (_handlersMap.TryGetValue(eventType, out var actions))
         {
-            @delegate += wrapper;
-
-            _handlersMap[type] = @delegate;
+            actions += wrapper;
+            _handlersMap[eventType] = actions;
         }
         else
         {
-            _handlersMap[typeof(TEvent)] = wrapper;
+            _handlersMap[eventType] = wrapper;
         }
 
-        _wrappedDelegatesMap[func] = wrapper;
+        _wrappersMap[subscriber.OnEvent] = wrapper;
     }
 
-    public void Unregister<TEvent>(
-        Func<TEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>> func)
+    public void Unregister<TEvent>(ISubscriber<TEvent> subscriber)
         where TEvent : IGameEvent
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(subscriber);
 
-        var type = typeof(TEvent);
+        var eventType = typeof(TEvent);
 
-        if (!_wrappedDelegatesMap.TryGetValue(func, out var wrapper))
+        if (!_wrappersMap.TryGetValue(subscriber.OnEvent, out var wrapper))
         {
             throw new InvalidOperationException();
         }
 
-        if (!_handlersMap.TryGetValue(type, out var @delegate))
+        if (!_handlersMap.TryGetValue(eventType, out var actions))
         {
             throw new InvalidOperationException();
         }
 
-        @delegate -= wrapper;
+        actions -= wrapper;
 
-        if (@delegate is null)
+        if (actions is null)
         {
-            _handlersMap.Remove(type);
+            _handlersMap.Remove(eventType);
         }
         else
         {
-            _handlersMap[type] = @delegate;
+            _handlersMap[eventType] = actions;
         }
 
-        _wrappedDelegatesMap.Remove(func);
+        _wrappersMap.Remove(subscriber.OnEvent);
     }
 
-    public async Task PublishAsync(
-        IGameEvent @event, 
-        ChannelWriter<IGameEvent> writer,
-        CancellationToken token)
+    public void Publish(
+        IGameEvent @event,
+        IGameState gameState,
+        ChannelWriter<IGameEvent> writer)
     {
         ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(writer);
 
-        token.ThrowIfCancellationRequested();
+        var actualType = @event.GetType();
 
-        var type = @event.GetType();
-
-        var tasks = _handlersMap
-            .Where(x => x.Key.IsAssignableFrom(type))
+        var actions = _handlersMap
+            .Where(x => x.Key.IsAssignableFrom(actualType))
             .SelectMany(x => x.Value.GetInvocationList())
-            .Cast<Func<IGameEvent, CancellationToken, Task<IReadOnlyCollection<IGameEvent>>>>()
-            .ToList();
+            .Cast<Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>>();
 
-        foreach (var task in tasks)
+        foreach (var action in actions)
         {
-            var @events = await task(@event, token);
-
-            foreach (var e in @events)
-            {
-                await PublishAsync(e, writer, token);
-            }
+            action(@event, gameState, writer);
         }
     }
 }
