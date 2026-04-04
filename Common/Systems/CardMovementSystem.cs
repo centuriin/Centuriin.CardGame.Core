@@ -1,25 +1,25 @@
 ﻿using System.Threading.Channels;
 
 using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 
-public sealed class CardMovementSystem :
-    ISystem,
-    ISubscriber<CardDealtEvent>
+public sealed class CardMovementSystem : SubscriberBase<CardDealtEvent>, ISystem
 {
-    public void OnEvent(
+    public CardMovementSystem(IGameEngineLogger logger) : base(logger)
+    {
+    }
+
+    protected override void OnEventCore(
         CardDealtEvent @event,
         IGameState gameState,
         ChannelWriter<IGameEvent> writer)
     {
-        ArgumentNullException.ThrowIfNull(@event);
-        ArgumentNullException.ThrowIfNull(gameState);
-        ArgumentNullException.ThrowIfNull(writer);
-
         var card = gameState.Get<Card, CardId>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(@event.NewOwnerId);
 
