@@ -11,6 +11,8 @@ using Centuriin.Centuriin.Core.Common;
 
 using FluentAssertions;
 
+using Moq;
+
 using Xunit;
 
 namespace Centuriin.CardGame.Core.Common.SmokeTests;
@@ -41,7 +43,7 @@ public sealed class GameTests
                 new ZoneComponent(new ZoneId(0))
             ]);
 
-        var gameState = new GameState(gameId);
+        var gameState = new GameState(gameId, Mock.Of<ITurnAutomat>(MockBehavior.Strict));
         gameState.AddEntity<Player, PlayerId>(new Player(playerId));
         gameState.AddEntity<Player, PlayerId>(new Player(PlayerId.System));
         gameState.AddEntity<Zone, ZoneId>(handZone);

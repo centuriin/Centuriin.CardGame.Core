@@ -11,9 +11,15 @@ public sealed class GameState : IGameState
 
     public GameId GameId { get; }
 
-    public GameState(GameId gameId)
+    public ITurnAutomat TurnAutomat { get; }
+
+    public GameState(
+        GameId gameId, ITurnAutomat turnAutomat)
     {
         GameId = gameId;
+
+        ArgumentNullException.ThrowIfNull(turnAutomat);
+        TurnAutomat = turnAutomat;
     }
 
     public void AddEntity<TEntity, TId>(TEntity entity)

@@ -7,6 +7,8 @@ public interface IGameState
 {
     public GameId GameId { get; }
 
+    public ITurnAutomat TurnAutomat { get; }
+
     public void AddEntity<TEntity, TId>(TEntity entity)
         where TEntity : EntityBase<TId>
         where TId : struct, IEquatable<TId>;

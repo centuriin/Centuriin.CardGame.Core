@@ -4,6 +4,8 @@ using Centuriin.CardGame.Core.Common.Entities.Zones;
 
 using FluentAssertions;
 
+using Moq;
+
 using Xunit;
 
 namespace Centuriin.CardGame.Core.Tests;
@@ -17,7 +19,9 @@ public sealed class GameStateTests
         var cardId = new CardId(1);
         var card = new Card(cardId);
 
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
         gameState.AddEntity<Card, CardId>(card);
@@ -36,7 +40,9 @@ public sealed class GameStateTests
         var initialCard = new Card(cardId);
         var updatedCard = new Card(cardId);
 
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
         gameState.AddEntity<Card, CardId>(initialCard);
@@ -52,7 +58,9 @@ public sealed class GameStateTests
     public void QueryShouldReturnEmptyCollectionWhenNoEntitiesAdded()
     {
         // Arrange
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
         var result = gameState.Query<Card>();
@@ -68,7 +76,9 @@ public sealed class GameStateTests
         var card = new Card(new CardId(1));
         var zone = new Zone(new ZoneId(10));
 
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
         gameState.AddEntity<Card, CardId>(card);
@@ -89,7 +99,9 @@ public sealed class GameStateTests
         var card1 = new Card(new CardId(1));
         var card2 = new Card(new CardId(2));
 
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
         gameState.AddEntity<Card, CardId>(card1);
@@ -108,7 +120,9 @@ public sealed class GameStateTests
         var cardId = new CardId(1);
         var card = new Card(cardId);
 
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         gameState.AddEntity<Card, CardId>(card);
 
@@ -125,7 +139,9 @@ public sealed class GameStateTests
     public void GetShouldThrowInvalidOperationExceptionWhenEntityTableDoesNotExist()
     {
         // Arrange
-        var gameState = new GameState(new(Guid.NewGuid()));
+        var gameState = new GameState(
+            new(Guid.NewGuid()),
+            Mock.Of<ITurnAutomat>(MockBehavior.Strict));
         var anyId = new CardId(1);
 
         // Act
