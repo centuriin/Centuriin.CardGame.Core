@@ -10,17 +10,19 @@ using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 
-public sealed class ClassicDealerSystem : SubscriberBase<GameStartedEvent>
+public sealed class ClassicDealerSystem : 
+    SubscriberBase, 
+    ISystem,
+    ISubscriber<GameStartedEvent>
 {
     public ClassicDealerSystem(IGameEngineLogger logger) : base(logger)
     {
     }
 
-    protected override void OnEventCore(
-        GameStartedEvent @event,
-        IGameState gameState,
-        ChannelWriter<IGameEvent> writer)
+    public void OnEvent(GameStartedEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
     {
+        ValidateAndLog(@event, gameState, writer);
+
         var generalDeck = gameState
             .Query<Card>()
             .WithComponent<OwnerComponent>(x => x.CurrentOwnerId == PlayerId.System)

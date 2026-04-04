@@ -9,17 +9,22 @@ using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 
-public sealed class CardMovementSystem : SubscriberBase<CardDealtEvent>, ISystem
+public sealed class CardMovementSystem : 
+    SubscriberBase,
+    ISystem,
+    ISubscriber<CardDealtEvent>
 {
     public CardMovementSystem(IGameEngineLogger logger) : base(logger)
     {
     }
 
-    protected override void OnEventCore(
+    public void OnEvent(
         CardDealtEvent @event,
         IGameState gameState,
         ChannelWriter<IGameEvent> writer)
     {
+        ValidateAndLog(@event, gameState, writer);
+
         var card = gameState.Get<Card, CardId>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(@event.NewOwnerId);
 
