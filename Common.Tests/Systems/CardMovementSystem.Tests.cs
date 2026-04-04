@@ -30,16 +30,25 @@ public sealed class CardMovementSystemTests
         var targetZoneId = new ZoneId(10);
 
         var card = new Card(cardId);
-        card.Add(new OwnerComponent(PlayerId.System));
-        card.Add(new ZoneComponent(new ZoneId(0)));
+        card.Add(
+            [
+                new OwnerComponent(PlayerId.System),
+                new ZoneComponent(new ZoneId(0))
+            ]);
 
         var handZone = new Zone(targetZoneId);
-        handZone.Add(new OwnerComponent(playerId));
-        handZone.Add(new ZoneRoleComponent(ZoneRole.Hand));
+        handZone.Add(
+            [
+                new OwnerComponent(playerId),
+                new ZoneRoleComponent(ZoneRole.Hand)
+            ]);
 
         var otherZone = new Zone(new ZoneId(99));
-        otherZone.Add(new OwnerComponent(otherPlayerId));
-        otherZone.Add(new ZoneRoleComponent(ZoneRole.Hand));
+        otherZone.Add(
+            [
+                new OwnerComponent(otherPlayerId),
+                new ZoneRoleComponent(ZoneRole.Hand)
+            ]);
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.Setup(x => x.Get<Card, CardId>(cardId))
@@ -69,8 +78,11 @@ public sealed class CardMovementSystemTests
         var cardId = new CardId(1);
 
         var card = new Card(cardId);
-        card.Add(new OwnerComponent(PlayerId.System));
-        card.Add(new ZoneComponent(new ZoneId(0)));
+        card.Add(
+            [
+                new OwnerComponent(PlayerId.System), 
+                new ZoneComponent(new ZoneId(0))
+            ]);
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.Setup(x => x.Get<Card, CardId>(cardId))

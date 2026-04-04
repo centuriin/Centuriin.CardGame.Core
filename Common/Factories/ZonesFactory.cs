@@ -38,12 +38,11 @@ public sealed class ZonesFactory : IZonesFactory
     {
         var zone = new Zone(new(zoneId));
 
-        foreach (var component in template.Components)
-        {
-            zone.Add(component.Copy());
-        }
-
-        zone.Add(new TemplateComponent(template.Id));
+        zone.Add(
+            [..
+                template.Components.Select(x => x.Copy()),
+                new TemplateComponent(template.Id)
+            ]);
 
         return zone;
     }

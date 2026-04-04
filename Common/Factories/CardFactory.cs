@@ -41,12 +41,11 @@ public sealed class CardsFactory : ICardsFactory
     {
         var card = new Card(new CardId(cardId));
 
-        foreach (var component in template.Components)
-        {
-            card.Add(component.Copy());
-        }
-
-        card.Add(new TemplateComponent(template.Id));
+        card.Add(
+            [.. 
+                template.Components.Select(x => x.Copy()), 
+                new TemplateComponent(template.Id)
+            ]);
 
         return card;
     }

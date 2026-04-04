@@ -24,8 +24,11 @@ public sealed class DecksLoaderTests
         var ownerId = new PlayerId(Guid.NewGuid());
 
         var deckZone = new Zone(new(10));
-        deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck));
-        deckZone.Add(new OwnerComponent(ownerId));
+        deckZone.Add(
+            [
+                new ZoneRoleComponent(ZoneRole.Deck),
+                new OwnerComponent(ownerId)
+            ]);
 
         var addedCards = new List<Card>();
         var gameStateMock = new Mock<IGameState>(MockBehavior.Strict);

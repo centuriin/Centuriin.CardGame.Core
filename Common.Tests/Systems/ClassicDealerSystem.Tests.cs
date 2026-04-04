@@ -37,13 +37,11 @@ public sealed class ClassicDealerSystemTests
 
         var zoneId = new ZoneId(10);
         var zone1 = new Zone(zoneId);
-        zone1.Add(new OwnerComponent(playerId1));
-        zone1.Add(new HasPrimaryCards(1));
+        zone1.Add(new OwnerComponent(playerId1), new HasPrimaryCards(1));
 
         var zoneId2 = new ZoneId(20);
         var zone2 = new Zone(zoneId2);
-        zone2.Add(new OwnerComponent(playerId2));
-        zone2.Add(new HasPrimaryCards(1));
+        zone2.Add(new OwnerComponent(playerId2), new HasPrimaryCards(1));
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.SetupGet(x => x.GameId)

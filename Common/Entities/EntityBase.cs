@@ -9,17 +9,20 @@ public abstract class EntityBase
     /// <summary>
     /// Adds component.
     /// </summary>
-    /// <param name="component">
+    /// <param name="components">
     /// Component.
     /// </param>
     /// <exception cref="ArgumentNullException">
-    /// When <paramref name="component"/> is <see langword="null"/>.
+    /// When <paramref name="components"/> is <see langword="null"/>.
     /// </exception>
-    public void Add(ComponentBase component)
+    public void Add(params IReadOnlyCollection<ComponentBase> components)
     {
-        ArgumentNullException.ThrowIfNull(component);
+        ArgumentNullException.ThrowIfNull(components);
 
-        Components[component.GetType()] = component;
+        foreach (var component in components)
+        {
+            Components[component.GetType()] = component;
+        }
     }
 
     /// <summary>
