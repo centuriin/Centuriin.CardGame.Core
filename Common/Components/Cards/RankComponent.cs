@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 
-namespace Centuriin.CardGame.Core.Common.Components;
+namespace Centuriin.CardGame.Core.Common.Components.Cards;
 
 /// <summary>
 /// Rank component.

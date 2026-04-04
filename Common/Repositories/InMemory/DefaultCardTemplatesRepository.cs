@@ -1,6 +1,7 @@
 ﻿using System.Collections.Frozen;
 
 using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Components.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 
 namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;

@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Components.Players;
 
 namespace Centuriin.CardGame.Core.Common.Entities.Players;
 
