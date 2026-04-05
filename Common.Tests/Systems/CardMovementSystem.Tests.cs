@@ -93,12 +93,13 @@ public sealed class CardMovementSystemTests
         var system = new CardMovementSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
-        var act = () => system.OnEvent(
-            new CardDealtEvent(gameId, cardId, playerId),
-            stateMock.Object,
-            Channel.CreateUnbounded<IGameEvent>().Writer);
+        var exception = Record.Exception(() => 
+            system.OnEvent(
+                new CardDealtEvent(gameId, cardId, playerId),
+                stateMock.Object,
+                Channel.CreateUnbounded<IGameEvent>().Writer));
 
         // Assert
-        act.Should().Throw<InvalidOperationException>();
+        exception.Should().BeOfType<InvalidOperationException>();
     }
 }
