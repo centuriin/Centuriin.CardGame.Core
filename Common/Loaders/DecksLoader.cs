@@ -50,7 +50,9 @@ public sealed class DecksLoader : IDecksLoader
 
             foreach (var card in cards)
             {
-                card.Add(new ZoneComponent(zone.Id));
+                card.Add(
+                    new ZoneComponent(zone.Id),
+                    new OwnerComponent(ownerId));
 
                 _gameState.AddEntity<Card, CardId>(card);
             }

@@ -20,7 +20,7 @@ namespace Centuriin.CardGame.Core.Common.SmokeTests;
 public sealed class GameTests
 {
     [Fact]
-    [Trait("Category", "Smoke")]
+    [Trait("Category", "Integration")]
     public async Task FullGameStartFlowShouldWorkCorrectlyAsync()
     {
         // Arrange

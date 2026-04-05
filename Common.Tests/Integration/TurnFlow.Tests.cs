@@ -16,7 +16,7 @@ namespace Centuriin.CardGame.Core.Common.SmokeTests;
 public sealed class TurnFlowTests
 {
     [Fact]
-    [Trait("Category", "Smoke")]
+    [Trait("Category", "Integration")]
     public async Task TurnFlowShouldCycleThroughPlayersCorrectlyAsync()
     {
         // Arrange
