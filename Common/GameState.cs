@@ -13,8 +13,7 @@ public sealed class GameState : IGameState
 
     public ITurnAutomat TurnAutomat { get; }
 
-    public GameState(
-        GameId gameId, ITurnAutomat turnAutomat)
+    public GameState(GameId gameId, ITurnAutomat turnAutomat)
     {
         GameId = gameId;
 

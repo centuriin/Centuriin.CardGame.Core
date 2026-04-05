@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
@@ -16,6 +15,8 @@ public sealed class ClassicPlayersLoader : IPlayersLoader
 
     public async Task LoadAsync(IReadOnlyCollection<PlayerId> playerIds, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(playerIds);
+
         token.ThrowIfCancellationRequested();
 
         _gameState.AddEntity<Player, PlayerId>(Player.System);

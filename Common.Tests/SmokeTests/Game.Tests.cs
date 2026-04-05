@@ -49,7 +49,7 @@ public sealed class GameTests
         gameState.AddEntity<Zone, ZoneId>(handZone);
         gameState.AddEntity<Card, CardId>(card);
 
-        var dealerSystem = new ClassicDealerSystem(DebugLogger.Instance);
+        var dealerSystem = new DealerSystem(DebugLogger.Instance);
         var movementSystem = new CardMovementSystem(DebugLogger.Instance);
 
         var dispatcher = new EventDispatcher();

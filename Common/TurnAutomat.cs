@@ -63,6 +63,8 @@ public sealed class TurnAutomat : ITurnAutomat
         }
     }
 
+    public IEnumerable<PlayerId> GetEnumarable() => _playersQueue;
+
     private void FillCycleIfNeeded()
     {
         if (_playersQueue.Count == 0 && IsCycled)
@@ -73,6 +75,4 @@ public sealed class TurnAutomat : ITurnAutomat
             }
         }
     }
-
-    public IEnumerable<PlayerId> GetEnumarable() => _playersQueue;
 }
