@@ -10,12 +10,11 @@ using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 
-public sealed class ClassicDealerSystem : 
-    SubscriberBase, 
-    ISystem,
+public sealed class DealerSystem : 
+    SystemBase,
     ISubscriber<GameStartedEvent>
 {
-    public ClassicDealerSystem(IGameEngineLogger logger) : base(logger)
+    public DealerSystem(IGameEngineLogger logger) : base(logger)
     {
     }
 
@@ -23,25 +22,26 @@ public sealed class ClassicDealerSystem :
     {
         ValidateAndLog(@event, gameState, writer);
 
-        var generalDeck = gameState
+        var playersDecks = gameState
             .Query<Card>()
-            .WithComponent<OwnerComponent>(x => x.CurrentOwnerId == PlayerId.System)
-            .As<Card>()
-            .Select(x => x.Id)
-            .Shuffle();
-
-        var pickQueue = new Queue<CardId>(generalDeck);
+            .ToLookup(k => k.Get<OwnerComponent>().CurrentOwnerId, v => v.Id)
+            .ToDictionary(k => k.Key, v => new Queue<CardId>(v.Shuffle()));
 
         foreach (var zone in gameState.Query<Zone>().WithComponent<HasPrimaryCards>())
         {
             var cardCount = zone.Get<HasPrimaryCards>().Count;
+            var zoneOwner = zone.Get<OwnerComponent>().CurrentOwnerId;
+
+            var deckQueue = playersDecks.ContainsKey(zoneOwner)
+                ? playersDecks[zoneOwner]
+                : playersDecks[PlayerId.System];
 
             for (var i = 0; i < cardCount; i++)
             {
-                var pickedCardId = pickQueue.Dequeue();
+                var pickedCardId = deckQueue.Dequeue();
 
                 var childEvent = new CardDealtEvent(
-                    gameState.GameId,
+                    @event.GameId,
                     pickedCardId,
                     zone.Get<OwnerComponent>().CurrentOwnerId);
 

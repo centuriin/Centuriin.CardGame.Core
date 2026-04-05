@@ -10,8 +10,7 @@ using Centuriin.CardGame.Core.Common.Logging;
 namespace Centuriin.CardGame.Core.Common.Systems;
 
 public sealed class CardMovementSystem : 
-    SubscriberBase,
-    ISystem,
+    SystemBase,
     ISubscriber<CardDealtEvent>
 {
     public CardMovementSystem(IGameEngineLogger logger) : base(logger)

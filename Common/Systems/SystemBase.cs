@@ -1,14 +1,15 @@
 ﻿using System.Threading.Channels;
 
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
 
-namespace Centuriin.CardGame.Core.Common.Events;
+namespace Centuriin.CardGame.Core.Common.Systems;
 
-public abstract class SubscriberBase
+public abstract class SystemBase
 {
     protected IGameEngineLogger Logger { get; }
 
-    protected SubscriberBase(IGameEngineLogger logger)
+    protected SystemBase(IGameEngineLogger logger)
     {
         ArgumentNullException.ThrowIfNull(logger);
         Logger = logger;
@@ -21,6 +22,9 @@ public abstract class SubscriberBase
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(writer);
 
-        Logger.LogDebug("Handling {Event}", typeof(TEvent).Name);
+        if (Logger.IsEnabled(LogLevel.Debug))
+        {
+            Logger.LogDebug("Handling {Event}", typeof(TEvent).Name);
+        }
     }
 }

@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 
-public sealed class ClassicDealerSystemTests
+public sealed class DealerSystemTests
 {
     [Fact]
     public void OnEventCoreShouldGenerateEventsForAllZonesWithHasPrimaryCards()
@@ -44,8 +44,6 @@ public sealed class ClassicDealerSystemTests
         zone2.Add(new OwnerComponent(playerId2), new HasPrimaryCards(1));
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
-        stateMock.SetupGet(x => x.GameId)
-            .Returns(gameId);
         stateMock.Setup(x => x.Query<Card>())
             .Returns([card1, card2]);
         stateMock.Setup(x => x.Query<Zone>())
@@ -53,7 +51,7 @@ public sealed class ClassicDealerSystemTests
 
         var channel = Channel.CreateUnbounded<IGameEvent>();
 
-        var system = new ClassicDealerSystem(Mock.Of<IGameEngineLogger>());
+        var system = new DealerSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, channel.Writer);
