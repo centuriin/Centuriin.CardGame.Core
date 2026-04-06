@@ -6,7 +6,7 @@ using Centuriin.CardGame.Core.Common.Entities.Cards;
 
 namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 
-public sealed class DefaultCardTemplatesRepository : ICardTemplatesRepository
+public sealed class DefaultCardTemplatesRepository : ITemplatesRepository<CardTemplate>
 {
     public static FrozenDictionary<TemplateId, CardTemplate> Templates36 { get; } =
         Enumerable.Range(1, 4)
@@ -25,8 +25,8 @@ public sealed class DefaultCardTemplatesRepository : ICardTemplatesRepository
     public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) => 
         Task.FromResult(Templates36[templateId]);
 
-    public Task<IReadOnlyDictionary<TemplateId, CardTemplate>> GetTemplatesByIdsAsync(
-        IReadOnlySet<TemplateId> templateIds, 
+    public Task<IReadOnlyCollection<CardTemplate>> GetTemplatesByIdsAsync(
+        IReadOnlyCollection<TemplateId> templateIds, 
         CancellationToken token) =>
-        Task.FromResult<IReadOnlyDictionary<TemplateId, CardTemplate>>(Templates36);
+        Task.FromResult<IReadOnlyCollection<CardTemplate>>(Templates36.Values);
 }

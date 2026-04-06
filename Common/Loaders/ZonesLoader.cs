@@ -4,20 +4,26 @@ using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public sealed class ZonesLoader : IZonesLoader
 {
     private readonly IGameState _gameState;
+    private readonly IZonesRepository _zonesRepository;
     private readonly IZonesFactory _zonesFactory;
 
     public ZonesLoader(
         IGameState gameState,
+        IZonesRepository zonesRepository,
         IZonesFactory zonesFactory)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         _gameState = gameState;
+
+        ArgumentNullException.ThrowIfNull(zonesRepository);
+        _zonesRepository = zonesRepository;
 
         ArgumentNullException.ThrowIfNull(zonesFactory);
         _zonesFactory = zonesFactory;
@@ -27,12 +33,14 @@ public sealed class ZonesLoader : IZonesLoader
     {
         token.ThrowIfCancellationRequested();
 
-        var zones = await _zonesFactory.CreateAsync(gameTypeId, token);
+        var zoneTemplateIds = await _zonesRepository.GetZoneTemplateIdsAsync(gameTypeId, token);
 
-        AddLinksBeetwenPlayersAndZones(zones, PlayerRole.Participant, ZoneRole.Hand);
-        AddLinksBeetwenPlayersAndZones(zones, PlayerRole.Bank, ZoneRole.Deck);
+        var zoneTemplates = await _zonesFactory.CreateAsync(zoneTemplateIds, token);
 
-        foreach (var zone in zones)
+        AddLinksBeetwenPlayersAndZones(zoneTemplates, PlayerRole.Participant, ZoneRole.Hand);
+        AddLinksBeetwenPlayersAndZones(zoneTemplates, PlayerRole.Bank, ZoneRole.Deck);
+
+        foreach (var zone in zoneTemplates)
         {
             _gameState.AddEntity<Zone, ZoneId>(zone);
         }
@@ -40,7 +48,7 @@ public sealed class ZonesLoader : IZonesLoader
 
     private void AddLinksBeetwenPlayersAndZones(
         IReadOnlyCollection<Zone> zones,
-        PlayerRole playerRole, 
+        PlayerRole playerRole,
         ZoneRole zoneRole)
     {
         var suitablePlayers = _gameState

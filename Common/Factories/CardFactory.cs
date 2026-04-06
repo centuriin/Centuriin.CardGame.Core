@@ -6,9 +6,9 @@ namespace Centuriin.CardGame.Core.Common.Factories;
 
 public sealed class CardsFactory : ICardsFactory
 {
-    private readonly ICardTemplatesRepository _templatesRepository;
+    private readonly ITemplatesRepository<CardTemplate> _templatesRepository;
 
-    public CardsFactory(ICardTemplatesRepository templatesRepository)
+    public CardsFactory(ITemplatesRepository<CardTemplate> templatesRepository)
     {
         ArgumentNullException.ThrowIfNull(templatesRepository);
         _templatesRepository = templatesRepository;
@@ -20,9 +20,8 @@ public sealed class CardsFactory : ICardsFactory
     {
         token.ThrowIfCancellationRequested();
 
-        var uniqueIds = templateIds.ToHashSet();
-
-        var templates = await _templatesRepository.GetTemplatesByIdsAsync(uniqueIds, token);
+        var templates = (await _templatesRepository.GetTemplatesByIdsAsync(templateIds, token))
+            .ToDictionary(k => k.Id);
 
         var cards = new List<Card>(templateIds.Count);
 
@@ -42,8 +41,8 @@ public sealed class CardsFactory : ICardsFactory
         var card = new Card(new CardId(cardId));
 
         card.Add(
-            [.. 
-                template.Components.Select(x => x.Copy()), 
+            [..
+                template.Components.Select(x => x.Copy()),
                 new TemplateComponent(template.Id)
             ]);
 

@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Repositories;
 
 public interface IDecksRepository
 {
-    public Task<IReadOnlyCollection<TemplateId>> GetDeckTemplateIdsAsync(
+    public Task<IReadOnlySet<TemplateId>> GetDeckTemplateIdsAsync(
         GameTypeId gameTypeId,
         PlayerId playerId,
         CancellationToken token);

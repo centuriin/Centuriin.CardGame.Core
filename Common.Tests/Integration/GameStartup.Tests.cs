@@ -40,27 +40,33 @@ public sealed class GameStartupIntegrationTests
         var handZone = new Zone(new ZoneId(2));
         handZone.Add(new ZoneRoleComponent(ZoneRole.Hand), new HasPrimaryCards(3));
 
+        var zoneTemplateIds = new HashSet<TemplateId> { new(202), new(203) };
+        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        zonesRepo
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync(zoneTemplateIds);
+
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
-        zonesFactoryMock.Setup(x => 
+        zonesFactoryMock.Setup(x =>
                 x.CreateAsync(
-                    gameTypeId,
+                    zoneTemplateIds,
                     TestContext.Current.CancellationToken))
             .ReturnsAsync([deckZone, handZone]);
 
-        var cardTemplateIds = new List<TemplateId> { new(101), new(102), new(103) };
+        var cardTemplateIds = new HashSet<TemplateId> { new(101), new(102), new(103) };
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
-        decksRepoMock.Setup(x => 
+        decksRepoMock.Setup(x =>
                 x.GetDeckTemplateIdsAsync(
-                    gameTypeId, 
+                    gameTypeId,
                     PlayerId.System,
                     TestContext.Current.CancellationToken))
             .ReturnsAsync(cardTemplateIds);
 
         var cards = cardTemplateIds.Select(id => new Card(new CardId((int)id.Value))).ToList();
         var cardsFactoryMock = new Mock<ICardsFactory>(MockBehavior.Strict);
-        cardsFactoryMock.Setup(x => 
+        cardsFactoryMock.Setup(x =>
                 x.CreateAsync(
-                    cardTemplateIds, 
+                    cardTemplateIds,
                     TestContext.Current.CancellationToken))
             .ReturnsAsync(cards);
 
@@ -76,15 +82,15 @@ public sealed class GameStartupIntegrationTests
 
         // Act
         await new ClassicPlayersLoader(gameState).LoadAsync(
-            [p1Id], 
+            [p1Id],
             TestContext.Current.CancellationToken);
-        
-        await new ZonesLoader(gameState, zonesFactoryMock.Object).LoadAsync(
-            gameTypeId, 
+
+        await new ZonesLoader(gameState, zonesRepo.Object, zonesFactoryMock.Object).LoadAsync(
+            gameTypeId,
             TestContext.Current.CancellationToken);
-        
+
         await new DecksLoader(gameState, decksRepoMock.Object, cardsFactoryMock.Object).LoadAsync(
-            gameTypeId, 
+            gameTypeId,
             TestContext.Current.CancellationToken);
 
         await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);

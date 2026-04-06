@@ -39,7 +39,7 @@ public sealed class DecksLoaderTests
             .Setup(x => x.AddEntity<Card, CardId>(It.IsAny<Card>()))
             .Callback<Card>(addedCards.Add);
 
-        var templateIds = new List<TemplateId> { new(101), new(102) };
+        var templateIds = new HashSet<TemplateId> { new(101), new(102) };
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
         decksRepoMock
             .Setup(x => x.GetDeckTemplateIdsAsync(gameTypeId, ownerId, TestContext.Current.CancellationToken))

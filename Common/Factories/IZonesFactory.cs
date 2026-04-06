@@ -4,5 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Factories;
 
 public interface IZonesFactory
 {
-    public Task<IReadOnlyCollection<Zone>> CreateAsync(GameTypeId gameTypeId, CancellationToken token);
+    public Task<IReadOnlyCollection<Zone>> CreateAsync(
+        IReadOnlyCollection<TemplateId> templateIds,
+        CancellationToken token);
 }

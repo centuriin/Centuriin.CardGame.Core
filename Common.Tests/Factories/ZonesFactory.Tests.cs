@@ -16,25 +16,28 @@ public sealed class ZonesFactoryTests
     public async Task CreateAsyncShouldAddCreatedZonesToGameStateAsync()
     {
         // Arrange
-        var gameTypeId = new GameTypeId(1);
-        var templates = new List<ZoneTemplate>
-        {
-            new(new(101), [new FakeComponent()]),
-            new(new(102), [new FakeComponent()])
-        };
+        var templateId1 = new TemplateId(101);
+        var templateId2 = new TemplateId(102);
+        var templateIds = new List<TemplateId> { templateId1, templateId1, templateId2 };
 
-        var repository = new Mock<IZoneTemplatesRepository>(MockBehavior.Strict);
+        var repository = new Mock<ITemplatesRepository<ZoneTemplate>>(MockBehavior.Strict);
         repository
-            .Setup(x => x.GetTemplatesByGameTypeAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(templates);
+            .Setup(x => x.GetTemplatesByIdsAsync(
+                It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 3),
+                TestContext.Current.CancellationToken))
+            .ReturnsAsync(
+                [
+                    new ZoneTemplate(templateId1, [new FakeComponent()]),
+                    new ZoneTemplate(templateId2, [new FakeComponent()])
+                ]);
 
         var factory = new ZonesFactory(repository.Object);
 
         // Act
-        var zones = await factory.CreateAsync(gameTypeId, TestContext.Current.CancellationToken);
+        var zones = await factory.CreateAsync(templateIds, TestContext.Current.CancellationToken);
 
         // Assert
-        zones.Should().HaveCount(2);
+        zones.Should().HaveCount(3);
 
         zones.Should().SatisfyRespectively(
             first =>
@@ -47,7 +50,13 @@ public sealed class ZonesFactoryTests
             {
                 second.Id.Value.Should().Be(2);
                 second.Has<FakeComponent>().Should().BeTrue();
-                second.Get<TemplateComponent>().TemplateId.Value.Should().Be(102);
+                second.Get<TemplateComponent>().TemplateId.Value.Should().Be(101);
+            },
+            last =>
+            {
+                last.Id.Value.Should().Be(3);
+                last.Has<FakeComponent>().Should().BeTrue();
+                last.Get<TemplateComponent>().TemplateId.Value.Should().Be(102);
             });
     }
 

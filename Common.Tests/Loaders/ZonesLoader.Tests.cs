@@ -10,6 +10,7 @@ using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
@@ -45,12 +46,21 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
+        var templateIds = new HashSet<TemplateId>();
+        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        zonesRepo
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync(templateIds);
+
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock
-            .Setup(x => x.CreateAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
             .ReturnsAsync([handZone1, handZone2, deckZone]);
 
-        var loader = new ZonesLoader(gameStateMock.Object, zonesFactoryMock.Object);
+        var loader = new ZonesLoader(
+            gameStateMock.Object, 
+            zonesRepo.Object,
+            zonesFactoryMock.Object);
 
         // Act
         await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
@@ -85,12 +95,21 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
+        var templateIds = new HashSet<TemplateId>();
+        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        zonesRepo
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync(templateIds);
+
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock
-            .Setup(x => x.CreateAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
-        var loader = new ZonesLoader(gameStateMock.Object, zonesFactoryMock.Object);
+        var loader = new ZonesLoader(
+            gameStateMock.Object, 
+            zonesRepo.Object, 
+            zonesFactoryMock.Object);
 
         // Act
         await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
