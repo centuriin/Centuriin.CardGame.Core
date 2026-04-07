@@ -54,12 +54,14 @@ public sealed class DecksLoaderTests
             .ReturnsAsync(createdCards);
 
         var loader = new DecksLoader(
-            gameStateMock.Object,
             decksRepoMock.Object,
             cardsFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
+        await loader.LoadAsync(
+            new(gameTypeId, []),
+            gameStateMock.Object,
+            TestContext.Current.CancellationToken);
 
         // Assert
         addedCards.Should().HaveCount(2);
@@ -87,12 +89,14 @@ public sealed class DecksLoaderTests
             .Callback<Card>(addedCards.Add);
 
         var loader = new DecksLoader(
-            gameStateMock.Object,
             Mock.Of<IDecksRepository>(MockBehavior.Strict),
             Mock.Of<ICardsFactory>(MockBehavior.Strict));
 
         // Act
-        await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
+        await loader.LoadAsync(
+            new(gameTypeId, []),
+            gameStateMock.Object,
+            TestContext.Current.CancellationToken);
 
         // Assert
         addedCards.Should().BeEmpty();

@@ -7,20 +7,15 @@ using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
-public sealed class DecksLoader : IDecksLoader
+public sealed class DecksLoader : IGameLoader
 {
-    private readonly IGameState _gameState;
     private readonly IDecksRepository _decksRepository;
     private readonly ICardsFactory _cardsFactory;
 
     public DecksLoader(
-        IGameState gameState,
         IDecksRepository decksRepository,
         ICardsFactory cardsRepository)
     {
-        ArgumentNullException.ThrowIfNull(gameState);
-        _gameState = gameState;
-
         ArgumentNullException.ThrowIfNull(decksRepository);
         _decksRepository = decksRepository;
 
@@ -28,11 +23,14 @@ public sealed class DecksLoader : IDecksLoader
         _cardsFactory = cardsRepository;
     }
 
-    public async Task LoadAsync(GameTypeId gameTypeId, CancellationToken token)
+    public async Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(gameState);
+
         token.ThrowIfCancellationRequested();
 
-        var deckZones = _gameState
+        var deckZones = gameState
             .Query<Zone>()
             .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck)
             .As<Zone>();
@@ -42,7 +40,7 @@ public sealed class DecksLoader : IDecksLoader
             var ownerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
             var deckTemplateIds = await _decksRepository.GetDeckTemplateIdsAsync(
-                gameTypeId,
+                setup.GameTypeId,
                 ownerId,
                 token);
 
@@ -54,7 +52,7 @@ public sealed class DecksLoader : IDecksLoader
                     new ZoneComponent(zone.Id),
                     new OwnerComponent(ownerId));
 
-                _gameState.AddEntity<Card, CardId>(card);
+                gameState.AddEntity<Card, CardId>(card);
             }
         }
     }

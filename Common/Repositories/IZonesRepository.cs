@@ -2,7 +2,7 @@
 
 public interface IZonesRepository
 {
-    public Task<IReadOnlySet<TemplateId>> GetZoneTemplateIdsAsync(
+    public Task<IReadOnlyCollection<TemplateId>> GetZoneTemplateIdsAsync(
         GameTypeId gameTypeId,
         CancellationToken token);
 }

@@ -32,8 +32,6 @@ public sealed class GameStartupIntegrationTests
         var p1Id = new PlayerId(Guid.NewGuid());
         var gameTypeId = new GameTypeId(1);
 
-        var gameState = new GameState(gameId, new TurnAutomat());
-
         var deckZone = new Zone(new ZoneId(1));
         deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck)); // Owner проставится в ZonesLoader
 
@@ -78,36 +76,38 @@ public sealed class GameStartupIntegrationTests
         dispatcher.Register<TurnFlowDefinedEvent>(new TurnFlowSystem(DebugLogger.Instance));
         dispatcher.Register<CardDealtEvent>(new CardMovementSystem(DebugLogger.Instance));
 
-        var game = new Game(gameState, Mock.Of<IGameEventsRepository>(), dispatcher);
+        var setup = new GameSetup(gameTypeId, [p1Id]);
+
+        var game = new Game(
+            new GameState(gameId, new TurnAutomat()), 
+            Mock.Of<IGameEventsRepository>(), 
+            dispatcher);
 
         // Act
-        await new ClassicPlayersLoader(gameState).LoadAsync(
-            [p1Id],
-            TestContext.Current.CancellationToken);
+        await new ClassicPlayersLoader()
+            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
 
-        await new ZonesLoader(gameState, zonesRepo.Object, zonesFactoryMock.Object).LoadAsync(
-            gameTypeId,
-            TestContext.Current.CancellationToken);
+        await new ZonesLoader(zonesRepo.Object, zonesFactoryMock.Object)
+            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
 
-        await new DecksLoader(gameState, decksRepoMock.Object, cardsFactoryMock.Object).LoadAsync(
-            gameTypeId,
-            TestContext.Current.CancellationToken);
+        await new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
+            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
 
         await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);
 
         // Assert
-        var cardsInHand = gameState.Query<Card>()
+        var cardsInHand = game.State.Query<Card>()
             .WithComponent<ZoneComponent>(z => z.CurrentZoneId == handZone.Id)
             .ToList();
 
         cardsInHand.Should().HaveCount(3);
         cardsInHand.All(c => c.Get<OwnerComponent>().CurrentOwnerId == p1Id).Should().BeTrue();
 
-        var cardsInDeck = gameState.Query<Card>()
+        var cardsInDeck = game.State.Query<Card>()
             .WithComponent<ZoneComponent>(z => z.CurrentZoneId == deckZone.Id)
             .ToList();
         cardsInDeck.Should().BeEmpty();
 
-        gameState.TurnAutomat.ActivePlayer.Should().Be(p1Id);
+        game.State.TurnAutomat.ActivePlayer.Should().Be(p1Id);
     }
 }

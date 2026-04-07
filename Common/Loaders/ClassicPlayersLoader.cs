@@ -3,30 +3,25 @@ using Centuriin.CardGame.Core.Common.Entities.Players;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
-public sealed class ClassicPlayersLoader : IPlayersLoader
+public sealed class ClassicPlayersLoader : IGameLoader
 {
-    private readonly IGameState _gameState;
-
-    public ClassicPlayersLoader(IGameState gameState)
+    public Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(setup);
         ArgumentNullException.ThrowIfNull(gameState);
-        _gameState = gameState;
-    }
-
-    public async Task LoadAsync(IReadOnlyCollection<PlayerId> playerIds, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(playerIds);
 
         token.ThrowIfCancellationRequested();
 
-        _gameState.AddEntity<Player, PlayerId>(Player.System);
+        gameState.AddEntity<Player, PlayerId>(Player.System);
 
-        foreach (var id in playerIds)
+        foreach (var id in setup.PlayerIds)
         {
             var player = new Player(id);
             player.Add(new PlayerRoleComponent(PlayerRole.Participant));
 
-            _gameState.AddEntity<Player, PlayerId>(player);
+            gameState.AddEntity<Player, PlayerId>(player);
         }
+
+        return Task.CompletedTask;
     }
 }

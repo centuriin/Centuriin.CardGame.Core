@@ -8,20 +8,15 @@ using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
-public sealed class ZonesLoader : IZonesLoader
+public sealed class ZonesLoader : IGameLoader
 {
-    private readonly IGameState _gameState;
     private readonly IZonesRepository _zonesRepository;
     private readonly IZonesFactory _zonesFactory;
 
     public ZonesLoader(
-        IGameState gameState,
         IZonesRepository zonesRepository,
         IZonesFactory zonesFactory)
     {
-        ArgumentNullException.ThrowIfNull(gameState);
-        _gameState = gameState;
-
         ArgumentNullException.ThrowIfNull(zonesRepository);
         _zonesRepository = zonesRepository;
 
@@ -29,29 +24,41 @@ public sealed class ZonesLoader : IZonesLoader
         _zonesFactory = zonesFactory;
     }
 
-    public async Task LoadAsync(GameTypeId gameTypeId, CancellationToken token)
+    public async Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(gameState);
+
         token.ThrowIfCancellationRequested();
 
-        var zoneTemplateIds = await _zonesRepository.GetZoneTemplateIdsAsync(gameTypeId, token);
+        var zoneTemplateIds = await _zonesRepository.GetZoneTemplateIdsAsync(setup.GameTypeId, token);
 
         var zoneTemplates = await _zonesFactory.CreateAsync(zoneTemplateIds, token);
 
-        AddLinksBeetwenPlayersAndZones(zoneTemplates, PlayerRole.Participant, ZoneRole.Hand);
-        AddLinksBeetwenPlayersAndZones(zoneTemplates, PlayerRole.Bank, ZoneRole.Deck);
+        AddLinksBeetwenPlayersAndZones(
+            gameState,
+            zoneTemplates, 
+            PlayerRole.Participant, 
+            ZoneRole.Hand);
+        AddLinksBeetwenPlayersAndZones(
+            gameState,
+            zoneTemplates, 
+            PlayerRole.Bank, 
+            ZoneRole.Deck);
 
         foreach (var zone in zoneTemplates)
         {
-            _gameState.AddEntity<Zone, ZoneId>(zone);
+            gameState.AddEntity<Zone, ZoneId>(zone);
         }
     }
 
-    private void AddLinksBeetwenPlayersAndZones(
+    private static void AddLinksBeetwenPlayersAndZones(
+        IGameState gameState,
         IReadOnlyCollection<Zone> zones,
         PlayerRole playerRole,
         ZoneRole zoneRole)
     {
-        var suitablePlayers = _gameState
+        var suitablePlayers = gameState
             .Query<Player>()
             .WithComponent<PlayerRoleComponent>(x => x.Role.HasFlag(playerRole));
 

@@ -57,13 +57,17 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
             .ReturnsAsync([handZone1, handZone2, deckZone]);
 
+        var setup = new GameSetup(gameTypeId, []);
+
         var loader = new ZonesLoader(
-            gameStateMock.Object, 
             zonesRepo.Object,
             zonesFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
+        await loader.LoadAsync(
+            new(gameTypeId, []), 
+            gameStateMock.Object, 
+            TestContext.Current.CancellationToken);
 
         // Assert
         addedEntities.Should().HaveCount(3);
@@ -107,12 +111,14 @@ public sealed class ZonesLoaderTests
             .ReturnsAsync([]);
 
         var loader = new ZonesLoader(
-            gameStateMock.Object, 
             zonesRepo.Object, 
             zonesFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(gameTypeId, TestContext.Current.CancellationToken);
+        await loader.LoadAsync(
+            new(gameTypeId, []), 
+            gameStateMock.Object, 
+            TestContext.Current.CancellationToken);
 
         // Assert
         addedEntities.Should().BeEmpty();
