@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Centuriin.CardGame.Core.Common.Loaders;
-
-namespace Centuriin.CardGame.Core.Common;
+﻿namespace Centuriin.CardGame.Core.Common;
 
 //public sealed class GameStartupService
 //{

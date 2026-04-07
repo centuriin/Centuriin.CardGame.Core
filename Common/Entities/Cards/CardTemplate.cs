@@ -5,7 +5,7 @@ namespace Centuriin.CardGame.Core.Common.Entities.Cards;
 public sealed class CardTemplate : TemplateBase
 {
     public CardTemplate(
-        TemplateId id, 
+        TemplateId id,
         IReadOnlyCollection<ComponentBase> components) : base(id, components)
     {
     }

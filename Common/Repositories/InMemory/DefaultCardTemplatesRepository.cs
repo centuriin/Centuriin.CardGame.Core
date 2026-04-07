@@ -1,6 +1,5 @@
 ﻿using System.Collections.Frozen;
 
-using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 
@@ -22,11 +21,11 @@ public sealed class DefaultCardTemplatesRepository : ITemplatesRepository<CardTe
             .SelectMany(x => x)
             .ToFrozenDictionary(k => k.Id);
 
-    public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) => 
+    public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) =>
         Task.FromResult(Templates36[templateId]);
 
     public Task<IReadOnlyCollection<CardTemplate>> GetTemplatesByIdsAsync(
-        IReadOnlyCollection<TemplateId> templateIds, 
+        IReadOnlyCollection<TemplateId> templateIds,
         CancellationToken token) =>
         Task.FromResult<IReadOnlyCollection<CardTemplate>>(Templates36.Values);
 }

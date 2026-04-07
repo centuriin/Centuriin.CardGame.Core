@@ -38,7 +38,7 @@ public sealed class GameState : IGameState
 
     public TEntity Get<TEntity, TId>(TId id)
         where TEntity : EntityBase<TId>
-        where TId: struct, IEquatable<TId>
+        where TId : struct, IEquatable<TId>
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
         {

@@ -1,8 +1,8 @@
 ﻿namespace Centuriin.CardGame.Core.Common.Repositories;
 
-public interface IZonesRepository
+public interface IZoneDefinitionsRepository
 {
-    public Task<IReadOnlyCollection<TemplateId>> GetZoneTemplateIdsAsync(
+    public Task<IReadOnlyCollection<ZoneDefinition>> GetZoneDefinitionsAsync(
         GameTypeId gameTypeId,
         CancellationToken token);
 }

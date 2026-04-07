@@ -1,16 +1,16 @@
-﻿using Moq;
-
-using Xunit;
-
-using FluentAssertions;
-
-using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Components.Players;
+using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Factories;
-using Centuriin.CardGame.Core.Common.Components.Players;
-using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Repositories;
+
+using FluentAssertions;
+
+using Moq;
+
+using Xunit;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
 
@@ -46,18 +46,24 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
-        var templateIds = new HashSet<TemplateId>();
-        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        var zoneDefinitions = new List<ZoneDefinition>()
+        {
+            new(new(11), ZoneScope.Singleton),
+            new(new(22), ZoneScope.PerPlayer),
+        };
+        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
         zonesRepo
-            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(templateIds);
+            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync(zoneDefinitions);
 
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock
-            .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
+            .Setup(x => x.CreateAsync(
+                It.Is<IReadOnlyCollection<TemplateId>>(x =>
+                    x.Count == 3
+                    && x.All(x => zoneDefinitions.Select(x => x.TemplateId).Contains(x))),
+                TestContext.Current.CancellationToken))
             .ReturnsAsync([handZone1, handZone2, deckZone]);
-
-        var setup = new GameSetup(gameTypeId, []);
 
         var loader = new ZonesLoader(
             zonesRepo.Object,
@@ -65,8 +71,8 @@ public sealed class ZonesLoaderTests
 
         // Act
         await loader.LoadAsync(
-            new(gameTypeId, []), 
-            gameStateMock.Object, 
+            new(gameTypeId, [participant.Id, deckOwner.Id]),
+            gameStateMock.Object,
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -99,25 +105,26 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
-        var templateIds = new HashSet<TemplateId>();
-        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
         zonesRepo
-            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(templateIds);
+            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync([]);
 
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock
-            .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
+            .Setup(x => x.CreateAsync(
+                It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 0),
+                TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
         var loader = new ZonesLoader(
-            zonesRepo.Object, 
+            zonesRepo.Object,
             zonesFactoryMock.Object);
 
         // Act
         await loader.LoadAsync(
-            new(gameTypeId, []), 
-            gameStateMock.Object, 
+            new(gameTypeId, []),
+            gameStateMock.Object,
             TestContext.Current.CancellationToken);
 
         // Assert

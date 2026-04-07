@@ -38,16 +38,17 @@ public sealed class GameStartupIntegrationTests
         var handZone = new Zone(new ZoneId(2));
         handZone.Add(new ZoneRoleComponent(ZoneRole.Hand), new HasPrimaryCards(3));
 
-        var zoneTemplateIds = new HashSet<TemplateId> { new(202), new(203) };
-        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
+        var zoneTemplateId = new TemplateId(111);
+        var zoneDefinitions = new List<ZoneDefinition> { new(zoneTemplateId, ZoneScope.Singleton) };
+        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
         zonesRepo
-            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(zoneTemplateIds);
+            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .ReturnsAsync(zoneDefinitions);
 
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock.Setup(x =>
                 x.CreateAsync(
-                    zoneTemplateIds,
+                    It.Is<IReadOnlyCollection<TemplateId>>(x => x.Single() == zoneTemplateId),
                     TestContext.Current.CancellationToken))
             .ReturnsAsync([deckZone, handZone]);
 
