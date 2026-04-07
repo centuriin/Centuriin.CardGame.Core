@@ -139,7 +139,6 @@ public sealed class EventDispatcherTests
         handlerCalls.Should().Be(1);
     }
 
-    // Вспомогательные классы
     public record class FakeTestEvent : IGameEvent
     {
         public GameId GameId => new(Guid.NewGuid());

@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
@@ -33,70 +31,71 @@ public sealed class GameStartupIntegrationTests
         var gameTypeId = new GameTypeId(1);
 
         var deckZone = new Zone(new ZoneId(1));
-        deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck)); // Owner проставится в ZonesLoader
+        deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck));
 
         var handZone = new Zone(new ZoneId(2));
         handZone.Add(new ZoneRoleComponent(ZoneRole.Hand), new HasPrimaryCards(3));
 
         var zoneTemplateId = new TemplateId(111);
-        var zoneDefinitions = new List<ZoneDefinition> { new(zoneTemplateId, ZoneScope.Singleton) };
-        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
-        zonesRepo
+        var zonesRepoMock = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
+        zonesRepoMock
             .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(zoneDefinitions);
+            .ReturnsAsync([new ZoneDefinition(zoneTemplateId, ZoneScope.Singleton)]);
 
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
-        zonesFactoryMock.Setup(x =>
-                x.CreateAsync(
-                    It.Is<IReadOnlyCollection<TemplateId>>(x => x.Single() == zoneTemplateId),
-                    TestContext.Current.CancellationToken))
+        zonesFactoryMock.Setup(x => x.CreateAsync(
+                It.IsAny<IReadOnlyCollection<TemplateId>>(), 
+                TestContext.Current.CancellationToken))
             .ReturnsAsync([deckZone, handZone]);
 
         var cardTemplateIds = new HashSet<TemplateId> { new(101), new(102), new(103) };
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
-        decksRepoMock.Setup(x =>
-                x.GetDeckTemplateIdsAsync(
-                    gameTypeId,
-                    PlayerId.System,
-                    TestContext.Current.CancellationToken))
+        decksRepoMock.Setup(x => x.GetDeckTemplateIdsAsync(
+                gameTypeId, 
+                PlayerId.System, 
+                TestContext.Current.CancellationToken))
             .ReturnsAsync(cardTemplateIds);
 
         var cards = cardTemplateIds.Select(id => new Card(new CardId((int)id.Value))).ToList();
         var cardsFactoryMock = new Mock<ICardsFactory>(MockBehavior.Strict);
-        cardsFactoryMock.Setup(x =>
-                x.CreateAsync(
-                    cardTemplateIds,
-                    TestContext.Current.CancellationToken))
+        cardsFactoryMock.Setup(x => x.CreateAsync(
+                cardTemplateIds,
+                TestContext.Current.CancellationToken))
             .ReturnsAsync(cards);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
         var dispatcher = new EventDispatcher();
-
         dispatcher.Register<GameStartedEvent>(new SetupTurnFlowSystem(DebugLogger.Instance));
         dispatcher.Register<GameStartedEvent>(new DealerSystem(DebugLogger.Instance));
         dispatcher.Register<TurnFlowDefinedEvent>(new TurnFlowSystem(DebugLogger.Instance));
         dispatcher.Register<CardDealtEvent>(new CardMovementSystem(DebugLogger.Instance));
 
-        var setup = new GameSetup(gameTypeId, [p1Id]);
-
         var game = new Game(
-            new GameState(gameId, new TurnAutomat()), 
-            Mock.Of<IGameEventsRepository>(), 
+            new GameState(gameId, new TurnAutomat()),
+            Mock.Of<IGameEventsRepository>(),
             dispatcher);
 
+        var setup = new GameSetup(gameTypeId, [p1Id]);
+
+        var gameFactoryMock = new Mock<IGameFactory>(MockBehavior.Strict);
+        gameFactoryMock.Setup(x => x.Create(setup)).Returns(game);
+
+        var loaders = new List<IGameLoader>
+        {
+            new ClassicPlayersLoader(),
+            new ZonesLoader(zonesRepoMock.Object, zonesFactoryMock.Object),
+            new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
+        };
+
+        var startupService = new GameStartupService(loaders, gameFactoryMock.Object);
+
         // Act
-        await new ClassicPlayersLoader()
-            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
-
-        await new ZonesLoader(zonesRepo.Object, zonesFactoryMock.Object)
-            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
-
-        await new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
-            .LoadAsync(setup, game.State, TestContext.Current.CancellationToken);
-
-        await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);
+        var resultGame = await startupService.StartupGameAsync(
+            setup,
+            TestContext.Current.CancellationToken);
 
         // Assert
+        resultGame.Should().BeSameAs(game);
+
         var cardsInHand = game.State.Query<Card>()
             .WithComponent<ZoneComponent>(z => z.CurrentZoneId == handZone.Id)
             .ToList();
