@@ -49,21 +49,21 @@ public sealed class DealerSystemTests
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([zone1, zone2]);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
 
         var system = new DealerSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
-        system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, channel.Writer);
+        system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, writer.Object);
 
         // Assert
-        channel.Reader.Count.Should().Be(2);
+        eventsList.Count.Should().Be(2);
 
-        channel.Reader.TryRead(out var @event1).Should().BeTrue(); 
-        channel.Reader.TryRead(out var @event2).Should().BeTrue();
-
-        var dealtEvent = @event1.Should().BeOfType<CardDealtEvent>().Which;
-        var dealtEvent2 = @event2.Should().BeOfType<CardDealtEvent>().Which;
+        var dealtEvent = eventsList[0].Should().BeOfType<CardDealtEvent>().Which;
+        var dealtEvent2 = eventsList[1].Should().BeOfType<CardDealtEvent>().Which;
 
         dealtEvent.CardId.Should().NotBe(dealtEvent2.CardId);
         dealtEvent.NewOwnerId.Should().NotBe(dealtEvent2.NewOwnerId);

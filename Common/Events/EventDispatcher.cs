@@ -1,11 +1,9 @@
-﻿using System.Threading.Channels;
-
-namespace Centuriin.CardGame.Core.Common.Events;
+﻿namespace Centuriin.CardGame.Core.Common.Events;
 
 public sealed class EventDispatcher : IEventDispatcher
 {
-    private readonly Dictionary<Type, Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>> _handlersMap = [];
-    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>> _wrappersMap = [];
+    private readonly Dictionary<Type, Action<IGameEvent, IGameState, IEventBusWriter>> _handlersMap = [];
+    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, IEventBusWriter>> _wrappersMap = [];
 
     public void Register<TEvent>(ISubscriber<TEvent> subscriber)
         where TEvent : IGameEvent
@@ -14,7 +12,7 @@ public sealed class EventDispatcher : IEventDispatcher
 
         var eventType = typeof(TEvent);
 
-        var wrapper = (IGameEvent e, IGameState s, ChannelWriter<IGameEvent> w) =>
+        var wrapper = (IGameEvent e, IGameState s, IEventBusWriter w) =>
             subscriber.OnEvent((TEvent)e, s, w);
 
         if (_handlersMap.TryGetValue(eventType, out var actions))
@@ -64,7 +62,7 @@ public sealed class EventDispatcher : IEventDispatcher
     public void Publish(
         IGameEvent @event,
         IGameState gameState,
-        ChannelWriter<IGameEvent> writer)
+        IEventBusWriter writer)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(gameState);
@@ -75,7 +73,7 @@ public sealed class EventDispatcher : IEventDispatcher
         var actions = _handlersMap
             .Where(x => x.Key.IsAssignableFrom(actualType))
             .SelectMany(x => x.Value.GetInvocationList())
-            .Cast<Action<IGameEvent, IGameState, ChannelWriter<IGameEvent>>>();
+            .Cast<Action<IGameEvent, IGameState, IEventBusWriter>>();
 
         foreach (var action in actions)
         {

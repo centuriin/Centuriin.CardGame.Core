@@ -23,7 +23,7 @@ public sealed class EventDispatcherTests
             .Setup(x => x.OnEvent(
                 It.IsAny<FakeTestEvent>(), 
                 It.IsAny<IGameState>(), 
-                It.IsAny<ChannelWriter<IGameEvent>>()))
+                It.IsAny<IEventBusWriter>()))
             .Callback(() => invokeCalls++);
 
         var dispatcher = new EventDispatcher();
@@ -33,7 +33,7 @@ public sealed class EventDispatcherTests
         dispatcher.Publish(
             new FakeTestEvent(),
             Mock.Of<IGameState>(MockBehavior.Strict),
-            Channel.CreateUnbounded<IGameEvent>().Writer);
+            Mock.Of<IEventBusWriter>(MockBehavior.Strict));
 
         // Assert
         invokeCalls.Should().Be(1);
@@ -51,14 +51,14 @@ public sealed class EventDispatcherTests
             .Setup(x => x.OnEvent(
                 It.IsAny<FakeTestEvent>(), 
                 It.IsAny<IGameState>(), 
-                It.IsAny<ChannelWriter<IGameEvent>>()))
+                It.IsAny<IEventBusWriter>()))
             .Callback(() => invocationCount++);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register(subscriberMock.Object);
 
         var gameState = Mock.Of<IGameState>(MockBehavior.Strict);
-        var writer = Channel.CreateUnbounded<IGameEvent>().Writer;
+        var writer = Mock.Of<IEventBusWriter>(MockBehavior.Strict);
 
         // Act
         dispatcher.Publish(@event, gameState, writer);
@@ -93,11 +93,17 @@ public sealed class EventDispatcherTests
         // Arrange
         var handlerCalls = 0;
         var sub1 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
-        sub1.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>(), It.IsAny<IGameState>(), It.IsAny<ChannelWriter<IGameEvent>>()))
+        sub1.Setup(x => x.OnEvent(
+                It.IsAny<FakeTestEvent>(), 
+                It.IsAny<IGameState>(), 
+                It.IsAny<IEventBusWriter>()))
             .Callback(() => handlerCalls++);
 
         var sub2 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
-        sub2.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>(), It.IsAny<IGameState>(), It.IsAny<ChannelWriter<IGameEvent>>()))
+        sub2.Setup(x => x.OnEvent(
+                It.IsAny<FakeTestEvent>(), 
+                It.IsAny<IGameState>(), 
+                It.IsAny<IEventBusWriter>()))
             .Callback(() => handlerCalls++);
 
         var dispatcher = new EventDispatcher();
@@ -108,7 +114,7 @@ public sealed class EventDispatcherTests
         dispatcher.Publish(
             new FakeTestEvent(), 
             Mock.Of<IGameState>(MockBehavior.Strict),
-            Channel.CreateUnbounded<IGameEvent>().Writer);
+            Mock.Of<IEventBusWriter>(MockBehavior.Strict));
 
         // Assert
         handlerCalls.Should().Be(2);
@@ -123,7 +129,7 @@ public sealed class EventDispatcherTests
         sub.Setup(x => x.OnEvent(
                 It.IsAny<FakeTestEvent>(), 
                 It.IsAny<IGameState>(), 
-                It.IsAny<ChannelWriter<IGameEvent>>()))
+                It.IsAny<IEventBusWriter>()))
             .Callback(() => handlerCalls++);
 
         var dispatcher = new EventDispatcher();
@@ -133,7 +139,7 @@ public sealed class EventDispatcherTests
         dispatcher.Publish(
             new DerivedTestEvent(), 
             Mock.Of<IGameState>(MockBehavior.Strict),
-            Channel.CreateUnbounded<IGameEvent>().Writer);
+            Mock.Of<IEventBusWriter>(MockBehavior.Strict));
 
         // Assert
         handlerCalls.Should().Be(1);

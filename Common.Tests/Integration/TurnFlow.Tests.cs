@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
@@ -8,6 +6,8 @@ using Centuriin.CardGame.Core.Common.Systems;
 using Centuriin.Centuriin.Core.Common;
 
 using FluentAssertions;
+
+using Moq;
 
 using Xunit;
 
@@ -40,45 +40,43 @@ public sealed class TurnFlowTests
         dispatcher.Register<TurnFlowDefinedEvent>(turnFlowSystem);
         dispatcher.Register<TurnEndedEvent>(turnFlowSystem);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
-        var writer = channel.Writer;
-        var reader = channel.Reader;
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer
+            .Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
 
         var flowDefinedEvent = new TurnFlowDefinedEvent(gameId, [p1, p2], IsCycled: true);
         var endTurnP1 = new TurnEndedEvent(gameId, p1);
         var endTurnP2 = new TurnEndedEvent(gameId, p2);
 
         // Act
-        dispatcher.Publish(flowDefinedEvent, gameState, writer);
+        dispatcher.Publish(flowDefinedEvent, gameState, writer.Object);
 
         var activeAfterDefinedEvent = gameState.TurnAutomat.ActivePlayer;
 
-        dispatcher.Publish(endTurnP1, gameState, writer);
+        dispatcher.Publish(endTurnP1, gameState, writer.Object);
 
         var activeAfterEndTurn1Event = gameState.TurnAutomat.ActivePlayer;
 
-        dispatcher.Publish(endTurnP2, gameState, writer);
+        dispatcher.Publish(endTurnP2, gameState, writer.Object);
 
         var activeAfterEndTurn2Event = gameState.TurnAutomat.ActivePlayer;
-
-        writer.Complete();
 
         // Assert
         activeAfterDefinedEvent.Should().Be(p1);
         activeAfterEndTurn1Event.Should().Be(p2);
         activeAfterEndTurn2Event.Should().Be(p1);
 
-        reader.Count.Should().Be(3);
+        eventsList.Count.Should().Be(3);
 
-        (await reader.ReadAllAsync(TestContext.Current.CancellationToken)
-            .ToListAsync(TestContext.Current.CancellationToken))
-            .Should().SatisfyRespectively(
-                first => first.Should().BeOfType<TurnStartedEvent>()
-                        .Which.PlayerId.Should().Be(p1),
-                second => second.Should().BeOfType<TurnStartedEvent>()
-                        .Which.PlayerId.Should().Be(p2),
-                last => last.Should().BeOfType<TurnStartedEvent>()
-                        .Which.PlayerId.Should().Be(p1));
-            
+        eventsList.Should().SatisfyRespectively(
+            first => first.Should().BeOfType<TurnStartedEvent>()
+                    .Which.PlayerId.Should().Be(p1),
+            second => second.Should().BeOfType<TurnStartedEvent>()
+                    .Which.PlayerId.Should().Be(p2),
+            last => last.Should().BeOfType<TurnStartedEvent>()
+                    .Which.PlayerId.Should().Be(p1));
+
     }
 }

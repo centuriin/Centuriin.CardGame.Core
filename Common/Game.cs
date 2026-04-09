@@ -13,6 +13,8 @@ public sealed class Game : IGame
         SingleWriter = true,
     });
 
+    private readonly ChannelWrapper _writer;
+
     private readonly IGameEventsRepository _eventsRepository;
     private readonly IEventDispatcher _dispatcher;
 
@@ -31,6 +33,8 @@ public sealed class Game : IGame
 
         ArgumentNullException.ThrowIfNull(dispatcher);
         _dispatcher = dispatcher;
+
+        _writer = new(_channel.Writer);
     }
 
     public async Task ApplyAsync(IGameEvent @event, CancellationToken token)
@@ -39,13 +43,25 @@ public sealed class Game : IGame
 
         token.ThrowIfCancellationRequested();
 
-        _ = _channel.Writer.TryWrite(@event);
+        _writer.Write(@event);
 
         while (_channel.Reader.TryRead(out var nextEvent))
         {
             await _eventsRepository.AddAsync(nextEvent, token);
 
-            _dispatcher.Publish(nextEvent, State, _channel.Writer);
+            _dispatcher.Publish(nextEvent, State, _writer);
         }
+    }
+
+    private sealed class ChannelWrapper : IEventBusWriter
+    {
+        private ChannelWriter<IGameEvent> Writer { get; }
+
+        public ChannelWrapper(ChannelWriter<IGameEvent> writer)
+        {
+            Writer = writer;
+        }
+
+        public void Write(IGameEvent @event) => _ = Writer.TryWrite(@event);
     }
 }

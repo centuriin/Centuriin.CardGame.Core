@@ -33,18 +33,20 @@ public sealed class TurnFlowSystemTests
         stateMock.SetupGet(x => x.TurnAutomat)
             .Returns(automatMock.Object);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
+
         var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: true);
-        system.OnEvent(@event, stateMock.Object, channel.Writer);
+        system.OnEvent(@event, stateMock.Object, writer.Object);
 
         // Assert
         setCycleCalls.Should().Be(1);
-
-        channel.Reader.TryRead(out var produced).Should().BeTrue();
-        produced.Should().BeOfType<TurnStartedEvent>()
+        eventsList.Single().Should().BeOfType<TurnStartedEvent>()
             .Which.PlayerId.Should().Be(players[0]);
     }
 
@@ -65,12 +67,11 @@ public sealed class TurnFlowSystemTests
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.SetupGet(x => x.TurnAutomat).Returns(automatMock.Object);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
         var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: false);
-        system.OnEvent(@event, stateMock.Object, channel.Writer);
+        system.OnEvent(@event, stateMock.Object, Mock.Of<IEventBusWriter>());
 
         // Assert
         setNextCalls.Should().Be(1);
@@ -94,18 +95,21 @@ public sealed class TurnFlowSystemTests
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.SetupGet(x => x.TurnAutomat).Returns(automatMock.Object);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
+
         var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         var @event = new TurnEndedEvent(gameId, p1);
-        system.OnEvent(@event, stateMock.Object, channel.Writer);
+        system.OnEvent(@event, stateMock.Object, writer.Object);
 
         // Assert
         moveNextCalls.Should().Be(1);
 
-        channel.Reader.TryRead(out var produced).Should().BeTrue();
-        produced.Should().BeOfType<TurnStartedEvent>()
+        eventsList.Single().Should().BeOfType<TurnStartedEvent>()
             .Which.PlayerId.Should().Be(p2);
     }
 }

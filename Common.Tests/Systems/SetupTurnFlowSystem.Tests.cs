@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
@@ -38,17 +36,19 @@ public sealed class SetupTurnFlowSystemTests
         stateMock.Setup(x => x.Query<Player>())
             .Returns([player1, systemPlayer, player2]);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
+
         var system = new SetupTurnFlowSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         var @event = new GameStartedEvent(gameId);
-        system.OnEvent(@event, stateMock.Object, channel.Writer);
+        system.OnEvent(@event, stateMock.Object, writer.Object);
 
         // Assert
-        channel.Reader.TryRead(out var producedEvent).Should().BeTrue();
-
-        producedEvent.Should()
+        eventsList.Single().Should()
             .Match<TurnFlowDefinedEvent>(e =>
                 e.GameId == gameId &&
                 e.InitialPlayerTrunsOrder.Count == 2 &&
@@ -68,16 +68,18 @@ public sealed class SetupTurnFlowSystemTests
         stateMock.Setup(x => x.Query<Player>())
             .Returns([]);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
+        var eventsList = new List<IGameEvent>();
+        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
+            .Callback((IGameEvent e) => eventsList.Add(e));
+
         var system = new SetupTurnFlowSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
-        system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, channel.Writer);
+        system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, writer.Object);
 
         // Assert
-        channel.Reader.TryRead(out var producedEvent).Should().BeTrue();
-
-        producedEvent.Should()
+        eventsList.Single().Should()
             .Match<TurnFlowDefinedEvent>(e =>
                 e.GameId == gameId &&
                 e.InitialPlayerTrunsOrder.Count == 0 &&

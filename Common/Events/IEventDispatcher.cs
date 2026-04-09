@@ -1,13 +1,11 @@
-﻿using System.Threading.Channels;
-
-namespace Centuriin.CardGame.Core.Common.Events;
+﻿namespace Centuriin.CardGame.Core.Common.Events;
 
 public interface IEventDispatcher
 {
     public void Publish(
         IGameEvent @event,
         IGameState gameState,
-        ChannelWriter<IGameEvent> writer);
+        IEventBusWriter writer);
 
     public void Register<TEvent>(
         ISubscriber<TEvent> subscriber)

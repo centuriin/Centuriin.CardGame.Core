@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
@@ -15,7 +13,7 @@ public abstract class SystemBase
         Logger = logger;
     }
 
-    protected void ValidateAndLog<TEvent>(TEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
+    protected void ValidateAndLog<TEvent>(TEvent @event, IGameState gameState, IEventBusWriter writer)
         where TEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(@event);

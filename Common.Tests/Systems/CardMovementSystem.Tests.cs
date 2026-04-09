@@ -56,13 +56,11 @@ public sealed class CardMovementSystemTests
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([otherZone, handZone]);
 
-        var channel = Channel.CreateUnbounded<IGameEvent>();
-
         var system = new CardMovementSystem(Mock.Of<IGameEngineLogger>());
 
         // Act
         var @event = new CardDealtEvent(gameId, cardId, playerId);
-        system.OnEvent(@event, stateMock.Object, channel.Writer);
+        system.OnEvent(@event, stateMock.Object, Mock.Of<IEventBusWriter>());
 
         // Assert
         card.Get<OwnerComponent>().CurrentOwnerId.Should().Be(playerId);
@@ -97,7 +95,7 @@ public sealed class CardMovementSystemTests
             system.OnEvent(
                 new CardDealtEvent(gameId, cardId, playerId),
                 stateMock.Object,
-                Channel.CreateUnbounded<IGameEvent>().Writer));
+                Mock.Of<IEventBusWriter>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();

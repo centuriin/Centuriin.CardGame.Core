@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
@@ -18,7 +16,7 @@ public sealed class DealerSystem :
     {
     }
 
-    public void OnEvent(GameStartedEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
+    public void OnEvent(GameStartedEvent @event, IGameState gameState, IEventBusWriter writer)
     {
         ValidateAndLog(@event, gameState, writer);
 
@@ -45,7 +43,7 @@ public sealed class DealerSystem :
                     pickedCardId,
                     zone.Get<OwnerComponent>().CurrentOwnerId);
 
-                _ = writer.TryWrite(childEvent);
+                writer.Write(childEvent);
             }
         }
     }

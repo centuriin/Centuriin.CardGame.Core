@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
@@ -14,7 +12,7 @@ public sealed class TurnFlowSystem :
     {
     }
 
-    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
+    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState, IEventBusWriter writer)
     {
         ValidateAndLog(@event, gameState, writer);
 
@@ -35,10 +33,10 @@ public sealed class TurnFlowSystem :
                 @event.IsCycled);
         }
 
-        _ = writer.TryWrite(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
+        writer.Write(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
     }
 
-    public void OnEvent(TurnEndedEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
+    public void OnEvent(TurnEndedEvent @event, IGameState gameState, IEventBusWriter writer)
     {
         ValidateAndLog(@event, gameState, writer);
 
@@ -52,6 +50,6 @@ public sealed class TurnFlowSystem :
                 gameState.TurnAutomat.ActivePlayer.Value);
         }
 
-        _ = writer.TryWrite(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
+        writer.Write(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
     }
 }

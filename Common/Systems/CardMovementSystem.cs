@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
@@ -20,7 +18,7 @@ public sealed class CardMovementSystem :
     public void OnEvent(
         CardDealtEvent @event,
         IGameState gameState,
-        ChannelWriter<IGameEvent> writer)
+        IEventBusWriter writer)
     {
         ValidateAndLog(@event, gameState, writer);
 

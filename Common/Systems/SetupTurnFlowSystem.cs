@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
@@ -15,7 +13,7 @@ public sealed class SetupTurnFlowSystem :
     {
     }
 
-    public void OnEvent(GameStartedEvent @event, IGameState gameState, ChannelWriter<IGameEvent> writer)
+    public void OnEvent(GameStartedEvent @event, IGameState gameState, IEventBusWriter writer)
     {
         ValidateAndLog(@event, gameState, writer);
 
@@ -26,9 +24,6 @@ public sealed class SetupTurnFlowSystem :
             .Shuffle()
             .ToList();
 
-        _ = writer.TryWrite(new TurnFlowDefinedEvent(
-            @event.GameId,
-            orderedPlayerIds,
-            IsCycled: true));
+        writer.Write(new TurnFlowDefinedEvent(@event.GameId, orderedPlayerIds, IsCycled: true));
     }
 }
