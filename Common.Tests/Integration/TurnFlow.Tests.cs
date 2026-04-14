@@ -33,7 +33,7 @@ public sealed class TurnFlowTests
         player2.Add(new PlayerRoleComponent(PlayerRole.Participant));
         gameState.AddEntity<Player, PlayerId>(player2);
 
-        var turnFlowSystem = new TurnFlowSystem(DebugLogger.Instance);
+        var turnFlowSystem = new TurnFlowSystem(DebugLogger<TurnFlowSystem>.Instance);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register<TurnFlowDefinedEvent>(turnFlowSystem);

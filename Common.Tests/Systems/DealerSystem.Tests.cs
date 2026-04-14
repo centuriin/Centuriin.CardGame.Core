@@ -51,7 +51,7 @@ public sealed class DealerSystemTests
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
-        var system = new DealerSystem(Mock.Of<IGameEngineLogger>());
+        var system = new DealerSystem(Mock.Of<ICoreLogger<DealerSystem>>());
 
         // Act
         system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, writer.Object);

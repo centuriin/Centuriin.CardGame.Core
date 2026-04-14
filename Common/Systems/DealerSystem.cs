@@ -12,7 +12,7 @@ public sealed class DealerSystem :
     SystemBase,
     ISubscriber<GameStartedEvent>
 {
-    public DealerSystem(IGameEngineLogger logger) : base(logger)
+    public DealerSystem(ICoreLogger<DealerSystem> logger) : base(logger)
     {
     }
 

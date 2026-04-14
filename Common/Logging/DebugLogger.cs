@@ -2,9 +2,9 @@
 
 namespace Centuriin.CardGame.Core.Common.Logging;
 
-public sealed class DebugLogger : IGameEngineLogger
+public sealed class DebugLogger<T> : ICoreLogger<T>
 {
-    public static DebugLogger Instance { get; } = new();
+    public static DebugLogger<T> Instance { get; } = new();
 
     private DebugLogger() { }
 

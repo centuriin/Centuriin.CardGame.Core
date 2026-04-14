@@ -9,7 +9,7 @@ public sealed class SetupTurnFlowSystem :
     SystemBase,
     ISubscriber<GameStartedEvent>
 {
-    public SetupTurnFlowSystem(IGameEngineLogger logger) : base(logger)
+    public SetupTurnFlowSystem(ICoreLogger<SetupTurnFlowSystem> logger) : base(logger)
     {
     }
 

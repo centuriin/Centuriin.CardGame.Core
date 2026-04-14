@@ -8,7 +8,7 @@ public sealed class TurnFlowSystem :
     ISubscriber<TurnFlowDefinedEvent>,
     ISubscriber<TurnEndedEvent>
 {
-    public TurnFlowSystem(IGameEngineLogger logger) : base(logger)
+    public TurnFlowSystem(ICoreLogger<TurnFlowSystem> logger) : base(logger)
     {
     }
 

@@ -35,7 +35,7 @@ public sealed class TurnFlowSystemTests
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
-        var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
+        var system = new TurnFlowSystem(Mock.Of<ICoreLogger<TurnFlowSystem>>());
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: true);
@@ -64,7 +64,7 @@ public sealed class TurnFlowSystemTests
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
         stateMock.SetupGet(x => x.TurnAutomat).Returns(automatMock.Object);
 
-        var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
+        var system = new TurnFlowSystem(Mock.Of<ICoreLogger<TurnFlowSystem>>());
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: false);
@@ -97,7 +97,7 @@ public sealed class TurnFlowSystemTests
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
-        var system = new TurnFlowSystem(Mock.Of<IGameEngineLogger>());
+        var system = new TurnFlowSystem(Mock.Of<ICoreLogger<TurnFlowSystem>>());
 
         // Act
         var @event = new TurnEndedEvent(gameId, p1);

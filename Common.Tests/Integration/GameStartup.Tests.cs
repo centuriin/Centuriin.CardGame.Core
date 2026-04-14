@@ -63,10 +63,14 @@ public sealed class GameStartupIntegrationTests
             .ReturnsAsync(cards);
 
         var dispatcher = new EventDispatcher();
-        dispatcher.Register<GameStartedEvent>(new SetupTurnFlowSystem(DebugLogger.Instance));
-        dispatcher.Register<GameStartedEvent>(new DealerSystem(DebugLogger.Instance));
-        dispatcher.Register<TurnFlowDefinedEvent>(new TurnFlowSystem(DebugLogger.Instance));
-        dispatcher.Register<CardDealtEvent>(new CardMovementSystem(DebugLogger.Instance));
+        dispatcher.Register<GameStartedEvent>(new SetupTurnFlowSystem(
+            DebugLogger<SetupTurnFlowSystem>.Instance));
+        dispatcher.Register<GameStartedEvent>(new DealerSystem(
+            DebugLogger<DealerSystem>.Instance));
+        dispatcher.Register<TurnFlowDefinedEvent>(
+            new TurnFlowSystem(DebugLogger<TurnFlowSystem>.Instance));
+        dispatcher.Register<CardDealtEvent>(new CardMovementSystem(
+            DebugLogger<CardMovementSystem>.Instance));
 
         var game = new Game(
             new GameState(gameId, new TurnAutomat()),

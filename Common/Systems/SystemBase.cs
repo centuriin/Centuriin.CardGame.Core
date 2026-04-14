@@ -5,9 +5,9 @@ namespace Centuriin.CardGame.Core.Common.Systems;
 
 public abstract class SystemBase
 {
-    protected IGameEngineLogger Logger { get; }
+    protected ICoreLogger Logger { get; }
 
-    protected SystemBase(IGameEngineLogger logger)
+    protected SystemBase(ICoreLogger logger)
     {
         ArgumentNullException.ThrowIfNull(logger);
         Logger = logger;

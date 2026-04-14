@@ -11,7 +11,7 @@ public sealed class CardMovementSystem :
     SystemBase,
     ISubscriber<CardDealtEvent>
 {
-    public CardMovementSystem(IGameEngineLogger logger) : base(logger)
+    public CardMovementSystem(ICoreLogger<CardMovementSystem> logger) : base(logger)
     {
     }
 

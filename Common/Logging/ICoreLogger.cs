@@ -1,6 +1,6 @@
 ﻿namespace Centuriin.CardGame.Core.Common.Logging;
 
-public interface IGameEngineLogger
+public interface ICoreLogger
 {
     public bool IsEnabled(LogLevel logLevel);
 
