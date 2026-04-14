@@ -5,4 +5,5 @@
   <Project Path="Common.Tests/Common.Tests.csproj" />
   <Project Path="Common/Common.csproj" />
   <Project Path="Drunkard/Drunkard.csproj" />
+  <Project Path="Extensions.DependencyInjection/Extensions.DependencyInjection.csproj" Id="956764d1-a2c5-439e-aafd-9122725df3b2" />
 </Solution>
