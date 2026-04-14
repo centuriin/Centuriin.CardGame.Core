@@ -3,7 +3,6 @@ using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Logging;
 using Centuriin.CardGame.Core.Common.Systems;
-using Centuriin.Centuriin.Core.Common;
 
 using FluentAssertions;
 

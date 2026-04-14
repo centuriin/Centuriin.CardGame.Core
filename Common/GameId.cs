@@ -1,4 +1,4 @@
-﻿namespace Centuriin.Centuriin.Core.Common;
+﻿namespace Centuriin.CardGame.Core.Common;
 
 /// <summary>
 /// Instance game identifier.

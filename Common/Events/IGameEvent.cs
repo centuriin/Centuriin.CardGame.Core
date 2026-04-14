@@ -1,6 +1,4 @@
-﻿using Centuriin.Centuriin.Core.Common;
-
-namespace Centuriin.CardGame.Core.Common.Events;
+﻿namespace Centuriin.CardGame.Core.Common.Events;
 
 public interface IGameEvent
 {

@@ -9,7 +9,6 @@ using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Logging;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Systems;
-using Centuriin.Centuriin.Core.Common;
 
 using FluentAssertions;
 
@@ -44,15 +43,15 @@ public sealed class GameStartupIntegrationTests
 
         var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
         zonesFactoryMock.Setup(x => x.CreateAsync(
-                It.IsAny<IReadOnlyCollection<TemplateId>>(), 
+                It.IsAny<IReadOnlyCollection<TemplateId>>(),
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([deckZone, handZone]);
 
         var cardTemplateIds = new HashSet<TemplateId> { new(101), new(102), new(103) };
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
         decksRepoMock.Setup(x => x.GetDeckTemplateIdsAsync(
-                gameTypeId, 
-                PlayerId.System, 
+                gameTypeId,
+                PlayerId.System,
                 TestContext.Current.CancellationToken))
             .ReturnsAsync(cardTemplateIds);
 

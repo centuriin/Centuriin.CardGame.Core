@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities;
-using Centuriin.Centuriin.Core.Common;
 
 namespace Centuriin.CardGame.Core.Common;
 

@@ -1,7 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.Centuriin.Core.Common;
+﻿using Centuriin.CardGame.Core.Common.Events;
 
 using FluentAssertions;
 
