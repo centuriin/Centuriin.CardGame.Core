@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Logging;
+using Centuriin.CardGame.Core.Common.Observability.Logging;
 
 using FluentAssertions;
 

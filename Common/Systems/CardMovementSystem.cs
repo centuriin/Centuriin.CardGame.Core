@@ -3,7 +3,7 @@ using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Logging;
+using Centuriin.CardGame.Core.Common.Observability.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 

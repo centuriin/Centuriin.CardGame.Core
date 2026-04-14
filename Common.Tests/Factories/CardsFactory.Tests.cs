@@ -31,7 +31,7 @@ public sealed class CardsFactoryTests
                     new CardTemplate(templateId2, [new FakeComponent()])
                 ]);
 
-        var factory = new CardsFactory(repoMock.Object);
+        var factory = new CardFactory(repoMock.Object);
 
         // Act
         var cards = await factory.CreateAsync(templateIds, TestContext.Current.CancellationToken);
@@ -71,7 +71,7 @@ public sealed class CardsFactoryTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
-        var factory = new CardsFactory(repoMock.Object);
+        var factory = new CardFactory(repoMock.Object);
 
         // Act
         var result = await factory.CreateAsync(

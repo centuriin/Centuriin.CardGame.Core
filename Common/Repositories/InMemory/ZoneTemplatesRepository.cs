@@ -25,6 +25,7 @@ public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
                         new(2),
                         [
                             new ZoneRoleComponent(ZoneRole.Hand),
+                            new HasPrimaryCards(3)
                         ])
                 },
                 {

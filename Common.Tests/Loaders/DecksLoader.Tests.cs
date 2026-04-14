@@ -48,7 +48,7 @@ public sealed class DecksLoaderTests
         var card1 = new Card(new CardId(1));
         var card2 = new Card(new CardId(2));
         var createdCards = new List<Card> { card1, card2 };
-        var cardsFactoryMock = new Mock<ICardsFactory>(MockBehavior.Strict);
+        var cardsFactoryMock = new Mock<ICardFactory>(MockBehavior.Strict);
         cardsFactoryMock
             .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
             .ReturnsAsync(createdCards);
@@ -90,7 +90,7 @@ public sealed class DecksLoaderTests
 
         var loader = new DecksLoader(
             Mock.Of<IDecksRepository>(MockBehavior.Strict),
-            Mock.Of<ICardsFactory>(MockBehavior.Strict));
+            Mock.Of<ICardFactory>(MockBehavior.Strict));
 
         // Act
         await loader.LoadAsync(

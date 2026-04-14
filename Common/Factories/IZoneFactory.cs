@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 
-public interface IZonesFactory
+public interface IZoneFactory
 {
     public Task<IReadOnlyCollection<Zone>> CreateAsync(
         IReadOnlyCollection<TemplateId> templateIds,

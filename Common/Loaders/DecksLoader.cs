@@ -10,11 +10,11 @@ namespace Centuriin.CardGame.Core.Common.Loaders;
 public sealed class DecksLoader : IGameLoader
 {
     private readonly IDecksRepository _decksRepository;
-    private readonly ICardsFactory _cardsFactory;
+    private readonly ICardFactory _cardsFactory;
 
     public DecksLoader(
         IDecksRepository decksRepository,
-        ICardsFactory cardsRepository)
+        ICardFactory cardsRepository)
     {
         ArgumentNullException.ThrowIfNull(decksRepository);
         _decksRepository = decksRepository;

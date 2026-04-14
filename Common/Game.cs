@@ -1,6 +1,7 @@
 ﻿using System.Threading.Channels;
 
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common;
@@ -42,6 +43,8 @@ public sealed class Game : IGame
         ArgumentNullException.ThrowIfNull(@event);
 
         token.ThrowIfCancellationRequested();
+
+        using var _ = CoreTelemetry.StartActivity(@event);
 
         _writer.Write(@event);
 

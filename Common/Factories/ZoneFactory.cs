@@ -4,11 +4,11 @@ using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 
-public sealed class ZonesFactory : IZonesFactory
+public sealed class ZoneFactory : IZoneFactory
 {
     private readonly ITemplatesRepository<ZoneTemplate> _templatesRepository;
 
-    public ZonesFactory(ITemplatesRepository<ZoneTemplate> templatesRepository)
+    public ZoneFactory(ITemplatesRepository<ZoneTemplate> templatesRepository)
     {
         ArgumentNullException.ThrowIfNull(templatesRepository);
         _templatesRepository = templatesRepository;

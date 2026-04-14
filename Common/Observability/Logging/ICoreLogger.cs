@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.Logging;
+﻿namespace Centuriin.CardGame.Core.Common.Observability.Logging;
 
 public interface ICoreLogger
 {

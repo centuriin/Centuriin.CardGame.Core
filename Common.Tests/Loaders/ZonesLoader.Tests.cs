@@ -56,7 +56,7 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync(zoneDefinitions);
 
-        var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
+        var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
         zonesFactoryMock
             .Setup(x => x.CreateAsync(
                 It.Is<IReadOnlyCollection<TemplateId>>(x =>
@@ -110,7 +110,7 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
-        var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
+        var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
         zonesFactoryMock
             .Setup(x => x.CreateAsync(
                 It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 0),

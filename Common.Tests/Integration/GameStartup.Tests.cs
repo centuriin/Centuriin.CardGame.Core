@@ -6,7 +6,7 @@ using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
-using Centuriin.CardGame.Core.Common.Logging;
+using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Systems;
 
@@ -41,7 +41,7 @@ public sealed class GameStartupIntegrationTests
             .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync([new ZoneDefinition(zoneTemplateId, ZoneScope.Singleton)]);
 
-        var zonesFactoryMock = new Mock<IZonesFactory>(MockBehavior.Strict);
+        var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
         zonesFactoryMock.Setup(x => x.CreateAsync(
                 It.IsAny<IReadOnlyCollection<TemplateId>>(),
                 TestContext.Current.CancellationToken))
@@ -56,7 +56,7 @@ public sealed class GameStartupIntegrationTests
             .ReturnsAsync(cardTemplateIds);
 
         var cards = cardTemplateIds.Select(id => new Card(new CardId((int)id.Value))).ToList();
-        var cardsFactoryMock = new Mock<ICardsFactory>(MockBehavior.Strict);
+        var cardsFactoryMock = new Mock<ICardFactory>(MockBehavior.Strict);
         cardsFactoryMock.Setup(x => x.CreateAsync(
                 cardTemplateIds,
                 TestContext.Current.CancellationToken))

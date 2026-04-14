@@ -11,11 +11,11 @@ namespace Centuriin.CardGame.Core.Common.Loaders;
 public sealed class ZonesLoader : IGameLoader
 {
     private readonly IZoneDefinitionsRepository _zoneDefinitionsRepository;
-    private readonly IZonesFactory _zonesFactory;
+    private readonly IZoneFactory _zonesFactory;
 
     public ZonesLoader(
         IZoneDefinitionsRepository zonesRepository,
-        IZonesFactory zonesFactory)
+        IZoneFactory zonesFactory)
     {
         ArgumentNullException.ThrowIfNull(zonesRepository);
         _zoneDefinitionsRepository = zonesRepository;

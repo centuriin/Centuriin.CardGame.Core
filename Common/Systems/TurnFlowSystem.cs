@@ -1,5 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Logging;
+using Centuriin.CardGame.Core.Common.Observability.Logging;
 
 namespace Centuriin.CardGame.Core.Common.Systems;
 

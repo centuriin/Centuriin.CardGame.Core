@@ -31,7 +31,7 @@ public sealed class ZonesFactoryTests
                     new ZoneTemplate(templateId2, [new FakeComponent()])
                 ]);
 
-        var factory = new ZonesFactory(repository.Object);
+        var factory = new ZoneFactory(repository.Object);
 
         // Act
         var zones = await factory.CreateAsync(templateIds, TestContext.Current.CancellationToken);

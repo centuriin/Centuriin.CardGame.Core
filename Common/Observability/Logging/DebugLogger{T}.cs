@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Centuriin.CardGame.Core.Common.Logging;
+namespace Centuriin.CardGame.Core.Common.Observability.Logging;
 
 public sealed class DebugLogger<T> : ICoreLogger<T>
 {
