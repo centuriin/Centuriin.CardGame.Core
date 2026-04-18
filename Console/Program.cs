@@ -1,9 +1,9 @@
 ﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
-using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Repositories.InMemory;
+using Centuriin.CardGame.Core.Common.Templates;
+using Centuriin.CardGame.Core.Common.World;
 
 using Extensions.DependencyInjection;
 

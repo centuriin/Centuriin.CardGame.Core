@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;
 

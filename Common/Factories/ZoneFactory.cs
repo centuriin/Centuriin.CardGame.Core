@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Repositories;
+using Centuriin.CardGame.Core.Common.Templates;
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 

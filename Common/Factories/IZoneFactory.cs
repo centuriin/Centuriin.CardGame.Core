@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Templates;
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 

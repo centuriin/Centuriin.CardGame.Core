@@ -1,3 +1,3 @@
-﻿namespace Centuriin.CardGame.Core.Common;
+﻿namespace Centuriin.CardGame.Core.Common.World;
 
 public readonly record struct GameTypeId(int Value);

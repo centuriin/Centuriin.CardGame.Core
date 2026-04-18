@@ -2,7 +2,7 @@
 
 using Centuriin.CardGame.Core.Common.Entities;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.World;
 
 public sealed class GameState : IGameState
 {

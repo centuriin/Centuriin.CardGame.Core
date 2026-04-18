@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Templates;
 
 public abstract class TemplateBase
 {

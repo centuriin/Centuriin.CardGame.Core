@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Common.Loaders;
+﻿using Centuriin.CardGame.Core.Common.World;
+
+namespace Centuriin.CardGame.Core.Common.Loaders;
 
 /// <summary>
 /// Describes game loader for game initialization before starting.

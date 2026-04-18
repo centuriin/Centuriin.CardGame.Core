@@ -2,6 +2,7 @@
 
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
+using Centuriin.CardGame.Core.Common.Templates;
 
 namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 

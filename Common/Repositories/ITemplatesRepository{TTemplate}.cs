@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Common.Repositories;
+﻿using Centuriin.CardGame.Core.Common.Templates;
+
+namespace Centuriin.CardGame.Core.Common.Repositories;
 
 public interface ITemplatesRepository<TTemplate>
     where TTemplate : TemplateBase

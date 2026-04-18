@@ -1,10 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 
-namespace Centuriin.CardGame.Core.Common.Entities.Zones;
+namespace Centuriin.CardGame.Core.Common.Templates;
 
-public sealed class ZoneTemplate : TemplateBase
+public sealed class CardTemplate : TemplateBase
 {
-    public ZoneTemplate(
+    public CardTemplate(
         TemplateId id,
         IReadOnlyCollection<ComponentBase> components) : base(id, components)
     {

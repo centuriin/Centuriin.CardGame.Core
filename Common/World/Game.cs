@@ -4,7 +4,7 @@ using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.World;
 
 public sealed class Game : IGame
 {
