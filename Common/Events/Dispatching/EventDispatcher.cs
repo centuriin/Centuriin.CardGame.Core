@@ -15,6 +15,8 @@ public sealed class EventDispatcher : IEventDispatcher
     {
         ArgumentNullException.ThrowIfNull(subscriber);
 
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
         var eventType = typeof(TEvent);
 
         var wrapper = (IGameEvent e, IGameState s, IEventBusWriter w) =>
@@ -38,6 +40,8 @@ public sealed class EventDispatcher : IEventDispatcher
         where TEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(subscriber);
+
+        ObjectDisposedException.ThrowIf(_disposed, this);
 
         var eventType = typeof(TEvent);
 
@@ -74,6 +78,8 @@ public sealed class EventDispatcher : IEventDispatcher
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(writer);
+
+        ObjectDisposedException.ThrowIf(_disposed, this);
 
         var actualType = @event.GetType();
 

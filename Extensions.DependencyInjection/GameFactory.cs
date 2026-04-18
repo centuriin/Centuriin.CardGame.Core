@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
@@ -10,36 +9,42 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Extensions.DependencyInjection;
 
-public sealed class GameFactory : IGameFactory
+public sealed class GameFactory : IGameSessionFactory
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public GameFactory(IServiceProvider serviceProvider)
+    public GameFactory(IServiceScopeFactory serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceProvider;
     }
 
-    public IGame Create(GameSetup setup)
+    public IGameSession Create(GameSetup setup)
     {
         ArgumentNullException.ThrowIfNull(setup);
 
-        var dispatcher = _serviceProvider.GetRequiredService<IEventDispatcher>();
+        var scope = _serviceScopeFactory.CreateScope();
+
+        var serviceProvider = scope.ServiceProvider;
+
+        var dispatcher = serviceProvider.GetRequiredService<IEventDispatcher>();
 
         //todo dispatcher linked list settings by builder
         dispatcher.Register<GameStartedEvent>(
             new SetupTurnFlowSystem(
-                _serviceProvider.GetRequiredService<ICoreLogger<SetupTurnFlowSystem>>()));
+                serviceProvider.GetRequiredService<ICoreLogger<SetupTurnFlowSystem>>()));
         dispatcher.Register<GameStartedEvent>(
             new DealerSystem(
-                _serviceProvider.GetRequiredService<ICoreLogger<DealerSystem>>()));
+                serviceProvider.GetRequiredService<ICoreLogger<DealerSystem>>()));
         dispatcher.Register<TurnFlowDefinedEvent>(
             new TurnFlowSystem(
-                _serviceProvider.GetRequiredService<ICoreLogger<TurnFlowSystem>>()));
+                serviceProvider.GetRequiredService<ICoreLogger<TurnFlowSystem>>()));
         dispatcher.Register<CardDealtEvent>(
             new CardMovementSystem(
-                _serviceProvider.GetRequiredService<ICoreLogger<CardMovementSystem>>()));
+                serviceProvider.GetRequiredService<ICoreLogger<CardMovementSystem>>()));
 
-        return ActivatorUtilities.CreateInstance<Game>(_serviceProvider, new GameId(Guid.NewGuid()), dispatcher);
+        var game = ActivatorUtilities.CreateInstance<Game>(serviceProvider, new GameId(Guid.NewGuid()), dispatcher);
+
+        return new GameSession(game, scope);
     }
 }

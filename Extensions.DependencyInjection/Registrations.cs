@@ -14,7 +14,7 @@ public static class Registrations
     public static IServiceCollection AddCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
-            .AddSingleton<IGameFactory, GameFactory>()
+            .AddSingleton<IGameSessionFactory, GameFactory>()
             .AddSingleton<IGameStartupService, GameStartupService>()
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()

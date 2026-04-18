@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Factories;
 
-public interface IGameFactory
+public interface IGameSessionFactory
 {
-    public IGame Create(GameSetup setup);
+    public IGameSession Create(GameSetup setup);
 }

@@ -83,8 +83,16 @@ public sealed class GameStartupIntegrationTests
 
         var setup = new GameSetup(gameTypeId, [p1Id]);
 
-        var gameFactoryMock = new Mock<IGameFactory>(MockBehavior.Strict);
-        gameFactoryMock.Setup(x => x.Create(setup)).Returns(game);
+        var sessionMock = new Mock<IGameSession>(MockBehavior.Strict);
+        sessionMock.SetupGet(x => x.Game).Returns(game);
+
+        var sessionsRepositoryMock = new Mock<IGameSessionsRepository>(MockBehavior.Strict);
+        sessionsRepositoryMock
+            .Setup(x => x.AddAsync(sessionMock.Object, TestContext.Current.CancellationToken))
+            .Returns(ValueTask.CompletedTask);
+
+        var gameFactoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
+        gameFactoryMock.Setup(x => x.Create(setup)).Returns(sessionMock.Object);
 
         var loaders = new List<IGameLoader>
         {
@@ -93,7 +101,10 @@ public sealed class GameStartupIntegrationTests
             new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
         };
 
-        var startupService = new GameStartupService(loaders, gameFactoryMock.Object);
+        var startupService = new GameStartupService(
+            sessionsRepositoryMock.Object,
+            loaders, 
+            gameFactoryMock.Object);
 
         // Act
         var resultGame = await startupService.StartupGameAsync(

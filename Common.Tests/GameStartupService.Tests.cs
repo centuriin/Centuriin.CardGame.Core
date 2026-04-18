@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
+using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;
@@ -14,11 +15,28 @@ namespace Centuriin.CardGame.Core.Common;
 public sealed class GameStartupServiceTests
 {
     [Fact]
+    public void ConstructorShouldThrowWhenSessionssRepositoryIsNull()
+    {
+        // Act
+        var exception = Record.Exception(() =>
+            new GameStartupService(
+                null!,
+                [],
+                Mock.Of<IGameSessionFactory>()));
+
+        // Assert
+        exception.Should().BeOfType<ArgumentNullException>();
+    }
+
+    [Fact]
     public void ConstructorShouldThrowWhenLoadersIsNull()
     {
         // Act
         var exception = Record.Exception(() =>
-            new GameStartupService(null!, Mock.Of<IGameFactory>()));
+            new GameStartupService(
+                Mock.Of<IGameSessionsRepository>(),
+                null!,
+                Mock.Of<IGameSessionFactory>()));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -29,7 +47,10 @@ public sealed class GameStartupServiceTests
     {
         // Act
         var exception = Record.Exception(() =>
-            new GameStartupService([], null!));
+            new GameStartupService(
+                Mock.Of<IGameSessionsRepository>(),
+                [],
+                null!));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -43,7 +64,6 @@ public sealed class GameStartupServiceTests
         var setup = new GameSetup(new(1), []);
 
         var gameState = Mock.Of<IGameState>(MockBehavior.Strict);
-        
 
         var applyCalls = 0;
         var gameMock = new Mock<IGame>(MockBehavior.Strict);
@@ -56,12 +76,23 @@ public sealed class GameStartupServiceTests
             .Callback(() => applyCalls++)
             .Returns(Task.CompletedTask);
 
+        var sessionMock = new Mock<IGameSession>(MockBehavior.Strict);
+        sessionMock.Setup(x => x.Game)
+            .Returns(gameMock.Object);
+
+        var sessionsRepositoryCalls = 0;
+        var sessionsRepositoryMock = new Mock<IGameSessionsRepository>(MockBehavior.Strict);
+        sessionsRepositoryMock
+            .Setup(x => x.AddAsync(sessionMock.Object, TestContext.Current.CancellationToken))
+            .Returns(ValueTask.CompletedTask)
+            .Callback(() => sessionsRepositoryCalls++);
+
         var factoryCalls = 0;
-        var factoryMock = new Mock<IGameFactory>(MockBehavior.Strict);
+        var factoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
         factoryMock
             .Setup(x => x.Create(setup))
             .Callback(() => factoryCalls++)
-            .Returns(gameMock.Object);
+            .Returns(sessionMock.Object);
 
         var loaderCalls = 0;
         var loaderMock = new Mock<IGameLoader>(MockBehavior.Strict);
@@ -70,7 +101,10 @@ public sealed class GameStartupServiceTests
             .Callback(() => loaderCalls++)
             .Returns(Task.CompletedTask);
 
-        var service = new GameStartupService([loaderMock.Object], factoryMock.Object);
+        var service = new GameStartupService(
+            sessionsRepositoryMock.Object,
+            [loaderMock.Object],
+            factoryMock.Object);
 
         // Act
         var result = await service.StartupGameAsync(setup, TestContext.Current.CancellationToken);
@@ -78,6 +112,7 @@ public sealed class GameStartupServiceTests
         // Assert
         result.Should().BeSameAs(gameMock.Object);
         factoryCalls.Should().Be(1);
+        sessionsRepositoryCalls.Should().Be(1);
         loaderCalls.Should().Be(1);
         applyCalls.Should().Be(1);
     }
@@ -86,7 +121,10 @@ public sealed class GameStartupServiceTests
     public async Task StartupGameAsyncShouldThrowWhenSetupIsNullAsync()
     {
         // Arrange
-        var service = new GameStartupService([], Mock.Of<IGameFactory>());
+        var service = new GameStartupService(
+            Mock.Of<IGameSessionsRepository>(),
+            [], 
+            Mock.Of<IGameSessionFactory>());
 
         // Act
         var exception = await Record.ExceptionAsync(() =>

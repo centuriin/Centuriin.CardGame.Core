@@ -17,6 +17,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
     .AddCore()
+    .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
     .AddSingleton<IZoneDefinitionsRepository, ZoneDefinitionRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
