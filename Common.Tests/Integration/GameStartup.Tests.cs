@@ -4,6 +4,7 @@ using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
@@ -75,7 +76,8 @@ public sealed class GameStartupIntegrationTests
             DebugLogger<CardMovementSystem>.Instance));
 
         var game = new Game(
-            new GameState(gameId, new TurnAutomat()),
+            gameId,
+            new GameState(new TurnAutomat()),
             Mock.Of<IGameEventsRepository>(),
             dispatcher);
 

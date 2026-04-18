@@ -1,12 +1,15 @@
 ﻿using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Events;
+namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
 
 public sealed class EventDispatcher : IEventDispatcher
 {
+    private bool _disposed;
+
     private readonly Dictionary<Type, Action<IGameEvent, IGameState, IEventBusWriter>> _handlersMap = [];
     private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, IEventBusWriter>> _wrappersMap = [];
 
+    /// <inheritdoc/>
     public void Register<TEvent>(ISubscriber<TEvent> subscriber)
         where TEvent : IGameEvent
     {
@@ -30,6 +33,7 @@ public sealed class EventDispatcher : IEventDispatcher
         _wrappersMap[subscriber.OnEvent] = wrapper;
     }
 
+    /// <inheritdoc/>
     public void Unregister<TEvent>(ISubscriber<TEvent> subscriber)
         where TEvent : IGameEvent
     {
@@ -61,6 +65,7 @@ public sealed class EventDispatcher : IEventDispatcher
         _wrappersMap.Remove(subscriber.OnEvent);
     }
 
+    /// <inheritdoc/>
     public void Publish(
         IGameEvent @event,
         IGameState gameState,
@@ -81,5 +86,19 @@ public sealed class EventDispatcher : IEventDispatcher
         {
             action(@event, gameState, writer);
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _wrappersMap.Clear();
+        _handlersMap.Clear();
+
+        _disposed = true;
     }
 }

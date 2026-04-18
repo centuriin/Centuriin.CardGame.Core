@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Systems;
 using Centuriin.CardGame.Core.Common.World;
@@ -22,7 +23,7 @@ public sealed class TurnFlowTests
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
 
-        var gameState = new GameState(gameId, new TurnAutomat());
+        var gameState = new GameState(new TurnAutomat());
 
         var p1 = new PlayerId(Guid.NewGuid());
         var player1 = new Player(p1);

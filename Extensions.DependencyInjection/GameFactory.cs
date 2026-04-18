@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Systems;
@@ -39,10 +40,6 @@ public sealed class GameFactory : IGameFactory
             new CardMovementSystem(
                 _serviceProvider.GetRequiredService<ICoreLogger<CardMovementSystem>>()));
 
-        var gameState = new GameState(
-            new(Guid.NewGuid()),
-            _serviceProvider.GetRequiredService<ITurnAutomat>());
-
-        return ActivatorUtilities.CreateInstance<Game>(_serviceProvider, gameState, dispatcher);
+        return ActivatorUtilities.CreateInstance<Game>(_serviceProvider, new GameId(Guid.NewGuid()), dispatcher);
     }
 }

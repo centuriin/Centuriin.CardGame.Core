@@ -1,8 +1,8 @@
 ﻿using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Events;
+namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
 
-public interface IEventDispatcher
+public interface IEventDispatcher : IDisposable
 {
     public void Publish(
         IGameEvent @event,

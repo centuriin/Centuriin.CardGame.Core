@@ -8,14 +8,10 @@ public sealed class GameState : IGameState
 {
     private readonly Dictionary<Type, IDictionary> _entities = [];
 
-    public GameId GameId { get; }
-
     public ITurnAutomat TurnAutomat { get; }
 
-    public GameState(GameId gameId, ITurnAutomat turnAutomat)
+    public GameState(ITurnAutomat turnAutomat)
     {
-        GameId = gameId;
-
         ArgumentNullException.ThrowIfNull(turnAutomat);
         TurnAutomat = turnAutomat;
     }

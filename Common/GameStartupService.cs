@@ -32,7 +32,7 @@ public sealed class GameStartupService : IGameStartupService
             await loader.LoadAsync(setup, game.State, token);
         }
 
-        await game.ApplyAsync(new GameStartedEvent(game.State.GameId), token);
+        await game.ApplyAsync(new GameStartedEvent(game.GameId), token);
 
         return game;
     }

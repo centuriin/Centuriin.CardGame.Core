@@ -42,12 +42,13 @@ public sealed class GameStartupServiceTests
         var gameId = new GameId(Guid.NewGuid());
         var setup = new GameSetup(new(1), []);
 
-        var gameStateMock = new Mock<IGameState>(MockBehavior.Strict);
-        gameStateMock.SetupGet(x => x.GameId).Returns(gameId);
+        var gameState = Mock.Of<IGameState>(MockBehavior.Strict);
+        
 
         var applyCalls = 0;
         var gameMock = new Mock<IGame>(MockBehavior.Strict);
-        gameMock.SetupGet(x => x.State).Returns(gameStateMock.Object);
+        gameMock.SetupGet(x => x.GameId).Returns(gameId);
+        gameMock.SetupGet(x => x.State).Returns(gameState);
         gameMock
             .Setup(x => x.ApplyAsync(
                 It.Is<GameStartedEvent>(e => e.GameId == gameId),
@@ -65,7 +66,7 @@ public sealed class GameStartupServiceTests
         var loaderCalls = 0;
         var loaderMock = new Mock<IGameLoader>(MockBehavior.Strict);
         loaderMock
-            .Setup(x => x.LoadAsync(setup, gameStateMock.Object, TestContext.Current.CancellationToken))
+            .Setup(x => x.LoadAsync(setup, gameState, TestContext.Current.CancellationToken))
             .Callback(() => loaderCalls++)
             .Returns(Task.CompletedTask);
 

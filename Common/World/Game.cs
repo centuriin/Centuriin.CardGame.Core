@@ -1,6 +1,7 @@
 ﻿using System.Threading.Channels;
 
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;
 
@@ -19,13 +20,18 @@ public sealed class Game : IGame
     private readonly IGameEventsRepository _eventsRepository;
     private readonly IEventDispatcher _dispatcher;
 
+    public GameId GameId { get; }
+
     public IGameState State { get; }
 
     public Game(
+        GameId gameId,
         IGameState gameState,
         IGameEventsRepository eventsRepository,
         IEventDispatcher dispatcher)
     {
+        GameId = gameId;
+
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
 

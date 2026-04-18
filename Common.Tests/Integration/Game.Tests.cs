@@ -4,6 +4,7 @@ using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Systems;
@@ -43,7 +44,7 @@ public sealed class GameTests
                 new ZoneComponent(new ZoneId(0))
             ]);
 
-        var gameState = new GameState(gameId, Mock.Of<ITurnAutomat>(MockBehavior.Strict));
+        var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
         gameState.AddEntity<Player, PlayerId>(new Player(playerId));
         gameState.AddEntity<Player, PlayerId>(new Player(PlayerId.System));
         gameState.AddEntity<Zone, ZoneId>(handZone);
@@ -58,7 +59,7 @@ public sealed class GameTests
 
         var eventsRepo = new FakeEventsRepository();
 
-        var game = new Game(gameState, eventsRepo, dispatcher);
+        var game = new Game(gameId, gameState, eventsRepo, dispatcher);
 
         // Act
         await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);

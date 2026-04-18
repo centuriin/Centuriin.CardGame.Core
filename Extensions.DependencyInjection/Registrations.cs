@@ -1,5 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
@@ -16,9 +16,9 @@ public static class Registrations
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
             .AddSingleton<IGameFactory, GameFactory>()
             .AddSingleton<IGameStartupService, GameStartupService>()
-            .AddTransient<IEventDispatcher, EventDispatcher>()
-            .AddTransient<ITurnAutomat, TurnAutomat>()
-            .AddTransient<IGameState, GameState>()
+            .AddScoped<IEventDispatcher, EventDispatcher>()
+            .AddScoped<ITurnAutomat, TurnAutomat>()
+            .AddScoped<IGameState, GameState>()
             .AddLoaders()
             .AddFactories();
 

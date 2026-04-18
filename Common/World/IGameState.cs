@@ -4,8 +4,6 @@ namespace Centuriin.CardGame.Core.Common.World;
 
 public interface IGameState
 {
-    public GameId GameId { get; }
-
     public ITurnAutomat TurnAutomat { get; }
 
     public void AddEntity<TEntity, TId>(TEntity entity)

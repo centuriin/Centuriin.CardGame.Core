@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.Events;
+﻿namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
 
 public interface IEventBusWriter
 {
