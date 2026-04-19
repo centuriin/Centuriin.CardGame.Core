@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Repositories;
 
-public interface IGameSessionsRepository
+public interface IGameSessionsRepository : IDisposable
 {
     public ValueTask<IGame> GetGameById(GameId gameId, CancellationToken token);
 

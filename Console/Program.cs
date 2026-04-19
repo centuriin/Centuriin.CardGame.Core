@@ -26,12 +26,20 @@ builder.Services
 
 var host = builder.Build();
 
-var startupService = host.Services.GetRequiredService<IGameStartupService>();
+using var scope1 = host.Services.CreateScope();
+var st1 = scope1.ServiceProvider.GetRequiredService<IGameStartupService>();
 
 var p1 = new PlayerId(Guid.NewGuid());
 var p2 = new PlayerId(Guid.NewGuid());
 
- await startupService.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
+await st1.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
+
+scope1.Dispose();
+
+using var scope2 = host.Services.CreateScope();
+var st2 = scope2.ServiceProvider.GetRequiredService<IGameStartupService>();
+
+await st2.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
 
 // todo
 public sealed class ZoneDefinitionRepo : IZoneDefinitionsRepository
