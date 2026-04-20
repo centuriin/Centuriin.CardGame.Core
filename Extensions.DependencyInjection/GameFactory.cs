@@ -10,25 +10,20 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 internal sealed class GameFactory : IGameSessionFactory
 {
     private readonly IGameProfilesRepository _profilesRepository;
-    private readonly IGameTypeRepository _gameTypeRepository;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public GameFactory(
         IGameProfilesRepository profilesRepository,
-        IGameTypeRepository gameTypeRepository,
         IServiceScopeFactory serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(profilesRepository);
         _profilesRepository = profilesRepository;
 
-        ArgumentNullException.ThrowIfNull(gameTypeRepository);
-        _gameTypeRepository = gameTypeRepository;
-
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceScopeFactory = serviceProvider;
     }
 
-    public IGameSession Create(GameSetup setup)
+    public async ValueTask<IGameSession> CreateAsync(GameSetup setup, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
 
@@ -36,11 +31,15 @@ internal sealed class GameFactory : IGameSessionFactory
 
         var serviceProvider = scope.ServiceProvider;
 
-        var dispatcher = serviceProvider.GetRequiredService<IGamePipelineBuilder>();
+        var pipelineBuilder = serviceProvider.GetRequiredService<IGamePipelineBuilder>();
 
-        //todo
+        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(setup.GameTypeId, token);
 
-        var game = ActivatorUtilities.CreateInstance<Game>(serviceProvider, new GameId(Guid.NewGuid()), dispatcher);
+        profile.Configure(pipelineBuilder);
+
+        pipelineBuilder.Build();
+
+        var game = ActivatorUtilities.CreateInstance<Game>(serviceProvider, new GameId(Guid.NewGuid()));
 
         return new GameSession(game, scope);
     }

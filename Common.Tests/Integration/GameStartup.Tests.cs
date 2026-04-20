@@ -92,7 +92,7 @@ public sealed class GameStartupIntegrationTests
             .Returns(ValueTask.CompletedTask);
 
         var gameFactoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
-        gameFactoryMock.Setup(x => x.Create(setup)).Returns(sessionMock.Object);
+        gameFactoryMock.Setup(x => x.CreateAsync(setup)).Returns(sessionMock.Object);
 
         var loaders = new List<IGameLoader>
         {

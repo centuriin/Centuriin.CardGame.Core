@@ -33,7 +33,7 @@ public sealed class GameStartupService : IGameStartupService
 
         token.ThrowIfCancellationRequested();
 
-        var session = _gameFactory.Create(setup);
+        var session = await _gameFactory.CreateAsync(setup, token);
 
         await _sessionsRepository.AddAsync(session, token);
 

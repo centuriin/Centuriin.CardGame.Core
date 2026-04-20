@@ -90,7 +90,7 @@ public sealed class GameStartupServiceTests
         var factoryCalls = 0;
         var factoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
         factoryMock
-            .Setup(x => x.Create(setup))
+            .Setup(x => x.CreateAsync(setup))
             .Callback(() => factoryCalls++)
             .Returns(sessionMock.Object);
 

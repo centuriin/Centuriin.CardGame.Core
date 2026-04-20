@@ -16,6 +16,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
     .AddCore()
+    .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
     .AddSingleton<IZoneDefinitionsRepository, ZoneDefinitionRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
@@ -31,11 +32,14 @@ var sessionsRepository = host.Services.GetRequiredService<IGameSessionsRepositor
 var p1 = new PlayerId(Guid.NewGuid());
 var p2 = new PlayerId(Guid.NewGuid());
 
+var p3 = new PlayerId(Guid.NewGuid());
+var p4 = new PlayerId(Guid.NewGuid());
+
 var g1 = await startup.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
 
 await sessionsRepository.RemoveByGameIdAsync(g1.GameId, CancellationToken.None);
 
-var g2 = await startup.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
+var g2 = await startup.StartupGameAsync(new GameSetup(new(1), [p3, p4]), CancellationToken.None);
 
 await sessionsRepository.RemoveByGameIdAsync(g2.GameId, CancellationToken.None);
 
@@ -53,4 +57,10 @@ public sealed class DecksRepo : IDecksRepository
 {
     public async Task<IReadOnlyCollection<TemplateId>> GetDeckTemplateIdsAsync(GameTypeId gameTypeId, PlayerId playerId, CancellationToken token) =>
         [.. DefaultCardTemplatesRepository.Templates36.Keys];
+}
+
+public sealed class GameTypeRepo : IGameTypeRepository
+{
+    public Task<GameTypeId> GetGameTypeIdByKey(string key) =>
+        Task.FromResult<GameTypeId>(new(1));
 }
