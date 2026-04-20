@@ -6,13 +6,15 @@ namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 
 public sealed class GameSessionsRepository : IGameSessionsRepository
 {
-    private readonly Lock _lock = new();
     private readonly ConcurrentDictionary<GameId, IGameSession> _sessions = [];
+    private bool _disposed;
 
     /// <inheritdoc/>
     public async ValueTask<IGame> GetGameById(GameId gameId, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
+
+        ObjectDisposedException.ThrowIf(_disposed, this);
 
         if (!_sessions.TryGetValue(gameId, out var session))
         {
@@ -29,6 +31,8 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
 
         token.ThrowIfCancellationRequested();
 
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
         if (!_sessions.TryAdd(session.Game.GameId, session))
         {
             throw new InvalidOperationException();
@@ -42,6 +46,8 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
     {
         token.ThrowIfCancellationRequested();
 
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
         if (_sessions.TryRemove(gameId, out var session))
         {
             session.Dispose();
@@ -53,7 +59,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
     /// <inheritdoc/>
     public void Dispose()
     {
-        lock (_lock)
+        if (!_disposed)
         {
             foreach (var session in _sessions.Values)
             {
@@ -61,5 +67,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
             }
             _sessions.Clear();
         }
+
+        _disposed = true;
     }
 }
