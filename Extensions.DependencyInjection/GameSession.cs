@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class GameSession : IGameSession
+internal sealed class GameSession : IGameSession
 {
     private readonly IServiceScope _serviceScope;
     private bool _disposed;

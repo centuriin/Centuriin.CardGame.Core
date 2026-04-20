@@ -1,8 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
+using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -14,13 +16,16 @@ public static class Registrations
     public static IServiceCollection AddCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
+            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>()
             .AddSingleton<IGameSessionFactory, GameFactory>()
             .AddSingleton<IGameStartupService, GameStartupService>()
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()
+            .AddScoped<IGamePipelineBuilder, GamePipelineBuilder>()
             .AddLoaders()
-            .AddFactories();
+            .AddFactories()
+            .AddGameProfiles();
 
     private static IServiceCollection AddLoaders(this IServiceCollection services) =>
         services
@@ -31,5 +36,14 @@ public static class Registrations
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
             .AddSingleton<IZoneFactory, ZoneFactory>()
-            .AddSingleton<ICardFactory, CardFactory>();
+            .AddSingleton<ICardFactory, CardFactory>()
+            .AddScoped<ISystemFactory, SystemFactory>();
+
+    private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
+        services
+            .Scan(s => s
+                .FromApplicationDependencies()
+                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime());
 }
