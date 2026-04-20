@@ -2,7 +2,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 public sealed class GameSession : IGameSession
 {

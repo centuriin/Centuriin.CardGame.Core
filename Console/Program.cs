@@ -4,8 +4,7 @@ using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.Templates;
 using Centuriin.CardGame.Core.Common.World;
-
-using Extensions.DependencyInjection;
+using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

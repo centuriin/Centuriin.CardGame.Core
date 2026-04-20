@@ -7,7 +7,7 @@ using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 public static class Registrations
 {

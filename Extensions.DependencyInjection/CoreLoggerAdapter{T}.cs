@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 
-using Core = Centuriin.CardGame.Core.Common.Observability.Logging;
+using Engine = Centuriin.CardGame.Core.Common.Observability.Logging;
 
-namespace Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class CoreLoggerAdapter<T> : Core.ICoreLogger<T>
+public sealed class CoreLoggerAdapter<T> : Engine.ICoreLogger<T>
 {
     private readonly ILogger<T> _logger;
 
@@ -14,7 +14,7 @@ public sealed class CoreLoggerAdapter<T> : Core.ICoreLogger<T>
         _logger = logger;
     }
 
-    public bool IsEnabled(Core.LogLevel logLevel) => _logger.IsEnabled(Map(logLevel));
+    public bool IsEnabled(Engine.LogLevel logLevel) => _logger.IsEnabled(Map(logLevel));
 
     public void LogDebug(string message, params object[] args) =>
         _logger.LogDebug(message, args);
@@ -31,13 +31,13 @@ public sealed class CoreLoggerAdapter<T> : Core.ICoreLogger<T>
     public void LogWarning(string message, params object[] args) =>
         _logger.LogWarning(message, args);
 
-    private static LogLevel Map(Core.LogLevel logLevel) => logLevel switch
+    private static LogLevel Map(Engine.LogLevel logLevel) => logLevel switch
     {
-        Core.LogLevel.Trace => LogLevel.Trace,
-        Core.LogLevel.Debug => LogLevel.Debug,
-        Core.LogLevel.Information => LogLevel.Information,
-        Core.LogLevel.Warning => LogLevel.Warning,
-        Core.LogLevel.Error => LogLevel.Error,
+        Engine.LogLevel.Trace => LogLevel.Trace,
+        Engine.LogLevel.Debug => LogLevel.Debug,
+        Engine.LogLevel.Information => LogLevel.Information,
+        Engine.LogLevel.Warning => LogLevel.Warning,
+        Engine.LogLevel.Error => LogLevel.Error,
 
         _ => throw new InvalidOperationException()
     };
