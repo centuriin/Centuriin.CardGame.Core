@@ -4,7 +4,7 @@ using Centuriin.CardGame.Core.Common.Systems;
 
 namespace Centuriin.CardGame.Core.Common.GameProfiles;
 
-public interface IConfigurableGamePipelineBuilder
+public interface IConfigurableGamePipeline
 {
     public IGamePipelineBuilder Add<TSystem, TEvent>()
         where TSystem : SystemBase, ISubscriber<TEvent>

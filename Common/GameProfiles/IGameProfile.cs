@@ -4,5 +4,5 @@ public interface IGameProfile
 {
     public string Key { get; }
 
-    public void Configure(IConfigurableGamePipelineBuilder builder);
+    public void Configure(IConfigurableGamePipeline pipeline);
 }

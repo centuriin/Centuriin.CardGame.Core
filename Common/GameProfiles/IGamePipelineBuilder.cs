@@ -1,6 +1,6 @@
 ﻿namespace Centuriin.CardGame.Core.Common.GameProfiles;
 
-public interface IGamePipelineBuilder : IConfigurableGamePipelineBuilder
+public interface IGamePipelineBuilder : IConfigurableGamePipeline
 {
     public void Build();
 }

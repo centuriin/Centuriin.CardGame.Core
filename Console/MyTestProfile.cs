@@ -8,11 +8,11 @@ internal sealed class MyTestProfile : IGameProfile
 {
     public string Key => "TEST";
 
-    public void Configure(IConfigurableGamePipelineBuilder builder)
+    public void Configure(IConfigurableGamePipeline pipeline)
     {
-        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(pipeline);
 
-        _ = builder
+        _ = pipeline
             .Add<SetupTurnFlowSystem, GameStartedEvent>()
             .Add<DealerSystem, GameStartedEvent>()
             .Add<TurnFlowSystem, TurnFlowDefinedEvent>()
