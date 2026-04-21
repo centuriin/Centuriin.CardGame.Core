@@ -13,7 +13,7 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 public static class Registrations
 {
-    public static IServiceCollection AddCore(this IServiceCollection services) =>
+    public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
             .AddSingleton<IGameProfilesRepository, GameProfilesRepository>()

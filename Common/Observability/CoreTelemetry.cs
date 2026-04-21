@@ -6,15 +6,18 @@ namespace Centuriin.CardGame.Core.Common.Observability;
 
 public static class CoreTelemetry
 {
+    public const string ACTIVITY_SOURCE_NAME = "Centuriin.CardGame.Core";
+
     private static ActivitySource Source { get; } =
-        new ActivitySource(nameof(Centuriin.CardGame.Core));
+        new ActivitySource(ACTIVITY_SOURCE_NAME);
 
     public static Activity? StartActivity(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
         var activity = Source.StartActivity("ApplyEvent");
-        activity?.SetTag(@event.GetType().Name, @event);
+        activity?.SetTag("event.type", @event.GetType().Name);
+        activity?.SetTag("game.id", @event.GameId.Value);
 
         return activity;
     }

@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Entities.Players;
+using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.Templates;
@@ -9,13 +10,22 @@ using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using OpenTelemetry.Trace;
+
 using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services
+    .AddOpenTelemetry()
+        .WithTracing(x =>
+            x.AddSource(CoreTelemetry.ACTIVITY_SOURCE_NAME)
+             .AddConsoleExporter())
+
+    .Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
-    .AddCore()
+
+    .AddCardGameCore()
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
     .AddSingleton<IZoneDefinitionsRepository, ZoneDefinitionRepo>()
@@ -25,6 +35,8 @@ builder.Services
     .AddSingleton<IGameEventsRepository, GameEventRepository>();
 
 var host = builder.Build();
+
+host.Start();
 
 var startup = host.Services.GetRequiredService<IGameStartupService>();
 var sessionsRepository = host.Services.GetRequiredService<IGameSessionsRepository>();
