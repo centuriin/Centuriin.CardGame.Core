@@ -19,7 +19,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services
     .AddOpenTelemetry()
         .WithTracing(x =>
-            x.AddSource(CoreTelemetry.ACTIVITY_SOURCE_NAME)
+            x.AddSource(Telemetry.ACTIVITY_SOURCE_NAME)
              .AddConsoleExporter())
 
     .Services

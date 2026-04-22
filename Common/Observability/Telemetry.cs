@@ -4,14 +4,14 @@ using Centuriin.CardGame.Core.Common.Events;
 
 namespace Centuriin.CardGame.Core.Common.Observability;
 
-public static class CoreTelemetry
+public static class Telemetry
 {
     public const string ACTIVITY_SOURCE_NAME = "Centuriin.CardGame.Core";
 
     private static ActivitySource Source { get; } =
         new ActivitySource(ACTIVITY_SOURCE_NAME);
 
-    public static Activity? StartActivity(IGameEvent @event)
+    internal static IDisposable? StartActivity(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 

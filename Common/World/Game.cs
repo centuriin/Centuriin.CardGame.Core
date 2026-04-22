@@ -50,12 +50,14 @@ public sealed class Game : IGame
 
         token.ThrowIfCancellationRequested();
 
-        using var _ = CoreTelemetry.StartActivity(@event);
+        using var _ = Telemetry.StartActivity(@event);
 
-        _writer.Write(@event);
+        _dispatcher.Publish(@event, State, _writer);
 
         while (_channel.Reader.TryRead(out var nextEvent))
         {
+            using var __ = Telemetry.StartActivity(nextEvent);
+
             await _eventsRepository.AddAsync(nextEvent, token);
 
             _dispatcher.Publish(nextEvent, State, _writer);
