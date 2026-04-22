@@ -1,10 +1,9 @@
 ﻿using Centuriin.CardGame.Core.Common.GameProfiles;
-using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 
-internal sealed class GameProfilesRepository : IGameProfilesRepository
+public sealed class GameProfilesRepository : IGameProfilesRepository
 {
     private readonly IEnumerable<IGameProfile> _gameProfiles;
     private readonly IGameTypeRepository _typeRepository;

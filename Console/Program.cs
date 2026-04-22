@@ -36,7 +36,7 @@ builder.Services
 
 var host = builder.Build();
 
-host.Start();
+await host.StartAsync();
 
 var startup = host.Services.GetRequiredService<IGameStartupService>();
 var sessionsRepository = host.Services.GetRequiredService<IGameSessionsRepository>();

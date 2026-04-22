@@ -1,10 +1,8 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.GameProfiles;
-using Centuriin.CardGame.Core.Common.Systems;
+﻿using Centuriin.CardGame.Core.Common.GameProfiles;
 
-namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Console;
 
-internal sealed class MyTestProfile : IGameProfile
+public sealed class MyTestProfile : IGameProfile
 {
     public string Key => "TEST";
 
@@ -13,9 +11,6 @@ internal sealed class MyTestProfile : IGameProfile
         ArgumentNullException.ThrowIfNull(pipeline);
 
         _ = pipeline
-            .Add<SetupTurnFlowSystem, GameStartedEvent>()
-            .Add<DealerSystem, GameStartedEvent>()
-            .Add<TurnFlowSystem, TurnFlowDefinedEvent>()
-            .Add<CardMovementSystem, CardDealtEvent>();
+            .UseDefaultProfile();
     }
 }

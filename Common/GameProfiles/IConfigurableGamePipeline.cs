@@ -6,21 +6,23 @@ namespace Centuriin.CardGame.Core.Common.GameProfiles;
 
 public interface IConfigurableGamePipeline
 {
-    public IGamePipelineBuilder Add<TSystem, TEvent>()
+    public IConfigurableGamePipeline UseDefaultProfile();
+
+    public IConfigurableGamePipeline Add<TSystem, TEvent>()
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent;
 
-    public IGamePipelineBuilder AddAfter<TBellowSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline AddAfter<TBellowSystem, TSystem, TEvent>()
         where TBellowSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent;
 
-    public IGamePipelineBuilder AddBefore<TFollowSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline AddBefore<TFollowSystem, TSystem, TEvent>()
         where TFollowSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent;
 
-    public IGamePipelineBuilder Replace<TReplaceableSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline Replace<TReplaceableSystem, TSystem, TEvent>()
         where TReplaceableSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent;

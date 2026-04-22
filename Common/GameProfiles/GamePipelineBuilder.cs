@@ -1,12 +1,11 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
-using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Systems;
 
-namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
+namespace Centuriin.CardGame.Core.Common.GameProfiles;
 
-internal sealed class GamePipelineBuilder : IGamePipelineBuilder
+public sealed class GamePipelineBuilder : IGamePipelineBuilder
 {
     private readonly LinkedList<RegistrationStep> _steps = new();
     private readonly ISystemFactory _factory;
@@ -24,7 +23,13 @@ internal sealed class GamePipelineBuilder : IGamePipelineBuilder
         _dispatcher = dispatcher;
     }
 
-    public IGamePipelineBuilder Add<TSystem, TEvent>()
+    public IConfigurableGamePipeline UseDefaultProfile()
+    {
+        DefaultProfile.Instance.Configure(this);
+        return this;
+    }
+
+    public IConfigurableGamePipeline Add<TSystem, TEvent>()
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
     {
@@ -34,7 +39,7 @@ internal sealed class GamePipelineBuilder : IGamePipelineBuilder
         return this;
     }
 
-    public IGamePipelineBuilder AddAfter<TBellowSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline AddAfter<TBellowSystem, TSystem, TEvent>()
         where TBellowSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
@@ -46,7 +51,7 @@ internal sealed class GamePipelineBuilder : IGamePipelineBuilder
         return this;
     }
 
-    public IGamePipelineBuilder AddBefore<TFollowSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline AddBefore<TFollowSystem, TSystem, TEvent>()
         where TFollowSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
@@ -58,7 +63,7 @@ internal sealed class GamePipelineBuilder : IGamePipelineBuilder
         return this;
     }
 
-    public IGamePipelineBuilder Replace<TReplaceableSystem, TSystem, TEvent>()
+    public IConfigurableGamePipeline Replace<TReplaceableSystem, TSystem, TEvent>()
         where TReplaceableSystem : SystemBase
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent

@@ -5,6 +5,7 @@ using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Repositories;
+using Centuriin.CardGame.Core.Common.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,7 @@ public static class Registrations
         services
             .Scan(s => s
                 .FromApplicationDependencies()
-                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: false)
+                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime());
 }
