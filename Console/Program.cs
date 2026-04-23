@@ -1,5 +1,9 @@
-﻿using Centuriin.CardGame.Core.Common;
+﻿using System.Net.Http.Headers;
+
+using Centuriin.CardGame.Core.Common;
+using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Entities.Players;
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Repositories.InMemory;
@@ -26,6 +30,7 @@ builder.Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
 
     .AddCardGameCore()
+    .AddSingleton<ICommandValidator, EmptyValidator>()
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
     .AddSingleton<IZoneDefinitionsRepository, ZoneDefinitionRepo>()
@@ -75,4 +80,9 @@ public sealed class GameTypeRepo : IGameTypeRepository
 {
     public Task<GameTypeId> GetGameTypeIdByKey(string key) =>
         Task.FromResult<GameTypeId>(new(1));
+}
+
+public sealed class EmptyValidator : ICommandValidator
+{
+    public IPrimaryEvent? Validate(ICommand command) => null!;
 }

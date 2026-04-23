@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-internal sealed class GameFactory : IGameSessionFactory
+public sealed class GameSessionFactory : IGameSessionFactory
 {
     private readonly IGameProfilesRepository _profilesRepository;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public GameFactory(
+    public GameSessionFactory(
         IGameProfilesRepository profilesRepository,
         IServiceScopeFactory serviceProvider)
     {

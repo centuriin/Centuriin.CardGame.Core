@@ -17,16 +17,21 @@ public static class Registrations
     public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
-            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>()
-            .AddSingleton<IGameSessionFactory, GameFactory>()
             .AddSingleton<IGameStartupService, GameStartupService>()
+
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()
             .AddScoped<IGamePipelineBuilder, GamePipelineBuilder>()
+
+            .AddStorage()
             .AddLoaders()
             .AddFactories()
             .AddGameProfiles();
+
+    private static IServiceCollection AddStorage(this IServiceCollection services) =>
+        services
+            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>();
 
     private static IServiceCollection AddLoaders(this IServiceCollection services) =>
         services
@@ -38,6 +43,7 @@ public static class Registrations
         services
             .AddSingleton<IZoneFactory, ZoneFactory>()
             .AddSingleton<ICardFactory, CardFactory>()
+            .AddSingleton<IGameSessionFactory, GameSessionFactory>()
             .AddScoped<ISystemFactory, SystemFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
