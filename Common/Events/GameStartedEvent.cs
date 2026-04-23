@@ -2,4 +2,4 @@
 
 namespace Centuriin.CardGame.Core.Common.Events;
 
-public sealed record class GameStartedEvent(GameId GameId) : IGameEvent;
+public sealed record class GameStartedEvent(GameId GameId) : IPrimaryEvent;

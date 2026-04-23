@@ -1,5 +1,6 @@
 ﻿using System.Threading.Channels;
 
+using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability;
@@ -17,6 +18,7 @@ public sealed class Game : IGame
 
     private readonly ChannelWrapper _writer;
 
+    private readonly ICommandValidator _commandValidator;
     private readonly IGameEventsRepository _eventsRepository;
     private readonly IEventDispatcher _dispatcher;
 
@@ -27,6 +29,7 @@ public sealed class Game : IGame
     public Game(
         GameId gameId,
         IGameState gameState,
+        ICommandValidator commandValidator,
         IGameEventsRepository eventsRepository,
         IEventDispatcher dispatcher)
     {
@@ -34,6 +37,9 @@ public sealed class Game : IGame
 
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
+
+        ArgumentNullException.ThrowIfNull(commandValidator);
+        _commandValidator = commandValidator;
 
         ArgumentNullException.ThrowIfNull(eventsRepository);
         _eventsRepository = eventsRepository;
@@ -44,7 +50,31 @@ public sealed class Game : IGame
         _writer = new(_channel.Writer);
     }
 
-    public async Task ApplyAsync(IGameEvent @event, CancellationToken token)
+    public async Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        token.ThrowIfCancellationRequested();
+
+        using var _ = Telemetry.StartActivity(command);
+
+        var @event = _commandValidator.Validate(@command);
+
+        if (@event is null)
+        {
+            // todo fail command
+            return null!;
+        }
+
+        var eventUnit = ApplyCore(@event);
+
+        await _eventsRepository.AddAsync(eventUnit, token);
+
+        // todo make result
+        return null!;
+    }
+
+    public async Task ApplyAsync(IPrimaryEvent @event, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -52,16 +82,28 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartActivity(@event);
 
-        _dispatcher.Publish(@event, State, _writer);
+        var eventUnit = ApplyCore(@event);
+
+        await _eventsRepository.AddAsync(eventUnit, token);
+    }
+
+    private IGameEventUnit ApplyCore(IPrimaryEvent primaryEvent)
+    {
+        var randomEvents = new List<IRandomEvent>();
+
+        _dispatcher.Publish(primaryEvent, State, _writer);
 
         while (_channel.Reader.TryRead(out var nextEvent))
         {
-            using var __ = Telemetry.StartActivity(nextEvent);
-
-            await _eventsRepository.AddAsync(nextEvent, token);
+            if (nextEvent is IRandomEvent randomEvent)
+            {
+                randomEvents.Add(randomEvent);
+            }
 
             _dispatcher.Publish(nextEvent, State, _writer);
         }
+
+        return new EventUnit(primaryEvent, randomEvents);
     }
 
     private sealed class ChannelWrapper : IEventBusWriter
@@ -75,4 +117,8 @@ public sealed class Game : IGame
 
         public void Write(IGameEvent @event) => _ = Writer.TryWrite(@event);
     }
+
+    private sealed record class EventUnit(
+        IPrimaryEvent PrimaryEvent, 
+        IReadOnlyCollection<IRandomEvent> RelatedRandomEvents) : IGameEventUnit;
 }

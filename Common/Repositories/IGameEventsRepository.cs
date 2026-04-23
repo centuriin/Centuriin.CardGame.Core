@@ -4,5 +4,5 @@ namespace Centuriin.CardGame.Core.Common.Repositories;
 
 public interface IGameEventsRepository
 {
-    public Task AddAsync(IGameEvent @event, CancellationToken token);
+    public Task AddAsync(IGameEventUnit @event, CancellationToken token);
 }

@@ -4,9 +4,9 @@ namespace Centuriin.CardGame.Core.Common.Repositories.InMemory;
 
 public sealed class GameEventRepository : IGameEventsRepository
 {
-    public readonly List<IGameEvent> Events = [];
+    public readonly List<IGameEventUnit> Events = [];
 
-    public Task AddAsync(IGameEvent @event, CancellationToken token)
+    public Task AddAsync(IGameEventUnit @event, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
