@@ -11,5 +11,5 @@ public interface IGame
 
     public Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token);
 
-    internal Task ApplyAsync(IPrimaryEvent @event, CancellationToken token);
+    public Task ApplyAsync(IPrimaryEvent @event, CancellationToken token);
 }
