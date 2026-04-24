@@ -10,7 +10,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Tests;
 
 public sealed class GameStartupServiceTests
 {
@@ -90,9 +90,9 @@ public sealed class GameStartupServiceTests
         var factoryCalls = 0;
         var factoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
         factoryMock
-            .Setup(x => x.CreateAsync(setup))
+            .Setup(x => x.CreateAsync(setup, TestContext.Current.CancellationToken))
             .Callback(() => factoryCalls++)
-            .Returns(sessionMock.Object);
+            .ReturnsAsync(sessionMock.Object);
 
         var loaderCalls = 0;
         var loaderMock = new Mock<IGameLoader>(MockBehavior.Strict);

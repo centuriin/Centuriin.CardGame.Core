@@ -12,7 +12,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.SmokeTests;
+namespace Centuriin.CardGame.Core.Common.Tests.Integration;
 
 public sealed class TurnFlowTests
 {

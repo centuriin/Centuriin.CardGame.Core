@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
@@ -16,7 +17,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.SmokeTests;
+namespace Centuriin.CardGame.Core.Common.Tests.Integration;
 
 public sealed class GameTests
 {
@@ -59,7 +60,12 @@ public sealed class GameTests
 
         var eventsRepo = new FakeEventsRepository();
 
-        var game = new Game(gameId, gameState, eventsRepo, dispatcher);
+        var game = new Game(
+            gameId, 
+            gameState, 
+            Mock.Of<ICommandValidator>(MockBehavior.Strict),
+            eventsRepo, 
+            dispatcher);
 
         // Act
         await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);
@@ -69,15 +75,18 @@ public sealed class GameTests
         updatedCard.Get<OwnerComponent>().CurrentOwnerId.Should().Be(playerId);
         updatedCard.Get<ZoneComponent>().CurrentZoneId.Should().Be(handZone.Id);
 
-        eventsRepo.Events.Should().HaveCount(2); // GameStarted + CardDealt
-        eventsRepo.Events[0].Should().BeOfType<GameStartedEvent>();
-        eventsRepo.Events[1].Should().BeOfType<CardDealtEvent>();
+        eventsRepo.Events.Should().HaveCount(1);
+        
+        var eventUnit = eventsRepo.Events.Single();
+
+        eventUnit.PrimaryEvent.Should().BeOfType<GameStartedEvent>();
+        eventUnit.RelatedRandomEvents.Single().Should().BeOfType<CardDealtEvent>();
     }
 
     private class FakeEventsRepository : IGameEventsRepository
     {
-        public List<IGameEvent> Events { get; } = new();
-        public Task AddAsync(IGameEvent @event, CancellationToken token)
+        public List<IGameEventUnit> Events { get; } = new();
+        public Task AddAsync(IGameEventUnit @event, CancellationToken token)
         {
             Events.Add(@event);
             return Task.CompletedTask;

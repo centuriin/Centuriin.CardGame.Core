@@ -4,6 +4,7 @@ using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Templates;
 using Centuriin.CardGame.Core.Common.World;
@@ -14,7 +15,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.Loaders;
+namespace Centuriin.CardGame.Core.Common.Tests.Loaders;
 
 public sealed class ZonesLoaderTests
 {

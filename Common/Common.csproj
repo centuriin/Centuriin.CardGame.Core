@@ -8,6 +8,7 @@
     </PropertyGroup>
 
 	<PropertyGroup>
+		<AssemblyName>Centuriin.CardGame.Core.Common</AssemblyName>
 		<RootNamespace>Centuriin.CardGame.Core.Common</RootNamespace>
 	</PropertyGroup>
 

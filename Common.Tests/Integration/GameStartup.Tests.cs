@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
@@ -19,7 +20,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.SmokeTests;
+namespace Centuriin.CardGame.Core.Common.Tests.Integration;
 
 public sealed class GameStartupIntegrationTests
 {
@@ -78,6 +79,7 @@ public sealed class GameStartupIntegrationTests
         var game = new Game(
             gameId,
             new GameState(new TurnAutomat()),
+            Mock.Of<ICommandValidator>(),
             Mock.Of<IGameEventsRepository>(),
             dispatcher);
 
@@ -92,7 +94,8 @@ public sealed class GameStartupIntegrationTests
             .Returns(ValueTask.CompletedTask);
 
         var gameFactoryMock = new Mock<IGameSessionFactory>(MockBehavior.Strict);
-        gameFactoryMock.Setup(x => x.CreateAsync(setup)).Returns(sessionMock.Object);
+        gameFactoryMock.Setup(x => x.CreateAsync(setup, TestContext.Current.CancellationToken))
+            .ReturnsAsync(sessionMock.Object);
 
         var loaders = new List<IGameLoader>
         {

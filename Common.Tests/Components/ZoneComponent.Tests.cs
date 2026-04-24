@@ -1,10 +1,11 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Zones;
+﻿using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Entities.Zones;
 
 using FluentAssertions;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.Components;
+namespace Centuriin.CardGame.Core.Common.Tests.Components;
 
 public sealed class ZoneComponentTests
 {

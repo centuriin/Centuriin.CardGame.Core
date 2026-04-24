@@ -8,7 +8,8 @@
     </PropertyGroup>
 	
 	<PropertyGroup>
-		<RootNamespace>Centuriin.CardGame.Core.Common</RootNamespace>
+		<AssemblyName>Centuriin.CardGame.Core.Common.Tests</AssemblyName>
+		<RootNamespace>Centuriin.CardGame.Core.Common.Tests</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -25,7 +26,7 @@
     </ItemGroup>
 	
     <ItemGroup>
-      <ProjectReference Include="..\Common\Common.csproj" />
+		<ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
 </Project>

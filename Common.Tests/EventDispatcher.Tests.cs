@@ -8,7 +8,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common;
+namespace Centuriin.CardGame.Core.Common.Tests;
 
 public sealed class EventDispatcherTests
 {

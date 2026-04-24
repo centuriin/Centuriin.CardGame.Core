@@ -9,7 +9,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Tests;
+namespace Centuriin.CardGame.Core.Common.Tests;
 
 public sealed class GameStateTests
 {
