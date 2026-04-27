@@ -11,7 +11,11 @@ public sealed class SetupTurnFlowSystem :
     SystemBase,
     ISubscriber<GameStartedEvent>
 {
-    public SetupTurnFlowSystem(ICoreLogger<SetupTurnFlowSystem> logger) : base(logger)
+    public SetupTurnFlowSystem(
+        IGameState gameState,
+        IGameEventBusWriter eventBusWriter,
+        ICoreLogger<SetupTurnFlowSystem> logger) : 
+        base(gameState, eventBusWriter, logger)
     {
     }
 

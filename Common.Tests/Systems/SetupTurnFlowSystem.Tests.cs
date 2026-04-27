@@ -44,7 +44,10 @@ public sealed class SetupTurnFlowSystemTests
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
-        var system = new SetupTurnFlowSystem(Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
+        var system = new SetupTurnFlowSystem(
+            stateMock.Object, 
+            writer.Object, 
+            Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
 
         // Act
         var @event = new GameStartedEvent(gameId);
@@ -76,7 +79,10 @@ public sealed class SetupTurnFlowSystemTests
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
-        var system = new SetupTurnFlowSystem(Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
+        var system = new SetupTurnFlowSystem(
+            stateMock.Object, 
+            writer.Object, 
+            Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
 
         // Act
         system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, writer.Object);

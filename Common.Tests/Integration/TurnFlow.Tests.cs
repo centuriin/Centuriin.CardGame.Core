@@ -36,17 +36,20 @@ public sealed class TurnFlowTests
         player2.Add(new PlayerRoleComponent(PlayerRole.Participant));
         gameState.AddEntity(player2);
 
-        var turnFlowSystem = new TurnFlowSystem(DebugLogger<TurnFlowSystem>.Instance);
-
-        var dispatcher = new EventDispatcher();
-        dispatcher.Register<TurnFlowDefinedEvent>(turnFlowSystem);
-        dispatcher.Register<TurnEndedEvent>(turnFlowSystem);
-
         var eventsList = new List<IGameEvent>();
         var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
         writer
             .Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
+
+        var turnFlowSystem = new TurnFlowSystem(
+            gameState,
+            writer.Object,
+            DebugLogger<TurnFlowSystem>.Instance);
+
+        var dispatcher = new EventDispatcher();
+        dispatcher.Register<TurnFlowDefinedEvent>(turnFlowSystem);
+        dispatcher.Register<TurnEndedEvent>(turnFlowSystem);
 
         var flowDefinedEvent = new TurnFlowDefinedEvent(gameId, [p1, p2], IsCycled: true);
         var endTurnP1 = new TurnEndedEvent(gameId, p1);

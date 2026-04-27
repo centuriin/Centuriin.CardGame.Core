@@ -19,19 +19,19 @@ public sealed class Game : IGame
 
     public Game(
         GameId gameId,
-        IGameEventBus gameEventBus,
         IGameState gameState,
+        IGameEventBus gameEventBus,
         ICommandValidator commandValidator,
         IGameEventsRepository eventsRepository,
         IEventDispatcher dispatcher)
     {
         GameId = gameId;
 
-        ArgumentNullException.ThrowIfNull(gameEventBus);
-        _gameEventBus = gameEventBus;
-
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
+
+        ArgumentNullException.ThrowIfNull(gameEventBus);
+        _gameEventBus = gameEventBus;
 
         ArgumentNullException.ThrowIfNull(commandValidator);
         _commandValidator = commandValidator;

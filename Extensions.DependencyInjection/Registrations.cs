@@ -20,6 +20,9 @@ public static class Registrations
             .AddSingleton<IGameStartupService, GameStartupService>()
 
             .AddScoped<IGameEventBus, GameEventBus>()
+            .AddScoped<IGameEventBusReader>(sp => sp.GetRequiredService<IGameEventBus>())
+            .AddScoped<IGameEventBusWriter>(sp => sp.GetRequiredService<IGameEventBus>())
+
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()

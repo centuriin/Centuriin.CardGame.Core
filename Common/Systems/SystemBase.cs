@@ -7,10 +7,23 @@ namespace Centuriin.CardGame.Core.Common.Systems;
 
 public abstract class SystemBase
 {
+    protected IGameState GameState { get; }
+
+    protected IGameEventBusWriter EventBusWriter { get; }
+
     protected ICoreLogger Logger { get; }
 
-    protected SystemBase(ICoreLogger logger)
+    protected SystemBase(
+        IGameState gameState,
+        IGameEventBusWriter eventBusWriter,
+        ICoreLogger logger)
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        GameState = gameState;
+
+        ArgumentNullException.ThrowIfNull(eventBusWriter);
+        EventBusWriter = eventBusWriter;
+
         ArgumentNullException.ThrowIfNull(logger);
         Logger = logger;
     }

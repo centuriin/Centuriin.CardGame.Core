@@ -10,7 +10,11 @@ public sealed class TurnFlowSystem :
     ISubscriber<TurnFlowDefinedEvent>,
     ISubscriber<TurnEndedEvent>
 {
-    public TurnFlowSystem(ICoreLogger<TurnFlowSystem> logger) : base(logger)
+    public TurnFlowSystem(
+        IGameState gameState, 
+        IGameEventBusWriter eventBusWriter, 
+        ICoreLogger<TurnFlowSystem> logger) : 
+        base(gameState, eventBusWriter, logger)
     {
     }
 

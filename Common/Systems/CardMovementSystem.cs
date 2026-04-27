@@ -13,7 +13,11 @@ public sealed class CardMovementSystem :
     SystemBase,
     ISubscriber<CardDealtEvent>
 {
-    public CardMovementSystem(ICoreLogger<CardMovementSystem> logger) : base(logger)
+    public CardMovementSystem(
+        IGameState gameState, 
+        IGameEventBusWriter eventBusWriter, 
+        ICoreLogger<CardMovementSystem> logger) : 
+        base(gameState, eventBusWriter, logger)
     {
     }
 

@@ -52,8 +52,16 @@ public sealed class GameTests
         gameState.AddEntity(handZone);
         gameState.AddEntity(card);
 
-        var dealerSystem = new DealerSystem(DebugLogger<DealerSystem>.Instance);
-        var movementSystem = new CardMovementSystem(DebugLogger<CardMovementSystem>.Instance);
+        var eventBus = new GameEventBus();
+
+        var dealerSystem = new DealerSystem(
+            gameState,
+            eventBus,
+            DebugLogger<DealerSystem>.Instance);
+        var movementSystem = new CardMovementSystem(
+            gameState,
+            eventBus,
+            DebugLogger<CardMovementSystem>.Instance);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register<CardDealtEvent>(movementSystem);
@@ -63,8 +71,8 @@ public sealed class GameTests
 
         var game = new Game(
             gameId,
-            new GameEventBus(),
             gameState,
+            eventBus,
             Mock.Of<ICommandValidator>(MockBehavior.Strict),
             eventsRepo,
             dispatcher);

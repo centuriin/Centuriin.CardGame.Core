@@ -56,7 +56,10 @@ public sealed class CardMovementSystemTests
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([otherZone, handZone]);
 
-        var system = new CardMovementSystem(Mock.Of<ICoreLogger<CardMovementSystem>>());
+        var system = new CardMovementSystem(
+            stateMock.Object,
+            Mock.Of<IGameEventBus>(),
+            Mock.Of<ICoreLogger<CardMovementSystem>>());
 
         // Act
         var @event = new CardDealtEvent(gameId, cardId, playerId);
@@ -88,7 +91,10 @@ public sealed class CardMovementSystemTests
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([]);
 
-        var system = new CardMovementSystem(Mock.Of<ICoreLogger<CardMovementSystem>>());
+        var system = new CardMovementSystem(
+            stateMock.Object,
+            Mock.Of<IGameEventBus>(),
+            Mock.Of<ICoreLogger<CardMovementSystem>>());
 
         // Act
         var exception = Record.Exception(() =>

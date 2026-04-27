@@ -66,20 +66,35 @@ public sealed class GameStartupIntegrationTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync(cards);
 
+        var gameState = new GameState(new TurnAutomat());
+        var eventBus = new GameEventBus();
+
         var dispatcher = new EventDispatcher();
-        dispatcher.Register<GameStartedEvent>(new SetupTurnFlowSystem(
-            DebugLogger<SetupTurnFlowSystem>.Instance));
-        dispatcher.Register<GameStartedEvent>(new DealerSystem(
-            DebugLogger<DealerSystem>.Instance));
+        dispatcher.Register<GameStartedEvent>(
+            new SetupTurnFlowSystem(
+                gameState,
+                eventBus,
+                DebugLogger<SetupTurnFlowSystem>.Instance));
+        dispatcher.Register<GameStartedEvent>(
+            new DealerSystem(
+                gameState,
+                eventBus,
+                DebugLogger<DealerSystem>.Instance));
         dispatcher.Register<TurnFlowDefinedEvent>(
-            new TurnFlowSystem(DebugLogger<TurnFlowSystem>.Instance));
-        dispatcher.Register<CardDealtEvent>(new CardMovementSystem(
-            DebugLogger<CardMovementSystem>.Instance));
+            new TurnFlowSystem(
+                gameState, 
+                eventBus, 
+                DebugLogger<TurnFlowSystem>.Instance));
+        dispatcher.Register<CardDealtEvent>(
+            new CardMovementSystem(
+                gameState,
+                eventBus,
+                DebugLogger<CardMovementSystem>.Instance));
 
         var game = new Game(
             gameId,
-            new GameEventBus(),
-            new GameState(new TurnAutomat()),
+            gameState,
+            eventBus,
             Mock.Of<ICommandValidator>(),
             Mock.Of<IGameEventsRepository>(),
             dispatcher);
