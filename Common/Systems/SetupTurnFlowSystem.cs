@@ -21,7 +21,6 @@ public sealed class SetupTurnFlowSystem :
 
         var orderedPlayerIds = gameState.Query<Player>()
             .WithComponent<PlayerRoleComponent>(x => x.Role == PlayerRole.Participant)
-            .As<Player>()
             .Select(x => x.Id)
             .Shuffle()
             .ToList();

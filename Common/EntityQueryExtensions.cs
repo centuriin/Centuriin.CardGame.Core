@@ -24,13 +24,4 @@ public static class EntityQueryExtensions
 
         return entities.Where(x => x.Has<TComponent>() && preicate(x.Get<TComponent>()));
     }
-
-    public static IEnumerable<TEntity> As<TEntity>(
-        this IEnumerable<EntityBase> entities)
-        where TEntity : EntityBase
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        return entities.Select(x => (TEntity)x);
-    }
 }

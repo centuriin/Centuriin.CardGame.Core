@@ -34,8 +34,7 @@ public sealed class DecksLoader : IGameLoader
 
         var deckZones = gameState
             .Query<Zone>()
-            .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck)
-            .As<Zone>();
+            .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck);
 
         foreach (var zone in deckZones)
         {

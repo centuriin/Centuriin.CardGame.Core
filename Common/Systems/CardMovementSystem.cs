@@ -31,7 +31,6 @@ public sealed class CardMovementSystem :
             .Query<Zone>()
             .WithComponent<OwnerComponent>(x => x.CurrentOwnerId == @event.NewOwnerId)
             .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Hand)
-            .As<Zone>()
             .Single();
 
         card.Get<ZoneComponent>().ChangeZoneId(hand.Id);
