@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -25,7 +25,7 @@ public sealed class DealerSystem :
         var playersDecks = gameState
             .Query<Card>()
             .ToLookup(k => k.Get<OwnerComponent>().CurrentOwnerId, v => v.Id)
-            .ToDictionary(k => k.Key, v => new Queue<CardId>(v.Shuffle()));
+            .ToDictionary(k => k.Key, v => new Queue<EntityId>(v.Shuffle()));
 
         foreach (var zone in gameState.Query<Zone>().WithComponent<HasPrimaryCards>())
         {
@@ -34,7 +34,7 @@ public sealed class DealerSystem :
 
             var deckQueue = playersDecks.ContainsKey(zoneOwner)
                 ? playersDecks[zoneOwner]
-                : playersDecks[PlayerId.System];
+                : playersDecks[EntityId.Default];
 
             for (var i = 0; i < cardCount; i++)
             {

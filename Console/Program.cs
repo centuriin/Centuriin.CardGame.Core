@@ -2,7 +2,6 @@
 
 using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Repositories;

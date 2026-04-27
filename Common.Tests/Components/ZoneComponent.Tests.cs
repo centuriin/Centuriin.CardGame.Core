@@ -13,7 +13,7 @@ public sealed class ZoneComponentTests
     public void CanCopy()
     {
         // Arrange
-        var component = new ZoneComponent(new ZoneId(2));
+        var component = new ZoneComponent(new(2));
 
         // Act
         var copy = component.Copy();
@@ -26,11 +26,11 @@ public sealed class ZoneComponentTests
     public void CopyCanNotChangeOriginal()
     {
         // Arrange
-        var component = new ZoneComponent(new ZoneId(2));
+        var component = new ZoneComponent(new(2));
         var copy = (ZoneComponent)component.Copy();
 
         // Act
-        copy.ChangeZoneId(new ZoneId(999));
+        copy.ChangeZoneId(new(999));
 
         // Assert
         copy.Should().NotBeEquivalentTo(component);

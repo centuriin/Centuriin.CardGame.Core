@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
-
-namespace Centuriin.CardGame.Core.Common.World;
+﻿namespace Centuriin.CardGame.Core.Common.World;
 
 public sealed record class GameSetup
 {

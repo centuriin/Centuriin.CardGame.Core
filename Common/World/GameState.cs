@@ -16,31 +16,29 @@ public sealed class GameState : IGameState
         TurnAutomat = turnAutomat;
     }
 
-    public void AddEntity<TEntity, TId>(TEntity entity)
-        where TEntity : EntityBase<TId>
-        where TId : struct, IEquatable<TId>
+    public void AddEntity<TEntity>(TEntity entity)
+        where TEntity : EntityBase
     {
         ArgumentNullException.ThrowIfNull(entity);
 
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
         {
-            _entities[typeof(TEntity)] = new Dictionary<TId, TEntity>() { { entity.Id, entity } };
+            _entities[typeof(TEntity)] = new Dictionary<EntityId, TEntity>() { { entity.Id, entity } };
             return;
         }
 
-        ((Dictionary<TId, TEntity>)dict)[entity.Id] = entity;
+        ((Dictionary<EntityId, TEntity>)dict)[entity.Id] = entity;
     }
 
-    public TEntity Get<TEntity, TId>(TId id)
-        where TEntity : EntityBase<TId>
-        where TId : struct, IEquatable<TId>
+    public TEntity Get<TEntity>(EntityId id)
+        where TEntity : EntityBase
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
         {
             throw new InvalidOperationException();
         }
 
-        return ((IDictionary<TId, TEntity>)dict)[id];
+        return ((IDictionary<EntityId, TEntity>)dict)[id];
     }
 
     public IEnumerable<TEntity> Query<TEntity>()

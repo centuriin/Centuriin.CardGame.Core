@@ -1,22 +1,22 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Entities;
 
 namespace Centuriin.CardGame.Core.Common;
 
 public sealed class TurnAutomat : ITurnAutomat
 {
-    private List<PlayerId> _players = [];
-    private LinkedList<PlayerId> _playersQueue = [];
+    private List<EntityId> _players = [];
+    private LinkedList<EntityId> _playersQueue = [];
 
     public bool IsCycled => _players.Count != 0;
 
-    public PlayerId ActivePlayer => _playersQueue.First?.Value
+    public EntityId ActivePlayer => _playersQueue.First?.Value
         ?? throw new InvalidOperationException();
 
-    public void SetCycle(IReadOnlyCollection<PlayerId> playerIds)
+    public void SetCycle(IReadOnlyCollection<EntityId> playerIds)
     {
         ArgumentNullException.ThrowIfNull(playerIds);
         _players = [.. playerIds];
-        _playersQueue = new LinkedList<PlayerId>(_players);
+        _playersQueue = new LinkedList<EntityId>(_players);
     }
 
     public void DropCycle() => _players.Clear();
@@ -28,7 +28,7 @@ public sealed class TurnAutomat : ITurnAutomat
         FillCycleIfNeeded();
     }
 
-    public void SetNext(params IReadOnlyCollection<PlayerId> players)
+    public void SetNext(params IReadOnlyCollection<EntityId> players)
     {
         ArgumentNullException.ThrowIfNull(players);
 
@@ -37,7 +37,7 @@ public sealed class TurnAutomat : ITurnAutomat
             throw new InvalidOperationException();
         }
 
-        IEnumerable<PlayerId> playersTemp = players;
+        IEnumerable<EntityId> playersTemp = players;
         if (_playersQueue.Count == 0)
         {
             _playersQueue.AddFirst(playersTemp.First());
@@ -52,7 +52,7 @@ public sealed class TurnAutomat : ITurnAutomat
         }
     }
 
-    public void DropQueueAfter(PlayerId playerId)
+    public void DropQueueAfter(EntityId playerId)
     {
         var node = _playersQueue.Find(playerId)
             ?? throw new InvalidOperationException();
@@ -63,7 +63,7 @@ public sealed class TurnAutomat : ITurnAutomat
         }
     }
 
-    public IEnumerable<PlayerId> GetEnumarable() => _playersQueue;
+    public IEnumerable<EntityId> GetEnumarable() => _playersQueue;
 
     private void FillCycleIfNeeded()
     {

@@ -56,7 +56,7 @@ public sealed class ZonesLoader : IGameLoader
 
         foreach (var zone in zoneTemplates)
         {
-            gameState.AddEntity<Zone, ZoneId>(zone);
+            gameState.AddEntity(zone);
         }
     }
 

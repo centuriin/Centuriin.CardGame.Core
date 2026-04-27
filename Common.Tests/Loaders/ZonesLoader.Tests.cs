@@ -25,19 +25,19 @@ public sealed class ZonesLoaderTests
         // Arrange
         var gameTypeId = new GameTypeId(1);
 
-        var participant = new Player(new PlayerId(Guid.NewGuid()));
+        var participant = new Player(new(1));
         participant.Add(new PlayerRoleComponent(PlayerRole.Participant));
 
-        var deckOwner = new Player(new PlayerId(Guid.NewGuid()));
+        var deckOwner = new Player(new(2));
         deckOwner.Add(new PlayerRoleComponent(PlayerRole.Participant | PlayerRole.Bank));
 
-        var handZone1 = new Zone(new ZoneId(10));
+        var handZone1 = new Zone(new(10));
         handZone1.Add(new ZoneRoleComponent(ZoneRole.Hand));
 
-        var handZone2 = new Zone(new ZoneId(20));
+        var handZone2 = new Zone(new(20));
         handZone2.Add(new ZoneRoleComponent(ZoneRole.Hand));
 
-        var deckZone = new Zone(new ZoneId(30));
+        var deckZone = new Zone(new(30));
         deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck));
 
         var addedEntities = new List<Zone>();
@@ -46,7 +46,7 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.Query<Player>())
             .Returns([participant, deckOwner]);
         gameStateMock
-            .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
+            .Setup(x => x.AddEntity(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
         var zoneDefinitions = new List<ZoneDefinition>()
@@ -74,7 +74,7 @@ public sealed class ZonesLoaderTests
 
         // Act
         await loader.LoadAsync(
-            new(gameTypeId, [participant.Id, deckOwner.Id]),
+            new(gameTypeId, [new PlayerId(Guid.NewGuid()), new PlayerId(Guid.NewGuid())]),
             gameStateMock.Object,
             TestContext.Current.CancellationToken);
 
@@ -105,7 +105,7 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.Query<Player>())
             .Returns([]);
         gameStateMock
-            .Setup(x => x.AddEntity<Zone, ZoneId>(It.IsAny<Zone>()))
+            .Setup(x => x.AddEntity(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
         var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);

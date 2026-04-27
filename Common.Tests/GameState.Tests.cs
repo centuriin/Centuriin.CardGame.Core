@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common;
+﻿using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.World;
@@ -17,13 +17,13 @@ public sealed class GameStateTests
     public void AddEntityShouldStoreEntityAndAllowRetrievalViaQuery()
     {
         // Arrange
-        var cardId = new CardId(1);
+        var cardId = new EntityId(1);
         var card = new Card(cardId);
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
-        gameState.AddEntity<Card, CardId>(card);
+        gameState.AddEntity(card);
         var result = gameState.Query<Card>();
 
         // Assert
@@ -35,15 +35,15 @@ public sealed class GameStateTests
     public void AddEntityShouldOverwriteExistingEntityWithSameId()
     {
         // Arrange
-        var cardId = new CardId(1);
+        var cardId = new EntityId(1);
         var initialCard = new Card(cardId);
         var updatedCard = new Card(cardId);
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
-        gameState.AddEntity<Card, CardId>(initialCard);
-        gameState.AddEntity<Card, CardId>(updatedCard);
+        gameState.AddEntity(initialCard);
+        gameState.AddEntity(updatedCard);
         var result = gameState.Query<Card>();
 
         // Assert
@@ -68,14 +68,14 @@ public sealed class GameStateTests
     public void GameStateShouldIsolateDifferentEntityTypes()
     {
         // Arrange
-        var card = new Card(new CardId(1));
-        var zone = new Zone(new ZoneId(10));
+        var card = new Card(new(1));
+        var zone = new Zone(new(10));
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
-        gameState.AddEntity<Card, CardId>(card);
-        gameState.AddEntity<Zone, ZoneId>(zone);
+        gameState.AddEntity(card);
+        gameState.AddEntity(zone);
 
         var cards = gameState.Query<Card>();
         var zones = gameState.Query<Zone>();
@@ -89,14 +89,14 @@ public sealed class GameStateTests
     public void QueryShouldReturnMultipleEntitiesOfSameType()
     {
         // Arrange
-        var card1 = new Card(new CardId(1));
-        var card2 = new Card(new CardId(2));
+        var card1 = new Card(new(1));
+        var card2 = new Card(new(2));
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
         // Act
-        gameState.AddEntity<Card, CardId>(card1);
-        gameState.AddEntity<Card, CardId>(card2);
+        gameState.AddEntity(card1);
+        gameState.AddEntity(card2);
         var result = gameState.Query<Card>();
 
         // Assert
@@ -108,15 +108,15 @@ public sealed class GameStateTests
     public void GetShouldReturnCorrectEntityWhenIdExists()
     {
         // Arrange
-        var cardId = new CardId(1);
+        var cardId = new EntityId(1);
         var card = new Card(cardId);
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
 
-        gameState.AddEntity<Card, CardId>(card);
+        gameState.AddEntity(card);
 
         // Act
-        var result = gameState.Get<Card, CardId>(cardId);
+        var result = gameState.Get<Card>(cardId);
 
         // Assert
         result.Should().NotBeNull();
@@ -129,10 +129,10 @@ public sealed class GameStateTests
     {
         // Arrange
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
-        var anyId = new CardId(1);
+        var anyId = new EntityId(1);
 
         // Act
-        var exception = Record.Exception(() => gameState.Get<Card, CardId>(anyId));
+        var exception = Record.Exception(() => gameState.Get<Card>(anyId));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();

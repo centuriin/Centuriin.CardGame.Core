@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -24,16 +24,16 @@ public sealed class CardMovementSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var playerId = new PlayerId(Guid.NewGuid());
-        var otherPlayerId = new PlayerId(Guid.NewGuid());
-        var cardId = new CardId(1);
-        var targetZoneId = new ZoneId(10);
+        var playerId = new EntityId(1);
+        var otherPlayerId = new EntityId(2);
+        var cardId = new EntityId(1);
+        var targetZoneId = new EntityId(10);
 
         var card = new Card(cardId);
         card.Add(
             [
-                new OwnerComponent(PlayerId.System),
-                new ZoneComponent(new ZoneId(0))
+                new OwnerComponent(EntityId.Default),
+                new ZoneComponent(new(0))
             ]);
 
         var handZone = new Zone(targetZoneId);
@@ -43,7 +43,7 @@ public sealed class CardMovementSystemTests
                 new ZoneRoleComponent(ZoneRole.Hand)
             ]);
 
-        var otherZone = new Zone(new ZoneId(99));
+        var otherZone = new Zone(new(99));
         otherZone.Add(
             [
                 new OwnerComponent(otherPlayerId),
@@ -51,7 +51,7 @@ public sealed class CardMovementSystemTests
             ]);
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
-        stateMock.Setup(x => x.Get<Card, CardId>(cardId))
+        stateMock.Setup(x => x.Get<Card>(cardId))
             .Returns(card);
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([otherZone, handZone]);
@@ -72,18 +72,18 @@ public sealed class CardMovementSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var playerId = new PlayerId(Guid.NewGuid());
-        var cardId = new CardId(1);
+        var playerId = new EntityId(1);
+        var cardId = new EntityId(1);
 
         var card = new Card(cardId);
         card.Add(
             [
-                new OwnerComponent(PlayerId.System), 
-                new ZoneComponent(new ZoneId(0))
+                new OwnerComponent(EntityId.Default),
+                new ZoneComponent(new(0))
             ]);
 
         var stateMock = new Mock<IGameState>(MockBehavior.Strict);
-        stateMock.Setup(x => x.Get<Card, CardId>(cardId))
+        stateMock.Setup(x => x.Get<Card>(cardId))
             .Returns(card);
         stateMock.Setup(x => x.Query<Zone>())
             .Returns([]);
@@ -91,7 +91,7 @@ public sealed class CardMovementSystemTests
         var system = new CardMovementSystem(Mock.Of<ICoreLogger<CardMovementSystem>>());
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
             system.OnEvent(
                 new CardDealtEvent(gameId, cardId, playerId),
                 stateMock.Object,

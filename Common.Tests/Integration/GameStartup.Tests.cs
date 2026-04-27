@@ -1,8 +1,8 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -30,13 +30,13 @@ public sealed class GameStartupIntegrationTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var p1Id = new PlayerId(Guid.NewGuid());
+        var p1Id = new EntityId(1);
         var gameTypeId = new GameTypeId(1);
 
-        var deckZone = new Zone(new ZoneId(1));
+        var deckZone = new Zone(new(1));
         deckZone.Add(new ZoneRoleComponent(ZoneRole.Deck));
 
-        var handZone = new Zone(new ZoneId(2));
+        var handZone = new Zone(new(2));
         handZone.Add(new ZoneRoleComponent(ZoneRole.Hand), new HasPrimaryCards(3));
 
         var zoneTemplateId = new TemplateId(111);
@@ -59,7 +59,7 @@ public sealed class GameStartupIntegrationTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync(cardTemplateIds);
 
-        var cards = cardTemplateIds.Select(id => new Card(new CardId((int)id.Value))).ToList();
+        var cards = cardTemplateIds.Select(id => new Card(new((int)id.Value))).ToList();
         var cardsFactoryMock = new Mock<ICardFactory>(MockBehavior.Strict);
         cardsFactoryMock.Setup(x => x.CreateAsync(
                 cardTemplateIds,
@@ -83,7 +83,7 @@ public sealed class GameStartupIntegrationTests
             Mock.Of<IGameEventsRepository>(),
             dispatcher);
 
-        var setup = new GameSetup(gameTypeId, [p1Id]);
+        var setup = new GameSetup(gameTypeId, [new PlayerId(Guid.NewGuid())]);
 
         var sessionMock = new Mock<IGameSession>(MockBehavior.Strict);
         sessionMock.SetupGet(x => x.Game).Returns(game);
@@ -106,7 +106,7 @@ public sealed class GameStartupIntegrationTests
 
         var startupService = new GameStartupService(
             sessionsRepositoryMock.Object,
-            loaders, 
+            loaders,
             gameFactoryMock.Object);
 
         // Act

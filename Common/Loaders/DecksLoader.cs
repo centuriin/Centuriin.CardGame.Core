@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Components.Zones;
-using Centuriin.CardGame.Core.Common.Entities.Cards;
+using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
@@ -42,7 +43,7 @@ public sealed class DecksLoader : IGameLoader
 
             var deckTemplateIds = await _decksRepository.GetDeckTemplateIdsAsync(
                 setup.GameTypeId,
-                ownerId,
+                gameState.Get<Player>(ownerId).Get<PlayerIdentifierComponent>().PlayerId,
                 token);
 
             var cards = await _cardsFactory.CreateAsync(deckTemplateIds, token);
@@ -53,7 +54,7 @@ public sealed class DecksLoader : IGameLoader
                     new ZoneComponent(zone.Id),
                     new OwnerComponent(ownerId));
 
-                gameState.AddEntity<Card, CardId>(card);
+                gameState.AddEntity(card);
             }
         }
     }

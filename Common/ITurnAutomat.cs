@@ -1,23 +1,23 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Entities;
 
 namespace Centuriin.CardGame.Core.Common;
 
 public interface ITurnAutomat
 {
-    public PlayerId ActivePlayer { get; }
+    public EntityId ActivePlayer { get; }
 
     public bool IsCycled { get; }
 
 
     public void DropCycle();
 
-    public void DropQueueAfter(PlayerId playerId);
+    public void DropQueueAfter(EntityId playerId);
 
-    public IEnumerable<PlayerId> GetEnumarable();
+    public IEnumerable<EntityId> GetEnumarable();
 
     public void MoveNext();
 
-    public void SetCycle(IReadOnlyCollection<PlayerId> playerIds);
+    public void SetCycle(IReadOnlyCollection<EntityId> playerIds);
 
-    public void SetNext(params IReadOnlyCollection<PlayerId> players);
+    public void SetNext(params IReadOnlyCollection<EntityId> players);
 }

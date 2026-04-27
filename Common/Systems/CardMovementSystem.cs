@@ -24,7 +24,7 @@ public sealed class CardMovementSystem :
     {
         ValidateAndLog(@event, gameState, writer);
 
-        var card = gameState.Get<Card, CardId>(@event.CardId);
+        var card = gameState.Get<Card>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(@event.NewOwnerId);
 
         var hand = gameState

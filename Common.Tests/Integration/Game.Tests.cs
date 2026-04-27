@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
@@ -27,9 +28,9 @@ public sealed class GameTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var playerId = new PlayerId(Guid.NewGuid());
+        var playerId = new EntityId(1);
 
-        var handZone = new Zone(new ZoneId(10));
+        var handZone = new Zone(new(10));
         handZone.Add(
             [
                 new OwnerComponent(playerId),
@@ -37,19 +38,19 @@ public sealed class GameTests
                 new HasPrimaryCards(1)
             ]);
 
-        var cardId = new CardId(1);
+        var cardId = new EntityId(1);
         var card = new Card(cardId);
         card.Add(
             [
-                new OwnerComponent(PlayerId.System),
-                new ZoneComponent(new ZoneId(0))
+                new OwnerComponent(EntityId.Default),
+                new ZoneComponent(new(0))
             ]);
 
         var gameState = new GameState(Mock.Of<ITurnAutomat>(MockBehavior.Strict));
-        gameState.AddEntity<Player, PlayerId>(new Player(playerId));
-        gameState.AddEntity<Player, PlayerId>(new Player(PlayerId.System));
-        gameState.AddEntity<Zone, ZoneId>(handZone);
-        gameState.AddEntity<Card, CardId>(card);
+        gameState.AddEntity(new Player(playerId));
+        gameState.AddEntity(new Player(EntityId.Default));
+        gameState.AddEntity(handZone);
+        gameState.AddEntity(card);
 
         var dealerSystem = new DealerSystem(DebugLogger<DealerSystem>.Instance);
         var movementSystem = new CardMovementSystem(DebugLogger<CardMovementSystem>.Instance);
@@ -61,22 +62,22 @@ public sealed class GameTests
         var eventsRepo = new FakeEventsRepository();
 
         var game = new Game(
-            gameId, 
-            gameState, 
+            gameId,
+            gameState,
             Mock.Of<ICommandValidator>(MockBehavior.Strict),
-            eventsRepo, 
+            eventsRepo,
             dispatcher);
 
         // Act
         await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);
 
         // Assert
-        var updatedCard = gameState.Get<Card, CardId>(cardId);
+        var updatedCard = gameState.Get<Card>(cardId);
         updatedCard.Get<OwnerComponent>().CurrentOwnerId.Should().Be(playerId);
         updatedCard.Get<ZoneComponent>().CurrentZoneId.Should().Be(handZone.Id);
 
         eventsRepo.Events.Should().HaveCount(1);
-        
+
         var eventUnit = eventsRepo.Events.Single();
 
         eventUnit.PrimaryEvent.Should().BeOfType<GameStartedEvent>();

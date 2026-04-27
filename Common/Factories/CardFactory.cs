@@ -39,7 +39,7 @@ public sealed class CardFactory : ICardFactory
 
     private static Card CreateCard(CardTemplate template, int cardId)
     {
-        var card = new Card(new CardId(cardId));
+        var card = new Card(new(cardId));
 
         card.Add(
             [..

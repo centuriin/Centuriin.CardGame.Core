@@ -3,7 +3,7 @@
 /// <summary>
 /// Card entity.
 /// </summary>
-public sealed class Card : EntityBase<CardId>, IEquatable<Card>
+public sealed class Card : EntityBase, IEquatable<Card>
 {
     /// <summary>
     /// Creates new instance of <see cref="Card"/>.
@@ -11,7 +11,7 @@ public sealed class Card : EntityBase<CardId>, IEquatable<Card>
     /// <param name="id">
     /// Instance identifier.
     /// </param>
-    public Card(CardId id) : base(id)
+    public Card(EntityId id) : base(id)
     {
     }
 

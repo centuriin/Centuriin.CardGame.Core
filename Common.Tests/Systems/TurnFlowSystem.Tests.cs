@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
@@ -20,7 +20,7 @@ public sealed class TurnFlowSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var players = new[] { new PlayerId(Guid.NewGuid()), new PlayerId(Guid.NewGuid()) };
+        var players = new[] { new EntityId(1), new EntityId(2) };
 
         var setCycleCalls = 0;
         var automatMock = new Mock<ITurnAutomat>(MockBehavior.Strict);
@@ -55,7 +55,7 @@ public sealed class TurnFlowSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var players = new[] { new PlayerId(Guid.NewGuid()) };
+        var players = new[] { new EntityId(1) };
 
         var setNextCalls = 0;
         var automatMock = new Mock<ITurnAutomat>(MockBehavior.Strict);
@@ -82,8 +82,8 @@ public sealed class TurnFlowSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var p1 = new PlayerId(Guid.NewGuid());
-        var p2 = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
+        var p2 = new EntityId(2);
 
         var moveNextCalls = 0;
         var automatMock = new Mock<ITurnAutomat>(MockBehavior.Strict);

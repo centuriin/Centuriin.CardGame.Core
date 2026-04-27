@@ -2,9 +2,22 @@
 
 namespace Centuriin.CardGame.Core.Common.Entities;
 
+/// <summary>
+/// Base class for entity.
+/// </summary>
 public abstract class EntityBase
 {
+    /// <summary>
+    /// Instance id.
+    /// </summary>
+    public EntityId Id { get; }
+
     protected Dictionary<Type, ComponentBase> Components { get; init; } = [];
+
+    protected EntityBase(EntityId id)
+    {
+        Id = id;
+    }
 
     /// <summary>
     /// Adds component.

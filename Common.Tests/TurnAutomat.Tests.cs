@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Entities;
+using Centuriin.CardGame.Core.Common.Entities.Players;
 
 using FluentAssertions;
 
@@ -12,8 +13,8 @@ public sealed class TurnAutomatTests
     public void SetCycleShouldInitializeQueueAndEnableCycling()
     {
         // Arrange
-        var p1 = new PlayerId(Guid.NewGuid());
-        var p2 = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
+        var p2 = new EntityId(2);
         var automat = new TurnAutomat();
 
         // Act
@@ -29,8 +30,8 @@ public sealed class TurnAutomatTests
     public void MoveNextShouldRotatePlayersWhenCycled()
     {
         // Arrange
-        var p1 = new PlayerId(Guid.NewGuid());
-        var p2 = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
+        var p2 = new EntityId(2);
         var automat = new TurnAutomat();
         automat.SetCycle([p1, p2]);
 
@@ -48,7 +49,7 @@ public sealed class TurnAutomatTests
     public void DropCycleShouldDisableCyclingAndClearPlayersList()
     {
         // Arrange
-        var p1 = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
         var automat = new TurnAutomat();
         automat.SetCycle([p1]);
 
@@ -65,9 +66,9 @@ public sealed class TurnAutomatTests
     public void SetNextShouldInsertPlayersAfterActivePlayer()
     {
         // Arrange
-        var p1 = new PlayerId(Guid.NewGuid());
-        var p2 = new PlayerId(Guid.NewGuid());
-        var extra = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
+        var p2 = new EntityId(2);
+        var extra = new EntityId(3);
         var automat = new TurnAutomat();
         automat.SetCycle([p1, p2]);
 
@@ -85,9 +86,9 @@ public sealed class TurnAutomatTests
     public void DropQueueAfterShouldRemoveAllFollowingPlayers()
     {
         // Arrange
-        var p1 = new PlayerId(Guid.NewGuid());
-        var p2 = new PlayerId(Guid.NewGuid());
-        var p3 = new PlayerId(Guid.NewGuid());
+        var p1 = new EntityId(1);
+        var p2 = new EntityId(2);
+        var p3 = new EntityId(3);
         var automat = new TurnAutomat();
         automat.SetCycle([p1, p2, p3]);
 

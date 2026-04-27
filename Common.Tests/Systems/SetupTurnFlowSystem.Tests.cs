@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Components.Players;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -21,9 +22,9 @@ public sealed class SetupTurnFlowSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var p1Id = new PlayerId(Guid.NewGuid());
-        var p2Id = new PlayerId(Guid.NewGuid());
-        var systemId = PlayerId.System;
+        var p1Id = new EntityId(1);
+        var p2Id = new EntityId(2);
+        var systemId = EntityId.Default;
 
         var player1 = new Player(p1Id);
         player1.Add(new PlayerRoleComponent(PlayerRole.Participant));

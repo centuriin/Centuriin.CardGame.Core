@@ -6,13 +6,11 @@ public interface IGameState
 {
     public ITurnAutomat TurnAutomat { get; }
 
-    public void AddEntity<TEntity, TId>(TEntity entity)
-        where TEntity : EntityBase<TId>
-        where TId : struct, IEquatable<TId>;
+    public void AddEntity<TEntity>(TEntity entity)
+        where TEntity : EntityBase;
 
-    public TEntity Get<TEntity, TId>(TId id)
-        where TEntity : EntityBase<TId>
-        where TId : struct, IEquatable<TId>;
+    public TEntity Get<TEntity>(EntityId id)
+        where TEntity : EntityBase;
 
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;

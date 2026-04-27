@@ -1,5 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
+using Centuriin.CardGame.Core.Common.Components.Players;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
@@ -24,7 +26,13 @@ public sealed class DecksLoaderTests
     {
         // Arrange
         var gameTypeId = new GameTypeId(1);
-        var ownerId = new PlayerId(Guid.NewGuid());
+        var ownerId = new EntityId(1);
+
+        var player = new Player(ownerId);
+        player.Add(
+            [
+                PlayerIdentifierComponent.System
+            ]);
 
         var deckZone = new Zone(new(10));
         deckZone.Add(
@@ -39,17 +47,23 @@ public sealed class DecksLoaderTests
             .Setup(x => x.Query<Zone>())
             .Returns([deckZone]);
         gameStateMock
-            .Setup(x => x.AddEntity<Card, CardId>(It.IsAny<Card>()))
+            .Setup(x => x.Get<Player>(ownerId))
+            .Returns(player);
+        gameStateMock
+            .Setup(x => x.AddEntity(It.IsAny<Card>()))
             .Callback<Card>(addedCards.Add);
 
         var templateIds = new HashSet<TemplateId> { new(101), new(102) };
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
         decksRepoMock
-            .Setup(x => x.GetDeckTemplateIdsAsync(gameTypeId, ownerId, TestContext.Current.CancellationToken))
+            .Setup(x => x.GetDeckTemplateIdsAsync(
+                gameTypeId, 
+                PlayerIdentifierComponent.System.PlayerId, 
+                TestContext.Current.CancellationToken))
             .ReturnsAsync(templateIds);
 
-        var card1 = new Card(new CardId(1));
-        var card2 = new Card(new CardId(2));
+        var card1 = new Card(new(1));
+        var card2 = new Card(new(2));
         var createdCards = new List<Card> { card1, card2 };
         var cardsFactoryMock = new Mock<ICardFactory>(MockBehavior.Strict);
         cardsFactoryMock
@@ -88,7 +102,7 @@ public sealed class DecksLoaderTests
             .Setup(x => x.Query<Zone>())
             .Returns([]);
         gameStateMock
-            .Setup(x => x.AddEntity<Card, CardId>(It.IsAny<Card>()))
+            .Setup(x => x.AddEntity(It.IsAny<Card>()))
             .Callback<Card>(addedCards.Add);
 
         var loader = new DecksLoader(

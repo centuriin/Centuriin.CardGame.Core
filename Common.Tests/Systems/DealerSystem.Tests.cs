@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
 using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Entities.Cards;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -24,22 +24,22 @@ public sealed class DealerSystemTests
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
-        var playerId1 = new PlayerId(Guid.NewGuid());
-        var playerId2 = new PlayerId(Guid.NewGuid());
+        var playerId1 = new EntityId(1);
+        var playerId2 = new EntityId(2);
 
-        var cardId1 = new CardId(1);
+        var cardId1 = new EntityId(1);
         var card1 = new Card(cardId1);
-        card1.Add(new OwnerComponent(PlayerId.System));
+        card1.Add(new OwnerComponent(EntityId.Default));
 
-        var cardId2 = new CardId(2);
+        var cardId2 = new EntityId(2);
         var card2 = new Card(new(2));
-        card2.Add(new OwnerComponent(PlayerId.System));
+        card2.Add(new OwnerComponent(EntityId.Default));
 
-        var zoneId = new ZoneId(10);
+        var zoneId = new EntityId(10);
         var zone1 = new Zone(zoneId);
         zone1.Add(new OwnerComponent(playerId1), new HasPrimaryCards(1));
 
-        var zoneId2 = new ZoneId(20);
+        var zoneId2 = new EntityId(20);
         var zone2 = new Zone(zoneId2);
         zone2.Add(new OwnerComponent(playerId2), new HasPrimaryCards(1));
 

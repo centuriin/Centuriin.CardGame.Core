@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.Entities;
 
 namespace Centuriin.CardGame.Core.Common.Components;
 
@@ -10,9 +10,9 @@ public sealed record class OwnerComponent : ComponentBase
     /// <summary>
     /// Current owner identifier.
     /// </summary>
-    public PlayerId CurrentOwnerId { get; private set; }
+    public EntityId CurrentOwnerId { get; private set; }
 
-    public OwnerComponent(PlayerId ownerId)
+    public OwnerComponent(EntityId ownerId)
     {
         CurrentOwnerId = ownerId;
     }
@@ -23,5 +23,5 @@ public sealed record class OwnerComponent : ComponentBase
     /// <param name="newOwnerId">
     /// New owner identifier.
     /// </param>
-    public void ChangeOwnerId(PlayerId newOwnerId) => CurrentOwnerId = newOwnerId;
+    public void ChangeOwnerId(EntityId newOwnerId) => CurrentOwnerId = newOwnerId;
 }

@@ -13,14 +13,15 @@ public sealed class ClassicPlayersLoader : IGameLoader
 
         token.ThrowIfCancellationRequested();
 
-        gameState.AddEntity<Player, PlayerId>(Player.System);
+        gameState.AddEntity(Player.System);
 
+        var index = 1;
         foreach (var id in setup.PlayerIds)
         {
-            var player = new Player(id);
+            var player = new Player(new(index++));
             player.Add(new PlayerRoleComponent(PlayerRole.Participant));
 
-            gameState.AddEntity<Player, PlayerId>(player);
+            gameState.AddEntity(player);
         }
 
         return Task.CompletedTask;
