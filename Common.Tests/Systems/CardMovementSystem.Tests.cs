@@ -58,12 +58,12 @@ public sealed class CardMovementSystemTests
 
         var system = new CardMovementSystem(
             stateMock.Object,
-            Mock.Of<IGameEventBus>(),
+            Mock.Of<IGameEventBusWriter>(),
             Mock.Of<ICoreLogger<CardMovementSystem>>());
 
         // Act
         var @event = new CardDealtEvent(gameId, cardId, playerId);
-        system.OnEvent(@event, stateMock.Object, Mock.Of<IGameEventBus>());
+        system.OnEvent(@event);
 
         // Assert
         card.Get<OwnerComponent>().CurrentOwnerId.Should().Be(playerId);
@@ -93,15 +93,12 @@ public sealed class CardMovementSystemTests
 
         var system = new CardMovementSystem(
             stateMock.Object,
-            Mock.Of<IGameEventBus>(),
+            Mock.Of<IGameEventBusWriter>(),
             Mock.Of<ICoreLogger<CardMovementSystem>>());
 
         // Act
         var exception = Record.Exception(() =>
-            system.OnEvent(
-                new CardDealtEvent(gameId, cardId, playerId),
-                stateMock.Object,
-                Mock.Of<IGameEventBus>(MockBehavior.Strict)));
+            system.OnEvent(new CardDealtEvent(gameId, cardId, playerId)));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();

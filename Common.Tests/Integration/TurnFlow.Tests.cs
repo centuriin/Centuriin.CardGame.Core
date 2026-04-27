@@ -56,15 +56,15 @@ public sealed class TurnFlowTests
         var endTurnP2 = new TurnEndedEvent(gameId, p2);
 
         // Act
-        dispatcher.Publish(flowDefinedEvent, gameState, writer.Object);
+        dispatcher.Publish(flowDefinedEvent);
 
         var activeAfterDefinedEvent = gameState.TurnAutomat.ActivePlayer;
 
-        dispatcher.Publish(endTurnP1, gameState, writer.Object);
+        dispatcher.Publish(endTurnP1);
 
         var activeAfterEndTurn1Event = gameState.TurnAutomat.ActivePlayer;
 
-        dispatcher.Publish(endTurnP2, gameState, writer.Object);
+        dispatcher.Publish(endTurnP2);
 
         var activeAfterEndTurn2Event = gameState.TurnAutomat.ActivePlayer;
 

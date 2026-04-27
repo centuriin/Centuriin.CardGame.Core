@@ -11,24 +11,24 @@ public sealed class TurnFlowSystem :
     ISubscriber<TurnEndedEvent>
 {
     public TurnFlowSystem(
-        IGameState gameState, 
-        IGameEventBusWriter eventBusWriter, 
-        ICoreLogger<TurnFlowSystem> logger) : 
+        IGameState gameState,
+        IGameEventBusWriter eventBusWriter,
+        ICoreLogger<TurnFlowSystem> logger) :
         base(gameState, eventBusWriter, logger)
     {
     }
 
-    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState, IGameEventBus writer)
+    public void OnEvent(TurnFlowDefinedEvent @event)
     {
-        ValidateAndLog(@event, gameState, writer);
+        ValidateAndLog(@event);
 
         if (@event.IsCycled)
         {
-            gameState.TurnAutomat.SetCycle(@event.InitialPlayerTrunsOrder);
+            GameState.TurnAutomat.SetCycle(@event.InitialPlayerTrunsOrder);
         }
         else
         {
-            gameState.TurnAutomat.SetNext(@event.InitialPlayerTrunsOrder);
+            GameState.TurnAutomat.SetNext(@event.InitialPlayerTrunsOrder);
         }
 
         if (Logger.IsEnabled(LogLevel.Debug))
@@ -39,23 +39,23 @@ public sealed class TurnFlowSystem :
                 @event.IsCycled);
         }
 
-        writer.Write(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
+        EventBusWriter.Write(new TurnStartedEvent(@event.GameId, GameState.TurnAutomat.ActivePlayer));
     }
 
-    public void OnEvent(TurnEndedEvent @event, IGameState gameState, IGameEventBus writer)
+    public void OnEvent(TurnEndedEvent @event)
     {
-        ValidateAndLog(@event, gameState, writer);
+        ValidateAndLog(@event);
 
-        gameState.TurnAutomat.MoveNext();
+        GameState.TurnAutomat.MoveNext();
 
         if (Logger.IsEnabled(LogLevel.Debug))
         {
             Logger.LogDebug(
                 "End turn for {PreviosPlayerId} and active player {CurrentPlayerId}",
                 @event.PlayerId.Value,
-                gameState.TurnAutomat.ActivePlayer.Value);
+                GameState.TurnAutomat.ActivePlayer.Value);
         }
 
-        writer.Write(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
+        EventBusWriter.Write(new TurnStartedEvent(@event.GameId, GameState.TurnAutomat.ActivePlayer));
     }
 }

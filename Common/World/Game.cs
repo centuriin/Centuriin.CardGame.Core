@@ -84,7 +84,7 @@ public sealed class Game : IGame
     {
         var randomEvents = new List<IRandomEvent>();
 
-        _dispatcher.Publish(primaryEvent, State, _gameEventBus);
+        _dispatcher.Publish(primaryEvent);
 
         while (_gameEventBus.TryRead(out var nextEvent))
         {
@@ -93,7 +93,7 @@ public sealed class Game : IGame
                 randomEvents.Add(randomEvent);
             }
 
-            _dispatcher.Publish(nextEvent, State, _gameEventBus);
+            _dispatcher.Publish(nextEvent);
         }
 
         return new EventUnit(primaryEvent, randomEvents);

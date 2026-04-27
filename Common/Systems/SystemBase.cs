@@ -28,12 +28,10 @@ public abstract class SystemBase
         Logger = logger;
     }
 
-    protected void ValidateAndLog<TEvent>(TEvent @event, IGameState gameState, IGameEventBus writer)
+    protected void ValidateAndLog<TEvent>(TEvent @event)
         where TEvent : IGameEvent
     {
         ArgumentNullException.ThrowIfNull(@event);
-        ArgumentNullException.ThrowIfNull(gameState);
-        ArgumentNullException.ThrowIfNull(writer);
 
         if (Logger.IsEnabled(LogLevel.Debug))
         {

@@ -21,17 +21,14 @@ public sealed class CardMovementSystem :
     {
     }
 
-    public void OnEvent(
-        CardDealtEvent @event,
-        IGameState gameState,
-        IGameEventBus writer)
+    public void OnEvent(CardDealtEvent @event)
     {
-        ValidateAndLog(@event, gameState, writer);
+        ValidateAndLog(@event);
 
-        var card = gameState.Get<Card>(@event.CardId);
+        var card = GameState.Get<Card>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(@event.NewOwnerId);
 
-        var hand = gameState
+        var hand = GameState
             .Query<Zone>()
             .WithComponent<OwnerComponent>(x => x.CurrentOwnerId == @event.NewOwnerId)
             .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Hand)

@@ -1,13 +1,11 @@
-﻿using Centuriin.CardGame.Core.Common.World;
-
-namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
+﻿namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
 
 public sealed class EventDispatcher : IEventDispatcher
 {
     private bool _disposed;
 
-    private readonly Dictionary<Type, Action<IGameEvent, IGameState, IGameEventBus>> _handlersMap = [];
-    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, IGameEventBus>> _wrappersMap = [];
+    private readonly Dictionary<Type, Action<IGameEvent>> _handlersMap = [];
+    private readonly Dictionary<Delegate, Action<IGameEvent>> _wrappersMap = [];
 
     /// <inheritdoc/>
     public void Register<TEvent>(ISubscriber<TEvent> subscriber)
@@ -19,8 +17,7 @@ public sealed class EventDispatcher : IEventDispatcher
 
         var eventType = typeof(TEvent);
 
-        var wrapper = (IGameEvent e, IGameState s, IGameEventBus w) =>
-            subscriber.OnEvent((TEvent)e, s, w);
+        var wrapper = (IGameEvent e) => subscriber.OnEvent((TEvent)e);
 
         if (_handlersMap.TryGetValue(eventType, out var actions))
         {
@@ -70,14 +67,9 @@ public sealed class EventDispatcher : IEventDispatcher
     }
 
     /// <inheritdoc/>
-    public void Publish(
-        IGameEvent @event,
-        IGameState gameState,
-        IGameEventBus writer)
+    public void Publish(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
-        ArgumentNullException.ThrowIfNull(gameState);
-        ArgumentNullException.ThrowIfNull(writer);
 
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -86,11 +78,11 @@ public sealed class EventDispatcher : IEventDispatcher
         var actions = _handlersMap
             .Where(x => x.Key.IsAssignableFrom(actualType))
             .SelectMany(x => x.Value.GetInvocationList())
-            .Cast<Action<IGameEvent, IGameState, IGameEventBus>>();
+            .Cast<Action<IGameEvent>>();
 
         foreach (var action in actions)
         {
-            action(@event, gameState, writer);
+            action(@event);
         }
     }
 

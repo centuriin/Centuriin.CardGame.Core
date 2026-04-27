@@ -19,20 +19,14 @@ public sealed class EventDispatcherTests
         var invokeCalls = 0;
         var subscriberMock = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
         subscriberMock
-            .Setup(x => x.OnEvent(
-                It.IsAny<FakeTestEvent>(),
-                It.IsAny<IGameState>(),
-                It.IsAny<IGameEventBus>()))
+            .Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>()))
             .Callback(() => invokeCalls++);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register(subscriberMock.Object);
 
         // Act
-        dispatcher.Publish(
-            new FakeTestEvent(),
-            Mock.Of<IGameState>(MockBehavior.Strict),
-            Mock.Of<IGameEventBus>(MockBehavior.Strict));
+        dispatcher.Publish(new FakeTestEvent());
 
         // Assert
         invokeCalls.Should().Be(1);
@@ -47,24 +41,18 @@ public sealed class EventDispatcherTests
 
         var subscriberMock = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
         subscriberMock
-            .Setup(x => x.OnEvent(
-                It.IsAny<FakeTestEvent>(),
-                It.IsAny<IGameState>(),
-                It.IsAny<IGameEventBus>()))
+            .Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>()))
             .Callback(() => invocationCount++);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register(subscriberMock.Object);
 
-        var gameState = Mock.Of<IGameState>(MockBehavior.Strict);
-        var writer = Mock.Of<IGameEventBus>(MockBehavior.Strict);
-
         // Act
-        dispatcher.Publish(@event, gameState, writer);
+        dispatcher.Publish(@event);
         dispatcher.Unregister(subscriberMock.Object);
 
         var exception = Record.Exception(() =>
-            dispatcher.Publish(@event, gameState, writer));
+            dispatcher.Publish(@event));
 
         // Assert
         exception.Should().BeNull();
@@ -92,17 +80,11 @@ public sealed class EventDispatcherTests
         // Arrange
         var handlerCalls = 0;
         var sub1 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
-        sub1.Setup(x => x.OnEvent(
-                It.IsAny<FakeTestEvent>(),
-                It.IsAny<IGameState>(),
-                It.IsAny<IGameEventBus>()))
+        sub1.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>()))
             .Callback(() => handlerCalls++);
 
         var sub2 = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
-        sub2.Setup(x => x.OnEvent(
-                It.IsAny<FakeTestEvent>(),
-                It.IsAny<IGameState>(),
-                It.IsAny<IGameEventBus>()))
+        sub2.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>()))
             .Callback(() => handlerCalls++);
 
         var dispatcher = new EventDispatcher();
@@ -110,10 +92,7 @@ public sealed class EventDispatcherTests
         dispatcher.Register(sub2.Object);
 
         // Act
-        dispatcher.Publish(
-            new FakeTestEvent(),
-            Mock.Of<IGameState>(MockBehavior.Strict),
-            Mock.Of<IGameEventBus>(MockBehavior.Strict));
+        dispatcher.Publish(new FakeTestEvent());
 
         // Assert
         handlerCalls.Should().Be(2);
@@ -125,20 +104,14 @@ public sealed class EventDispatcherTests
         // Arrange
         var handlerCalls = 0;
         var sub = new Mock<ISubscriber<FakeTestEvent>>(MockBehavior.Strict);
-        sub.Setup(x => x.OnEvent(
-                It.IsAny<FakeTestEvent>(),
-                It.IsAny<IGameState>(),
-                It.IsAny<IGameEventBus>()))
+        sub.Setup(x => x.OnEvent(It.IsAny<FakeTestEvent>()))
             .Callback(() => handlerCalls++);
 
         var dispatcher = new EventDispatcher();
         dispatcher.Register(sub.Object);
 
         // Act
-        dispatcher.Publish(
-            new DerivedTestEvent(),
-            Mock.Of<IGameState>(MockBehavior.Strict),
-            Mock.Of<IGameEventBus>(MockBehavior.Strict));
+        dispatcher.Publish(new DerivedTestEvent());
 
         // Assert
         handlerCalls.Should().Be(1);

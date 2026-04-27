@@ -19,16 +19,16 @@ public sealed class SetupTurnFlowSystem :
     {
     }
 
-    public void OnEvent(GameStartedEvent @event, IGameState gameState, IGameEventBus writer)
+    public void OnEvent(GameStartedEvent @event)
     {
-        ValidateAndLog(@event, gameState, writer);
+        ValidateAndLog(@event);
 
-        var orderedPlayerIds = gameState.Query<Player>()
+        var orderedPlayerIds = GameState.Query<Player>()
             .WithComponent<PlayerRoleComponent>(x => x.Role == PlayerRole.Participant)
             .Select(x => x.Id)
             .Shuffle()
             .ToList();
 
-        writer.Write(new TurnFlowDefinedEvent(@event.GameId, orderedPlayerIds, IsCycled: true));
+        EventBusWriter.Write(new TurnFlowDefinedEvent(@event.GameId, orderedPlayerIds, IsCycled: true));
     }
 }

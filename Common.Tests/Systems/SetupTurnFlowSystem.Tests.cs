@@ -40,7 +40,7 @@ public sealed class SetupTurnFlowSystemTests
             .Returns([player1, systemPlayer, player2]);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBusWriter>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
@@ -51,7 +51,7 @@ public sealed class SetupTurnFlowSystemTests
 
         // Act
         var @event = new GameStartedEvent(gameId);
-        system.OnEvent(@event, stateMock.Object, writer.Object);
+        system.OnEvent(@event);
 
         // Assert
         eventsList.Single().Should()
@@ -75,7 +75,7 @@ public sealed class SetupTurnFlowSystemTests
             .Returns([]);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBusWriter>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
@@ -85,7 +85,7 @@ public sealed class SetupTurnFlowSystemTests
             Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
 
         // Act
-        system.OnEvent(new GameStartedEvent(gameId), stateMock.Object, writer.Object);
+        system.OnEvent(new GameStartedEvent(gameId));
 
         // Assert
         eventsList.Single().Should()

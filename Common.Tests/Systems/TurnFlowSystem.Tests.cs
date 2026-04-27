@@ -34,7 +34,7 @@ public sealed class TurnFlowSystemTests
             .Returns(automatMock.Object);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBusWriter>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
@@ -45,7 +45,7 @@ public sealed class TurnFlowSystemTests
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: true);
-        system.OnEvent(@event, stateMock.Object, writer.Object);
+        system.OnEvent(@event);
 
         // Assert
         setCycleCalls.Should().Be(1);
@@ -77,7 +77,7 @@ public sealed class TurnFlowSystemTests
 
         // Act
         var @event = new TurnFlowDefinedEvent(gameId, players, IsCycled: false);
-        system.OnEvent(@event, stateMock.Object, Mock.Of<IGameEventBus>());
+        system.OnEvent(@event);
 
         // Assert
         setNextCalls.Should().Be(1);
@@ -102,7 +102,7 @@ public sealed class TurnFlowSystemTests
         stateMock.SetupGet(x => x.TurnAutomat).Returns(automatMock.Object);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBusWriter>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
@@ -113,7 +113,7 @@ public sealed class TurnFlowSystemTests
 
         // Act
         var @event = new TurnEndedEvent(gameId, p1);
-        system.OnEvent(@event, stateMock.Object, writer.Object);
+        system.OnEvent(@event);
 
         // Assert
         moveNextCalls.Should().Be(1);

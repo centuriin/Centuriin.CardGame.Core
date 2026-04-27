@@ -22,16 +22,16 @@ public sealed class DealerSystem :
     {
     }
 
-    public void OnEvent(GameStartedEvent @event, IGameState gameState, IGameEventBus writer)
+    public void OnEvent(GameStartedEvent @event)
     {
-        ValidateAndLog(@event, gameState, writer);
+        ValidateAndLog(@event);
 
-        var playersDecks = gameState
+        var playersDecks = GameState
             .Query<Card>()
             .ToLookup(k => k.Get<OwnerComponent>().CurrentOwnerId, v => v.Id)
             .ToDictionary(k => k.Key, v => new Queue<EntityId>(v.Shuffle()));
 
-        foreach (var zone in gameState.Query<Zone>().WithComponent<HasPrimaryCards>())
+        foreach (var zone in GameState.Query<Zone>().WithComponent<HasPrimaryCards>())
         {
             var cardCount = zone.Get<HasPrimaryCards>().Count;
             var zoneOwner = zone.Get<OwnerComponent>().CurrentOwnerId;
@@ -49,7 +49,7 @@ public sealed class DealerSystem :
                     pickedCardId,
                     zone.Get<OwnerComponent>().CurrentOwnerId);
 
-                writer.Write(childEvent);
+                EventBusWriter.Write(childEvent);
             }
         }
     }
