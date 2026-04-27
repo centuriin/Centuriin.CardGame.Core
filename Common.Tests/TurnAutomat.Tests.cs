@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities;
-using Centuriin.CardGame.Core.Common.Entities.Players;
 
 using FluentAssertions;
 

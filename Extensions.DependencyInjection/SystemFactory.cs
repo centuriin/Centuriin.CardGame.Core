@@ -26,5 +26,5 @@ public sealed class SystemFactory : ISystemFactory
 
         return (SystemBase)ActivatorUtilities.CreateInstance(_serviceProvider, systemType);
     }
-        
+
 }

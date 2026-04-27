@@ -119,6 +119,6 @@ public sealed class Game : IGame
     }
 
     private sealed record class EventUnit(
-        IPrimaryEvent PrimaryEvent, 
+        IPrimaryEvent PrimaryEvent,
         IReadOnlyCollection<IRandomEvent> RelatedRandomEvents) : IGameEventUnit;
 }

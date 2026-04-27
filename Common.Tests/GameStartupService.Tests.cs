@@ -123,7 +123,7 @@ public sealed class GameStartupServiceTests
         // Arrange
         var service = new GameStartupService(
             Mock.Of<IGameSessionsRepository>(),
-            [], 
+            [],
             Mock.Of<IGameSessionFactory>());
 
         // Act

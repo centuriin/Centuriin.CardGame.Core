@@ -57,8 +57,8 @@ public sealed class DecksLoaderTests
         var decksRepoMock = new Mock<IDecksRepository>(MockBehavior.Strict);
         decksRepoMock
             .Setup(x => x.GetDeckTemplateIdsAsync(
-                gameTypeId, 
-                PlayerIdentifierComponent.System.PlayerId, 
+                gameTypeId,
+                PlayerIdentifierComponent.System.PlayerId,
                 TestContext.Current.CancellationToken))
             .ReturnsAsync(templateIds);
 

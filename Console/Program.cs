@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-
-using Centuriin.CardGame.Core.Common;
+﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability;
