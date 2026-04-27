@@ -19,6 +19,7 @@ public static class Registrations
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
             .AddSingleton<IGameStartupService, GameStartupService>()
 
+            .AddScoped<IGameEventBus, GameEventBus>()
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()

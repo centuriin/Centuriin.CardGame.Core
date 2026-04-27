@@ -40,7 +40,7 @@ public sealed class SetupTurnFlowSystemTests
             .Returns([player1, systemPlayer, player2]);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 
@@ -72,7 +72,7 @@ public sealed class SetupTurnFlowSystemTests
             .Returns([]);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 

@@ -18,7 +18,7 @@ public sealed class DealerSystem :
     {
     }
 
-    public void OnEvent(GameStartedEvent @event, IGameState gameState, IEventBusWriter writer)
+    public void OnEvent(GameStartedEvent @event, IGameState gameState, IGameEventBus writer)
     {
         ValidateAndLog(@event, gameState, writer);
 

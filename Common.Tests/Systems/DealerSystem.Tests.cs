@@ -50,7 +50,7 @@ public sealed class DealerSystemTests
             .Returns([zone1, zone2]);
 
         var eventsList = new List<IGameEvent>();
-        var writer = new Mock<IEventBusWriter>(MockBehavior.Strict);
+        var writer = new Mock<IGameEventBus>(MockBehavior.Strict);
         writer.Setup(x => x.Write(It.IsAny<IGameEvent>()))
             .Callback((IGameEvent e) => eventsList.Add(e));
 

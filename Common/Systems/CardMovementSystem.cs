@@ -20,7 +20,7 @@ public sealed class CardMovementSystem :
     public void OnEvent(
         CardDealtEvent @event,
         IGameState gameState,
-        IEventBusWriter writer)
+        IGameEventBus writer)
     {
         ValidateAndLog(@event, gameState, writer);
 

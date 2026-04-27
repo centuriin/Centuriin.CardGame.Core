@@ -60,7 +60,7 @@ public sealed class CardMovementSystemTests
 
         // Act
         var @event = new CardDealtEvent(gameId, cardId, playerId);
-        system.OnEvent(@event, stateMock.Object, Mock.Of<IEventBusWriter>());
+        system.OnEvent(@event, stateMock.Object, Mock.Of<IGameEventBus>());
 
         // Assert
         card.Get<OwnerComponent>().CurrentOwnerId.Should().Be(playerId);
@@ -95,7 +95,7 @@ public sealed class CardMovementSystemTests
             system.OnEvent(
                 new CardDealtEvent(gameId, cardId, playerId),
                 stateMock.Object,
-                Mock.Of<IEventBusWriter>(MockBehavior.Strict)));
+                Mock.Of<IGameEventBus>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();

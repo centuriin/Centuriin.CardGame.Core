@@ -8,5 +8,5 @@ public interface ISubscriber<TEvent>
     public void OnEvent(
         TEvent @event,
         IGameState gameState,
-        IEventBusWriter writer);
+        IGameEventBus writer);
 }

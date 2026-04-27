@@ -7,7 +7,7 @@ public interface IEventDispatcher : IDisposable
     public void Publish(
         IGameEvent @event,
         IGameState gameState,
-        IEventBusWriter writer);
+        IGameEventBus writer);
 
     public void Register<TEvent>(
         ISubscriber<TEvent> subscriber)

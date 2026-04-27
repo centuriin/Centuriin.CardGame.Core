@@ -78,6 +78,7 @@ public sealed class GameStartupIntegrationTests
 
         var game = new Game(
             gameId,
+            new GameEventBus(),
             new GameState(new TurnAutomat()),
             Mock.Of<ICommandValidator>(),
             Mock.Of<IGameEventsRepository>(),

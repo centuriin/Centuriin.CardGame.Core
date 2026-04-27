@@ -6,8 +6,8 @@ public sealed class EventDispatcher : IEventDispatcher
 {
     private bool _disposed;
 
-    private readonly Dictionary<Type, Action<IGameEvent, IGameState, IEventBusWriter>> _handlersMap = [];
-    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, IEventBusWriter>> _wrappersMap = [];
+    private readonly Dictionary<Type, Action<IGameEvent, IGameState, IGameEventBus>> _handlersMap = [];
+    private readonly Dictionary<Delegate, Action<IGameEvent, IGameState, IGameEventBus>> _wrappersMap = [];
 
     /// <inheritdoc/>
     public void Register<TEvent>(ISubscriber<TEvent> subscriber)
@@ -19,7 +19,7 @@ public sealed class EventDispatcher : IEventDispatcher
 
         var eventType = typeof(TEvent);
 
-        var wrapper = (IGameEvent e, IGameState s, IEventBusWriter w) =>
+        var wrapper = (IGameEvent e, IGameState s, IGameEventBus w) =>
             subscriber.OnEvent((TEvent)e, s, w);
 
         if (_handlersMap.TryGetValue(eventType, out var actions))
@@ -73,7 +73,7 @@ public sealed class EventDispatcher : IEventDispatcher
     public void Publish(
         IGameEvent @event,
         IGameState gameState,
-        IEventBusWriter writer)
+        IGameEventBus writer)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(gameState);
@@ -86,7 +86,7 @@ public sealed class EventDispatcher : IEventDispatcher
         var actions = _handlersMap
             .Where(x => x.Key.IsAssignableFrom(actualType))
             .SelectMany(x => x.Value.GetInvocationList())
-            .Cast<Action<IGameEvent, IGameState, IEventBusWriter>>();
+            .Cast<Action<IGameEvent, IGameState, IGameEventBus>>();
 
         foreach (var action in actions)
         {

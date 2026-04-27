@@ -14,7 +14,7 @@ public sealed class TurnFlowSystem :
     {
     }
 
-    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState, IEventBusWriter writer)
+    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState, IGameEventBus writer)
     {
         ValidateAndLog(@event, gameState, writer);
 
@@ -38,7 +38,7 @@ public sealed class TurnFlowSystem :
         writer.Write(new TurnStartedEvent(@event.GameId, gameState.TurnAutomat.ActivePlayer));
     }
 
-    public void OnEvent(TurnEndedEvent @event, IGameState gameState, IEventBusWriter writer)
+    public void OnEvent(TurnEndedEvent @event, IGameState gameState, IGameEventBus writer)
     {
         ValidateAndLog(@event, gameState, writer);
 

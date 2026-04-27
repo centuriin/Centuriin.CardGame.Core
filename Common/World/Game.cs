@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-using Centuriin.CardGame.Core.Common.Commands;
+﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability;
@@ -10,14 +8,7 @@ namespace Centuriin.CardGame.Core.Common.World;
 
 public sealed class Game : IGame
 {
-    private readonly Channel<IGameEvent> _channel = Channel.CreateUnbounded<IGameEvent>(new()
-    {
-        SingleReader = true,
-        SingleWriter = true,
-    });
-
-    private readonly ChannelWrapper _writer;
-
+    private readonly IGameEventBus _gameEventBus;
     private readonly ICommandValidator _commandValidator;
     private readonly IGameEventsRepository _eventsRepository;
     private readonly IEventDispatcher _dispatcher;
@@ -28,12 +19,16 @@ public sealed class Game : IGame
 
     public Game(
         GameId gameId,
+        IGameEventBus gameEventBus,
         IGameState gameState,
         ICommandValidator commandValidator,
         IGameEventsRepository eventsRepository,
         IEventDispatcher dispatcher)
     {
         GameId = gameId;
+
+        ArgumentNullException.ThrowIfNull(gameEventBus);
+        _gameEventBus = gameEventBus;
 
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
@@ -46,8 +41,6 @@ public sealed class Game : IGame
 
         ArgumentNullException.ThrowIfNull(dispatcher);
         _dispatcher = dispatcher;
-
-        _writer = new(_channel.Writer);
     }
 
     public async Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token)
@@ -91,31 +84,19 @@ public sealed class Game : IGame
     {
         var randomEvents = new List<IRandomEvent>();
 
-        _dispatcher.Publish(primaryEvent, State, _writer);
+        _dispatcher.Publish(primaryEvent, State, _gameEventBus);
 
-        while (_channel.Reader.TryRead(out var nextEvent))
+        while (_gameEventBus.TryRead(out var nextEvent))
         {
             if (nextEvent is IRandomEvent randomEvent)
             {
                 randomEvents.Add(randomEvent);
             }
 
-            _dispatcher.Publish(nextEvent, State, _writer);
+            _dispatcher.Publish(nextEvent, State, _gameEventBus);
         }
 
         return new EventUnit(primaryEvent, randomEvents);
-    }
-
-    private sealed class ChannelWrapper : IEventBusWriter
-    {
-        private ChannelWriter<IGameEvent> Writer { get; }
-
-        public ChannelWrapper(ChannelWriter<IGameEvent> writer)
-        {
-            Writer = writer;
-        }
-
-        public void Write(IGameEvent @event) => _ = Writer.TryWrite(@event);
     }
 
     private sealed record class EventUnit(

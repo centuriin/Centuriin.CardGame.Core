@@ -63,6 +63,7 @@ public sealed class GameTests
 
         var game = new Game(
             gameId,
+            new GameEventBus(),
             gameState,
             Mock.Of<ICommandValidator>(MockBehavior.Strict),
             eventsRepo,
