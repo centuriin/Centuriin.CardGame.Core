@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Factories;
+﻿using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
@@ -42,7 +41,7 @@ public sealed class GameStartupService : IGameStartupService
             await loader.LoadAsync(setup, session.Game.State, token);
         }
 
-        await session.Game.ApplyAsync(new GameStartedEvent(session.Game.GameId), token);
+        await session.Game.StartAsync(token);
 
         return session.Game;
     }

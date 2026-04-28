@@ -9,18 +9,18 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 public sealed class GameSessionFactory : IGameSessionFactory
 {
-    private readonly IGameProfilesRepository _profilesRepository;
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IGameProfilesRepository _profilesRepository;
 
     public GameSessionFactory(
-        IGameProfilesRepository profilesRepository,
-        IServiceScopeFactory serviceProvider)
+        IServiceScopeFactory serviceProvider,
+        IGameProfilesRepository profilesRepository)
     {
-        ArgumentNullException.ThrowIfNull(profilesRepository);
-        _profilesRepository = profilesRepository;
-
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceScopeFactory = serviceProvider;
+
+        ArgumentNullException.ThrowIfNull(profilesRepository);
+        _profilesRepository = profilesRepository;
     }
 
     public async ValueTask<IGameSession> CreateAsync(GameSetup setup, CancellationToken token)
@@ -39,7 +39,10 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         pipelineBuilder.Build();
 
-        var game = ActivatorUtilities.CreateInstance<Game>(serviceProvider, new GameId(Guid.NewGuid()));
+        var game = ActivatorUtilities.CreateInstance<Game>(
+            serviceProvider,
+            new GameId(Guid.NewGuid()),
+            GameStatus.Pending);
 
         return new GameSession(game, scope);
     }

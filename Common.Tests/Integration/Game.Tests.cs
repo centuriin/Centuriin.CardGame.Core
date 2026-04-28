@@ -71,14 +71,16 @@ public sealed class GameTests
 
         var game = new Game(
             gameId,
+            GameStatus.Pending,
             gameState,
-            eventBus,
             Mock.Of<ICommandValidator>(MockBehavior.Strict),
-            eventsRepo,
-            dispatcher);
+            new GameEventApplier(
+                eventBus,
+                dispatcher,
+                eventsRepo));
 
         // Act
-        await game.ApplyAsync(new GameStartedEvent(gameId), TestContext.Current.CancellationToken);
+        await game.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var updatedCard = gameState.Get<Card>(cardId);

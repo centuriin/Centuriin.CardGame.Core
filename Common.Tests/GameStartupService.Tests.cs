@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Factories;
+﻿using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
@@ -70,9 +69,7 @@ public sealed class GameStartupServiceTests
         gameMock.SetupGet(x => x.GameId).Returns(gameId);
         gameMock.SetupGet(x => x.State).Returns(gameState);
         gameMock
-            .Setup(x => x.ApplyAsync(
-                It.Is<GameStartedEvent>(e => e.GameId == gameId),
-                TestContext.Current.CancellationToken))
+            .Setup(x => x.StartAsync(TestContext.Current.CancellationToken))
             .Callback(() => applyCalls++)
             .Returns(Task.CompletedTask);
 

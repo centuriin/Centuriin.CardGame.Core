@@ -1,46 +1,48 @@
-﻿using Centuriin.CardGame.Core.Common.Commands;
+﻿using System.ComponentModel;
+
+using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability;
-using Centuriin.CardGame.Core.Common.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.World;
 
 public sealed class Game : IGame
 {
-    private readonly IGameEventBus _gameEventBus;
     private readonly ICommandValidator _commandValidator;
-    private readonly IGameEventsRepository _eventsRepository;
-    private readonly IEventDispatcher _dispatcher;
+    private readonly IGameEventApplier _eventApplier;
 
     public GameId GameId { get; }
+
+    public GameStatus Status { get; }
 
     public IGameState State { get; }
 
     public Game(
         GameId gameId,
+        GameStatus gameStatus,
         IGameState gameState,
-        IGameEventBus gameEventBus,
         ICommandValidator commandValidator,
-        IGameEventsRepository eventsRepository,
-        IEventDispatcher dispatcher)
+        IGameEventApplier eventApplier)
     {
         GameId = gameId;
+
+        if (!Enum.IsDefined(gameStatus))
+        {
+            throw new InvalidEnumArgumentException(
+                nameof(gameStatus),
+                (int)gameStatus,
+                typeof(GameStatus));
+        }
+        Status = gameStatus;
 
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
 
-        ArgumentNullException.ThrowIfNull(gameEventBus);
-        _gameEventBus = gameEventBus;
-
         ArgumentNullException.ThrowIfNull(commandValidator);
         _commandValidator = commandValidator;
 
-        ArgumentNullException.ThrowIfNull(eventsRepository);
-        _eventsRepository = eventsRepository;
-
-        ArgumentNullException.ThrowIfNull(dispatcher);
-        _dispatcher = dispatcher;
+        ArgumentNullException.ThrowIfNull(eventApplier);
+        _eventApplier = eventApplier;
     }
 
     public async Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token)
@@ -59,47 +61,23 @@ public sealed class Game : IGame
             return null!;
         }
 
-        var eventUnit = ApplyCore(@event);
-
-        await _eventsRepository.AddAsync(eventUnit, token);
+        var eventUnit = _eventApplier.ApplyAsync(@event, token);
 
         // todo make result
         return null!;
     }
 
-    public async Task ApplyAsync(IPrimaryEvent @event, CancellationToken token)
+    public async Task StartAsync(CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(@event);
-
         token.ThrowIfCancellationRequested();
 
-        using var _ = Telemetry.StartActivity(@event);
-
-        var eventUnit = ApplyCore(@event);
-
-        await _eventsRepository.AddAsync(eventUnit, token);
-    }
-
-    private IGameEventUnit ApplyCore(IPrimaryEvent primaryEvent)
-    {
-        var randomEvents = new List<IRandomEvent>();
-
-        _dispatcher.Publish(primaryEvent);
-
-        while (_gameEventBus.TryRead(out var nextEvent))
+        if (Status is not GameStatus.Pending)
         {
-            if (nextEvent is IRandomEvent randomEvent)
-            {
-                randomEvents.Add(randomEvent);
-            }
-
-            _dispatcher.Publish(nextEvent);
+            throw new InvalidOperationException();
         }
 
-        return new EventUnit(primaryEvent, randomEvents);
-    }
+        using var _ = Telemetry.StartGameActivity(this);
 
-    private sealed record class EventUnit(
-        IPrimaryEvent PrimaryEvent,
-        IReadOnlyCollection<IRandomEvent> RelatedRandomEvents) : IGameEventUnit;
+        var unit = _eventApplier.ApplyAsync(new GameStartedEvent(GameId), token);
+    }
 }

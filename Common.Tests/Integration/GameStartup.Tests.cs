@@ -93,11 +93,13 @@ public sealed class GameStartupIntegrationTests
 
         var game = new Game(
             gameId,
+            GameStatus.Pending,
             gameState,
-            eventBus,
             Mock.Of<ICommandValidator>(),
-            Mock.Of<IGameEventsRepository>(),
-            dispatcher);
+            new GameEventApplier(
+                eventBus,
+                dispatcher,
+                Mock.Of<IGameEventsRepository>()));
 
         var setup = new GameSetup(gameTypeId, [new PlayerId(Guid.NewGuid())]);
 

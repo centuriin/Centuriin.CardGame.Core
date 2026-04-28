@@ -2,6 +2,7 @@
 
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Observability;
 
@@ -31,6 +32,16 @@ public static class Telemetry
         activity?.SetTag("command.type", command.GetType().Name);
         activity?.SetTag("game.id", command.GameId.Value);
         activity?.SetTag("actor.id", command.Actor.Value);
+
+        return activity;
+    }
+
+    internal static IDisposable? StartGameActivity(IGame game)
+    {
+        ArgumentNullException.ThrowIfNull(game);
+
+        var activity = Source.StartActivity("GameStart");
+        activity?.SetTag("game.id", game.GameId.Value);
 
         return activity;
     }
