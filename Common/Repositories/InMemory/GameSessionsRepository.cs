@@ -33,7 +33,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
 
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        if (!_sessions.TryAdd(session.Game.GameId, session))
+        if (!_sessions.TryAdd(session.Game.Id, session))
         {
             throw new InvalidOperationException();
         }

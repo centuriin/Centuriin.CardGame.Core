@@ -41,7 +41,7 @@ public static class Telemetry
         ArgumentNullException.ThrowIfNull(game);
 
         var activity = Source.StartActivity("GameStart");
-        activity?.SetTag("game.id", game.GameId.Value);
+        activity?.SetTag("game.id", game.Id.Value);
 
         return activity;
     }

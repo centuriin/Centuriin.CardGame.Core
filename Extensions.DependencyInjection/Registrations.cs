@@ -49,6 +49,7 @@ public static class Registrations
             .AddSingleton<IZoneFactory, ZoneFactory>()
             .AddSingleton<ICardFactory, CardFactory>()
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
+
             .AddScoped<ISystemFactory, SystemFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>

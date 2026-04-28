@@ -11,20 +11,20 @@ public sealed class Game : IGame
     private readonly ICommandValidator _commandValidator;
     private readonly IGameEventApplier _eventApplier;
 
-    public GameId GameId { get; }
+    public GameId Id { get; }
 
     public GameStatus Status { get; }
 
     public IGameState State { get; }
 
     public Game(
-        GameId gameId,
+        GameId id,
         GameStatus gameStatus,
         IGameState gameState,
         ICommandValidator commandValidator,
         IGameEventApplier eventApplier)
     {
-        GameId = gameId;
+        Id = id;
 
         if (!Enum.IsDefined(gameStatus))
         {
@@ -78,6 +78,6 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartGameActivity(this);
 
-        var unit = _eventApplier.ApplyAsync(new GameStartedEvent(GameId), token);
+        var unit = _eventApplier.ApplyAsync(new GameStartedEvent(Id), token);
     }
 }

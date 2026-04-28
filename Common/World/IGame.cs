@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.World;
 
 public interface IGame
 {
-    public GameId GameId { get; }
+    public GameId Id { get; }
 
     public GameStatus Status { get; }
 

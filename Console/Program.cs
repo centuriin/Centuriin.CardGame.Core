@@ -51,11 +51,11 @@ var p4 = new PlayerId(Guid.NewGuid());
 
 var g1 = await startup.StartupGameAsync(new GameSetup(new(1), [p1, p2]), CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g1.GameId, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g1.Id, CancellationToken.None);
 
 var g2 = await startup.StartupGameAsync(new GameSetup(new(1), [p3, p4]), CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g2.GameId, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g2.Id, CancellationToken.None);
 
 // todo
 public sealed class ZoneDefinitionRepo : IZoneDefinitionsRepository

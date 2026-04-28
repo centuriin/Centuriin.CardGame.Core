@@ -66,7 +66,7 @@ public sealed class GameStartupServiceTests
 
         var applyCalls = 0;
         var gameMock = new Mock<IGame>(MockBehavior.Strict);
-        gameMock.SetupGet(x => x.GameId).Returns(gameId);
+        gameMock.SetupGet(x => x.Id).Returns(gameId);
         gameMock.SetupGet(x => x.State).Returns(gameState);
         gameMock
             .Setup(x => x.StartAsync(TestContext.Current.CancellationToken))
