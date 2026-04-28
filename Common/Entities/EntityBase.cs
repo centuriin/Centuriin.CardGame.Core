@@ -28,7 +28,7 @@ public abstract class EntityBase
     /// <exception cref="ArgumentNullException">
     /// When <paramref name="components"/> is <see langword="null"/>.
     /// </exception>
-    public void Add(params IReadOnlyCollection<ComponentBase> components)
+    public void Add(params IEnumerable<ComponentBase> components)
     {
         ArgumentNullException.ThrowIfNull(components);
 

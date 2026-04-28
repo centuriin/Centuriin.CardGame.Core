@@ -13,7 +13,7 @@ public sealed class Game : IGame
 
     public GameId Id { get; }
 
-    public GameStatus Status { get; }
+    public GameStatus Status { get; private set; }
 
     public IGameState State { get; }
 
@@ -53,7 +53,7 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartActivity(command);
 
-        var @event = _commandValidator.Validate(@command);
+        var @event = _commandValidator.Validate(command);
 
         if (@event is null)
         {
@@ -78,6 +78,8 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartGameActivity(this);
 
-        var unit = _eventApplier.ApplyAsync(new GameStartedEvent(Id), token);
+        var unit = await _eventApplier.ApplyAsync(new GameStartedEvent(Id), token);
+
+        Status = GameStatus.Running;
     }
 }

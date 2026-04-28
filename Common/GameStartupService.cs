@@ -9,12 +9,12 @@ public sealed class GameStartupService : IGameStartupService
 {
     private readonly IGameSessionsRepository _sessionsRepository;
     private readonly IEnumerable<IGameLoader> _loaders;
-    private readonly IGameSessionFactory _gameFactory;
+    private readonly IGameSessionFactory _gameSessionFactory;
 
     public GameStartupService(
         IGameSessionsRepository sessionsRepository,
         IEnumerable<IGameLoader> loaders,
-        IGameSessionFactory gameFactory)
+        IGameSessionFactory gameSessionFactory)
     {
         ArgumentNullException.ThrowIfNull(sessionsRepository);
         _sessionsRepository = sessionsRepository;
@@ -22,8 +22,8 @@ public sealed class GameStartupService : IGameStartupService
         ArgumentNullException.ThrowIfNull(loaders);
         _loaders = loaders;
 
-        ArgumentNullException.ThrowIfNull(gameFactory);
-        _gameFactory = gameFactory;
+        ArgumentNullException.ThrowIfNull(gameSessionFactory);
+        _gameSessionFactory = gameSessionFactory;
     }
 
     public async Task<IGame> StartupGameAsync(GameSetup setup, CancellationToken token)
@@ -32,7 +32,7 @@ public sealed class GameStartupService : IGameStartupService
 
         token.ThrowIfCancellationRequested();
 
-        var session = await _gameFactory.CreateAsync(setup, token);
+        var session = await _gameSessionFactory.CreateAsync(setup, token);
 
         await _sessionsRepository.AddAsync(session, token);
 
