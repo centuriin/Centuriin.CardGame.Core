@@ -81,5 +81,5 @@ public sealed class GameTypeRepo : IGameTypeRepository
 
 public sealed class EmptyValidator : ICommandValidator
 {
-    public IPrimaryEvent? Validate(ICommand command) => null!;
+    public IPrimaryEvent? Validate(IGameState gameStatem, ICommand command) => null!;
 }

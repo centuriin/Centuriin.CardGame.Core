@@ -8,7 +8,6 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
 {
     private readonly Dictionary<Type, List<IGameRule>> _rulesMap = [];
 
-    private readonly 
     private readonly ICoreLogger<CommandValidator> _logger;
 
     public CommandValidator(ICoreLogger<CommandValidator> logger)
@@ -56,5 +55,7 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
                 return null;
             }
         }
+
+        return null;
     }
 }

@@ -53,7 +53,7 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartActivity(command);
 
-        var @event = _commandValidator.Validate(command);
+        var @event = _commandValidator.Validate(State, command);
 
         if (@event is null)
         {
