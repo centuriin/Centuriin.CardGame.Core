@@ -39,10 +39,9 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         pipelineBuilder.Build();
 
-        var game = ActivatorUtilities.CreateInstance<Game>(
-            serviceProvider,
-            new GameId(Guid.NewGuid()),
-            GameStatus.Pending);
+        var game = serviceProvider
+            .GetRequiredService<IGameFactory>()
+            .Create();
 
         return new GameSession(game, scope);
     }

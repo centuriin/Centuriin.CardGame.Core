@@ -50,7 +50,8 @@ public static class Registrations
             .AddSingleton<ICardFactory, CardFactory>()
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
 
-            .AddScoped<ISystemFactory, SystemFactory>();
+            .AddScoped<ISystemFactory, SystemFactory>()
+            .AddScoped<IGameFactory, GameFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
