@@ -2,4 +2,4 @@
 
 public interface ICommandValidatationConfigurator : 
     IConfigurator, 
-    IConfigurableCommandValidatationConfigurator;
+    IConfigurableCommandValidatation;

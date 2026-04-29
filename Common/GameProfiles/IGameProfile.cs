@@ -6,5 +6,7 @@ public interface IGameProfile
 {
     public string Key { get; }
 
-    public void Configure(IConfigurableGamePipeline pipeline);
+    public void Configure(IConfigurableGamePipeline configurablePipeLine);
+
+    public void Configure(IConfigurableCommandValidatation configurableCommandValidatation);
 }

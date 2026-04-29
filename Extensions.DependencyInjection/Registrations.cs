@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common;
+using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
@@ -24,10 +25,17 @@ public static class Registrations
             .AddScoped<IGameEventBusReader>(sp => sp.GetRequiredService<IGameEventBus>())
             .AddScoped<IGameEventBusWriter>(sp => sp.GetRequiredService<IGameEventBus>())
 
+
+            .AddScoped<CommandValidator>()
+            .AddScoped<ICommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
+            .AddScoped<IConfigurableCommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
+
             .AddScoped<IGameEventApplier, GameEventApplier>()
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()
+
+            .AddScoped<ICommandValidatationConfigurator, CommandValidatationConfigurator>()
             .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
 
             .AddStorage()
@@ -52,6 +60,7 @@ public static class Registrations
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
 
             .AddScoped<ISystemFactory, SystemFactory>()
+            .AddScoped<IRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>

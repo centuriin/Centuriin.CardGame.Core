@@ -31,13 +31,19 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         var serviceProvider = scope.ServiceProvider;
 
-        var pipelineBuilder = serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
-
         var profile = await _profilesRepository.GetProfileByGameTypIdAsync(setup.GameTypeId, token);
 
-        profile.Configure(pipelineBuilder);
+        var pipelineConfigurator = 
+            serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
+        
+        profile.Configure(pipelineConfigurator);
+        pipelineConfigurator.Setup();
 
-        pipelineBuilder.Setup();
+        var commandValidationConfigurator = 
+            serviceProvider.GetRequiredService<ICommandValidatationConfigurator>();
+
+        profile.Configure(commandValidationConfigurator);
+        commandValidationConfigurator.Setup();
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()

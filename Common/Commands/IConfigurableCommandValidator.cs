@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Events;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 

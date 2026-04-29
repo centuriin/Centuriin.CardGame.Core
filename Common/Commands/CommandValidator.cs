@@ -1,15 +1,21 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
+﻿using System.Collections.Immutable;
+
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
-public sealed class CommandValidator : ICommandValidator, IConfigurableCommandValidatationConfigurator
+public sealed class CommandValidator : ICommandValidator, IConfigurableCommandValidator
 {
-    private readonly Dictionary<Type, List<IGameRule>> _rulesMap = [];
-
     private readonly ICoreLogger<CommandValidator> _logger;
+
+    private IReadOnlyDictionary<Type, List<IGameRule>> RulesMap { get; set; } =
+        ImmutableDictionary<Type, List<IGameRule>>.Empty;
+
+    private IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> FactoriesMap { get; set; } =
+        ImmutableDictionary<Type, Func<ICommand, IPrimaryEvent>>.Empty;
 
     public CommandValidator(ICoreLogger<CommandValidator> logger)
     {
@@ -17,29 +23,26 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
         _logger = logger;
     }
 
-    public void AddRule<TCommand>(IGameRule rule)
-        where TCommand : ICommand
+    public void Configure(
+        IReadOnlyDictionary<Type, List<IGameRule>> rulesMap, 
+        IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> factoriesMap)
     {
-        ArgumentNullException.ThrowIfNull(rule);
+        ArgumentNullException.ThrowIfNull(rulesMap);
+        RulesMap = rulesMap;
 
-        var commandType = typeof(TCommand);
-
-        if (!_rulesMap.TryGetValue(commandType, out var rules))
-        {
-            rules = [];
-            _rulesMap[commandType] = rules;
-        }
-
-        rules.Add(rule);
+        ArgumentNullException.ThrowIfNull(factoriesMap);
+        FactoriesMap = factoriesMap;
     }
-
-    public IConfigurableGameRules AddValidation<TCommand>() where TCommand : ICommand => throw new NotImplementedException();
 
     public IPrimaryEvent? Validate(IGameState gameState, ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var rules = _rulesMap[command.GetType()];
+        var commandType = command.GetType();
+
+        var rules = RulesMap
+            .Where(x => x.Key.IsAssignableFrom(commandType))
+            .SelectMany(x => x.Value);
 
         foreach (var rule in rules)
         {
@@ -59,8 +62,6 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
             }
         }
 
-        return null;
+        return FactoriesMap[commandType].Invoke(command);
     }
-
-    public IConfigurableCommandValidatationConfigurator WithResult<TEvent>() where TEvent : IPrimaryEvent => throw new NotImplementedException();
 }

@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Factories;
 
@@ -75,7 +76,7 @@ public sealed class CommandValidatationConfigurator :
             return this;
         }
 
-        public IConfigurableCommandValidatationConfigurator WithFactory<TEvent>(Func<TCommand, TEvent> factory)
+        public IConfigurableCommandValidatation WithFactory<TEvent>(Func<TCommand, TEvent> factory)
             where TEvent : IPrimaryEvent
         {
             _configurator.ThrowIfInitialized();

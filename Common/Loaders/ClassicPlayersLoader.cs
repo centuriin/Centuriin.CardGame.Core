@@ -19,7 +19,9 @@ public sealed class ClassicPlayersLoader : IGameLoader
         foreach (var id in setup.PlayerIds)
         {
             var player = new Player(new(index++));
-            player.Add(new PlayerRoleComponent(PlayerRole.Participant));
+            player.Add(
+                new PlayerRoleComponent(PlayerRole.Participant),
+                new PlayerIdentifierComponent(id));
 
             gameState.AddEntity(player);
         }

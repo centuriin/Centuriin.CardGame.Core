@@ -22,4 +22,9 @@ internal sealed class DefaultProfile : IGameProfile
             .Add<TurnFlowSystem, TurnFlowDefinedEvent>()
             .Add<CardMovementSystem, CardDealtEvent>();
     }
+
+    public void Configure(IConfigurableCommandValidatation configurableCommandValidatation)
+    {
+
+    }
 }
