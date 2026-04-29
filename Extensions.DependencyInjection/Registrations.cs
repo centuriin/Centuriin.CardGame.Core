@@ -21,10 +21,30 @@ public static class Registrations
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
             .AddSingleton<IGameStartupService, GameStartupService>()
 
+            .AddBootStrappers()
+
+            .AddGameLoop()
+
+            .AddFactories()
+
+            .AddGameProfiles()
+
+            .AddStorage();
+
+    private static IServiceCollection AddBootStrappers(this IServiceCollection services) =>
+        services
+            .AddScoped<ICommandValidatationConfigurator, CommandValidatationConfigurator>()
+            .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
+
+            .AddSingleton<IGameLoader, ClassicPlayersLoader>()
+            .AddSingleton<IGameLoader, ZonesLoader>()
+            .AddSingleton<IGameLoader, DecksLoader>();
+
+    private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
+        services
             .AddScoped<IGameEventBus, GameEventBus>()
             .AddScoped<IGameEventBusReader>(sp => sp.GetRequiredService<IGameEventBus>())
             .AddScoped<IGameEventBusWriter>(sp => sp.GetRequiredService<IGameEventBus>())
-
 
             .AddScoped<CommandValidator>()
             .AddScoped<ICommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
@@ -33,25 +53,11 @@ public static class Registrations
             .AddScoped<IGameEventApplier, GameEventApplier>()
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
-            .AddScoped<IGameState, GameState>()
-
-            .AddScoped<ICommandValidatationConfigurator, CommandValidatationConfigurator>()
-            .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
-
-            .AddStorage()
-            .AddLoaders()
-            .AddFactories()
-            .AddGameProfiles();
+            .AddScoped<IGameState, GameState>();
 
     private static IServiceCollection AddStorage(this IServiceCollection services) =>
         services
             .AddSingleton<IGameProfilesRepository, GameProfilesRepository>();
-
-    private static IServiceCollection AddLoaders(this IServiceCollection services) =>
-        services
-            .AddSingleton<IGameLoader, ClassicPlayersLoader>()
-            .AddSingleton<IGameLoader, ZonesLoader>()
-            .AddSingleton<IGameLoader, DecksLoader>();
 
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
