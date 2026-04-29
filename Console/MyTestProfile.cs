@@ -23,10 +23,7 @@ public sealed class MyTestProfile : IGameProfile
         ArgumentNullException.ThrowIfNull(configurableCommandValidatation);
 
         _ = configurableCommandValidatation
-            .AddValidation<ICommand>()
-                .AddRule<ActorIsActivePlayerRule>();
-
-        _ = configurableCommandValidatation
+            .UseDefaultProfile()
             .AddValidation<FakeCommand>()
                 .AddRule<ActorIsActivePlayerRule>()
                 .WithFactory(x => new GameStartedEvent(x.GameId));

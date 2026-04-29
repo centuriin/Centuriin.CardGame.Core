@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
+﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Systems;
 
@@ -25,6 +26,7 @@ internal sealed class DefaultProfile : IGameProfile
 
     public void Configure(IConfigurableCommandValidatation configurableCommandValidatation)
     {
-
+        _ = configurableCommandValidatation
+            .AddGeneralRule<ActorIsActivePlayerRule>();
     }
 }

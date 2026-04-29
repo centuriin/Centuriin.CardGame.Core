@@ -2,6 +2,7 @@
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Common.Configuration;
 
@@ -12,6 +13,10 @@ public sealed class CommandValidatationConfigurator :
     private readonly Dictionary<Type, object> _gameRulesConfigurators = [];
 
     private readonly IConfigurableCommandValidator _configurableValidator;
+
+    private static Type GeneralCommandType { get; } = typeof(ICommand);
+
+    private Dictionary<Type, IGameRule> GameRulesInstanceCache { get; } = [];
 
     private Dictionary<Type, List<IGameRule>> GameRules { get; } = [];
 
@@ -47,7 +52,42 @@ public sealed class CommandValidatationConfigurator :
         return (IConfigurableGameRules<TCommand>)configurable;
     }
 
+    public IConfigurableCommandValidatation UseDefaultProfile()
+    {
+        DefaultProfile.Instance.Configure(this);
+        return this;
+    }
+
+    public IConfigurableCommandValidatation AddGeneralRule<TGameRule>()
+            where TGameRule : IGameRule
+    {
+        ThrowIfInitialized();
+
+        if (!GameRules.TryGetValue(GeneralCommandType, out var rules))
+        {
+            rules = [];
+            GameRules[GeneralCommandType] = rules;
+        }
+
+        rules.Add(GetRule<TGameRule>());
+
+        return this;
+    }
+
     protected override void SetupCore() => _configurableValidator.Configure(GameRules, EventFactories);
+
+    private IGameRule GetRule<TGameRule>() where TGameRule : IGameRule
+    {
+        var ruleType = typeof(TGameRule);
+
+        if (!GameRulesInstanceCache.TryGetValue(ruleType, out var rule))
+        {
+            rule = RuleFactory.Create<TGameRule>();
+            GameRulesInstanceCache[ruleType] = rule;
+        }
+
+        return rule;
+    }
 
     private sealed class ConfigurableGameRules<TCommand> : IConfigurableGameRules<TCommand>
         where TCommand : ICommand
@@ -71,7 +111,7 @@ public sealed class CommandValidatationConfigurator :
                 _configurator.GameRules[CommandType] = rules;
             }
 
-            rules.Add(_configurator.RuleFactory.Create<TGameRule>());
+            rules.Add(_configurator.GetRule<TGameRule>());
 
             return this;
         }
