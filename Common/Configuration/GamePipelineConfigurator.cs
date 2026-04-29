@@ -1,18 +1,18 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Systems;
 
-namespace Centuriin.CardGame.Core.Common.GameProfiles;
+namespace Centuriin.CardGame.Core.Common.Configuration;
 
-public sealed class GamePipelineBuilder : IGamePipelineBuilder
+public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineConfigurator
 {
     private readonly LinkedList<RegistrationStep> _steps = new();
     private readonly ISystemFactory _factory;
     private readonly IEventDispatcher _dispatcher;
-    private bool _isBuilded;
 
-    public GamePipelineBuilder(
+    public GamePipelineConfigurator(
         ISystemFactory factory,
         IEventDispatcher dispatcher)
     {
@@ -33,7 +33,7 @@ public sealed class GamePipelineBuilder : IGamePipelineBuilder
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
     {
-        ThrowIfBuilded();
+        ThrowIfInitialized();
 
         _steps.AddLast(CreateStep<TSystem, TEvent>());
         return this;
@@ -44,7 +44,7 @@ public sealed class GamePipelineBuilder : IGamePipelineBuilder
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
     {
-        ThrowIfBuilded();
+        ThrowIfInitialized();
 
         var node = FindNode<TBellowSystem>();
         _steps.AddAfter(node, CreateStep<TSystem, TEvent>());
@@ -56,7 +56,7 @@ public sealed class GamePipelineBuilder : IGamePipelineBuilder
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
     {
-        ThrowIfBuilded();
+        ThrowIfInitialized();
 
         var node = FindNode<TFollowSystem>();
         _steps.AddBefore(node, CreateStep<TSystem, TEvent>());
@@ -68,17 +68,15 @@ public sealed class GamePipelineBuilder : IGamePipelineBuilder
         where TSystem : SystemBase, ISubscriber<TEvent>
         where TEvent : IGameEvent
     {
-        ThrowIfBuilded();
+        ThrowIfInitialized();
 
         var node = FindNode<TReplaceableSystem>();
         node.Value = CreateStep<TSystem, TEvent>();
         return this;
     }
 
-    public void Build()
+    protected override void SetupCore()
     {
-        ThrowIfBuilded();
-
         var instancesCache = new Dictionary<Type, SystemBase>(_steps.Count);
 
         foreach (var step in _steps)
@@ -90,16 +88,6 @@ public sealed class GamePipelineBuilder : IGamePipelineBuilder
             }
 
             step.RegisterAction.Invoke(_dispatcher, system);
-        }
-
-        _isBuilded = true;
-    }
-
-    private void ThrowIfBuilded()
-    {
-        if (_isBuilded)
-        {
-            throw new InvalidOperationException();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Systems;
 
 namespace Centuriin.CardGame.Core.Common.GameProfiles;

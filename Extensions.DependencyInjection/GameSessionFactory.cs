@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Factories;
-using Centuriin.CardGame.Core.Common.GameProfiles;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -31,13 +31,13 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         var serviceProvider = scope.ServiceProvider;
 
-        var pipelineBuilder = serviceProvider.GetRequiredService<IGamePipelineBuilder>();
+        var pipelineBuilder = serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
 
         var profile = await _profilesRepository.GetProfileByGameTypIdAsync(setup.GameTypeId, token);
 
         profile.Configure(pipelineBuilder);
 
-        pipelineBuilder.Build();
+        pipelineBuilder.Setup();
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()

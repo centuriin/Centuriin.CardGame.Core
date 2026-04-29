@@ -1,6 +1,9 @@
-﻿namespace Centuriin.CardGame.Core.Common.Commands;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Factories;
 
-public sealed class GameRulesBuilder : IGameRulesBuilder, IConfigurableGameRulesBuilder
+namespace Centuriin.CardGame.Core.Common.Commands;
+
+public sealed class GameRulesBuilder : IGameRulesBuilder, IConfigurableGameRules
 {
     private readonly Dictionary<Type, List<Type>> _ruleMappings = [];
     private readonly IRuleFactory _factory;
@@ -10,7 +13,7 @@ public sealed class GameRulesBuilder : IGameRulesBuilder, IConfigurableGameRules
         _factory = factory;
     }
 
-    public IConfigurableGameRulesBuilder AddRule<TCommand, TRule>()
+    public IConfigurableGameRules AddRule<TCommand, TRule>()
         where TCommand : ICommand
         where TRule : IGameRule
     {

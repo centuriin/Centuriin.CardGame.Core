@@ -1,8 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
-
-namespace Centuriin.CardGame.Core.Common.Factories;
+﻿namespace Centuriin.CardGame.Core.Common.Factories;
 
 public interface IPrimaryEventFactory
 {
-    public IPrimaryEvent Create();
+    public TEvent Create<TEvent>();
 }

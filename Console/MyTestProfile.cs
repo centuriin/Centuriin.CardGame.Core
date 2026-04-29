@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.GameProfiles;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Console;
 

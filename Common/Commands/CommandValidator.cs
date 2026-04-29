@@ -1,10 +1,11 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
-public sealed class CommandValidator : ICommandValidator, IConfigurableCommandValidator
+public sealed class CommandValidator : ICommandValidator, IConfigurableCommandValidatationConfigurator
 {
     private readonly Dictionary<Type, List<IGameRule>> _rulesMap = [];
 
@@ -32,6 +33,8 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
         rules.Add(rule);
     }
 
+    public IConfigurableGameRules AddValidation<TCommand>() where TCommand : ICommand => throw new NotImplementedException();
+
     public IPrimaryEvent? Validate(IGameState gameState, ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -58,4 +61,6 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
 
         return null;
     }
+
+    public IConfigurableCommandValidatationConfigurator WithResult<TEvent>() where TEvent : IPrimaryEvent => throw new NotImplementedException();
 }

@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common;
+using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.GameProfiles;
@@ -27,7 +28,7 @@ public static class Registrations
             .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>()
-            .AddScoped<IGamePipelineBuilder, GamePipelineBuilder>()
+            .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
 
             .AddStorage()
             .AddLoaders()

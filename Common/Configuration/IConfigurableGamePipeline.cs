@@ -2,7 +2,7 @@
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Systems;
 
-namespace Centuriin.CardGame.Core.Common.GameProfiles;
+namespace Centuriin.CardGame.Core.Common.Configuration;
 
 public interface IConfigurableGamePipeline
 {
