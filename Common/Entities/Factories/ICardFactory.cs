@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Entities.Cards;
 using Centuriin.CardGame.Core.Common.Templates;
 
-namespace Centuriin.CardGame.Core.Common.Factories;
+namespace Centuriin.CardGame.Core.Common.Entities.Factories;
 
 public interface ICardFactory
 {

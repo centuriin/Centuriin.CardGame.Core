@@ -1,5 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Factories;
+using Centuriin.CardGame.Core.Common.Entities.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.Templates;
 
@@ -9,7 +9,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Common.Tests.Factories;
+namespace Centuriin.CardGame.Core.Common.Tests.Entities.Factories;
 
 public sealed class CardsFactoryTests
 {

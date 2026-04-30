@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.World;
-
-namespace Centuriin.CardGame.Core.Common.Factories;
+﻿namespace Centuriin.CardGame.Core.Common.World;
 
 public interface IGameSessionFactory
 {

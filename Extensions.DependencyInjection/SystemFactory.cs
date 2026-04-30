@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Factories;
-using Centuriin.CardGame.Core.Common.Systems;
+﻿using Centuriin.CardGame.Core.Common.Systems;
 
 using Microsoft.Extensions.DependencyInjection;
 

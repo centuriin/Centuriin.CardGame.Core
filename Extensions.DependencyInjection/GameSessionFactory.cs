@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -47,7 +46,7 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()
-            .Create();
+            .Create<ServerGame>();
 
         return new GameSession(game, scope);
     }

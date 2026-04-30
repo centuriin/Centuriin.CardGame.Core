@@ -1,6 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
-using Centuriin.CardGame.Core.Common.Factories;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Systems;
 

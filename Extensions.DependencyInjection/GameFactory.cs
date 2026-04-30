@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Factories;
-using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,14 +14,14 @@ public sealed class GameFactory : IGameFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IGame Create() =>
-        ActivatorUtilities.CreateInstance<ServerGame>(
+    public TGame Create<TGame>() where TGame : IGame =>
+        ActivatorUtilities.CreateInstance<TGame>(
             _serviceProvider, 
             new GameId(Guid.CreateVersion7()), 
             GameStatus.Pending);
 
-    public IGame Create(IGameSnapshot snapshot) =>
-        ActivatorUtilities.CreateInstance<ServerGame>(
+    public TGame Create<TGame>(IGameSnapshot snapshot) where TGame : IGame =>
+        ActivatorUtilities.CreateInstance<TGame>(
             _serviceProvider, 
             snapshot.GameStatus, 
             snapshot.GameState,

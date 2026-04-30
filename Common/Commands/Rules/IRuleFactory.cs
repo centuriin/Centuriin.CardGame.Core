@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
-
-namespace Centuriin.CardGame.Core.Common.Factories;
+﻿namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 
 public interface IRuleFactory
 {
