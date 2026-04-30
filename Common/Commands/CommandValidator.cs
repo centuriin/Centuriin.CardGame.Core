@@ -62,6 +62,13 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
             }
         }
 
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug(
+                "Command {CommadType} successfull validated",
+                command.GetType().Name);
+        }
+
         return FactoriesMap[commandType].Invoke(command);
     }
 }

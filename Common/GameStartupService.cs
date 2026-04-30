@@ -7,14 +7,14 @@ namespace Centuriin.CardGame.Core.Common;
 
 public sealed class GameStartupService : IGameStartupService
 {
+    private readonly IGameSessionFactory _gameSessionFactory;
     private readonly IGameSessionsRepository _sessionsRepository;
     private readonly IEnumerable<IGameLoader> _loaders;
-    private readonly IGameSessionFactory _gameSessionFactory;
 
     public GameStartupService(
+        IGameSessionFactory gameSessionFactory,
         IGameSessionsRepository sessionsRepository,
-        IEnumerable<IGameLoader> loaders,
-        IGameSessionFactory gameSessionFactory)
+        IEnumerable<IGameLoader> loaders)
     {
         ArgumentNullException.ThrowIfNull(sessionsRepository);
         _sessionsRepository = sessionsRepository;

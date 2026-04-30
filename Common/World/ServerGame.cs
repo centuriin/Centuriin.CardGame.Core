@@ -6,7 +6,7 @@ using Centuriin.CardGame.Core.Common.Observability;
 
 namespace Centuriin.CardGame.Core.Common.World;
 
-public sealed class Game : IGame
+public sealed class ServerGame : IGame
 {
     private readonly ICommandValidator _commandValidator;
     private readonly IGameEventApplier _eventApplier;
@@ -17,7 +17,21 @@ public sealed class Game : IGame
 
     public IGameState State { get; }
 
-    public Game(
+    public GameVersion Version { get; private set; } = GameVersion.Default;
+
+    public ServerGame(
+        GameId id,
+        GameStatus gameStatus,
+        IGameState gameState,
+        GameVersion version,
+        ICommandValidator commandValidator,
+        IGameEventApplier eventApplier) :
+        this(id, gameStatus, gameState, commandValidator,  eventApplier)
+    {
+        Version = version;
+    }
+
+    public ServerGame(
         GameId id,
         GameStatus gameStatus,
         IGameState gameState,
@@ -63,6 +77,8 @@ public sealed class Game : IGame
 
         var eventUnit = _eventApplier.ApplyAsync(@event, token);
 
+        Version++;
+
         // todo make result
         return null!;
     }
@@ -81,5 +97,6 @@ public sealed class Game : IGame
         var unit = await _eventApplier.ApplyAsync(new GameStartedEvent(Id), token);
 
         Status = GameStatus.Running;
+        Version++;
     }
 }

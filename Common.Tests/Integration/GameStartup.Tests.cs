@@ -91,7 +91,7 @@ public sealed class GameStartupIntegrationTests
                 eventBus,
                 DebugLogger<CardMovementSystem>.Instance));
 
-        var game = new Game(
+        var game = new ServerGame(
             gameId,
             GameStatus.Pending,
             gameState,
@@ -123,9 +123,9 @@ public sealed class GameStartupIntegrationTests
         };
 
         var startupService = new GameStartupService(
+            gameFactoryMock.Object,
             sessionsRepositoryMock.Object,
-            loaders,
-            gameFactoryMock.Object);
+            loaders);
 
         // Act
         var resultGame = await startupService.StartupGameAsync(

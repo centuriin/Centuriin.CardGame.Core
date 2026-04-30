@@ -69,7 +69,7 @@ public sealed class GameTests
 
         var eventsRepo = new FakeEventsRepository();
 
-        var game = new Game(
+        var game = new ServerGame(
             gameId,
             GameStatus.Pending,
             gameState,

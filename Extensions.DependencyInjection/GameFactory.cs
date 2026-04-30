@@ -16,14 +16,15 @@ public sealed class GameFactory : IGameFactory
     }
 
     public IGame Create() =>
-        ActivatorUtilities.CreateInstance<Game>(
+        ActivatorUtilities.CreateInstance<ServerGame>(
             _serviceProvider, 
             new GameId(Guid.CreateVersion7()), 
             GameStatus.Pending);
 
     public IGame Create(IGameSnapshot snapshot) =>
-        ActivatorUtilities.CreateInstance<Game>(
+        ActivatorUtilities.CreateInstance<ServerGame>(
             _serviceProvider, 
             snapshot.GameStatus, 
-            snapshot.GameState);
+            snapshot.GameState,
+            snapshot.Version);
 }

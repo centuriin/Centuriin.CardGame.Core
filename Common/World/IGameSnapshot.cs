@@ -8,5 +8,5 @@ public interface IGameSnapshot
 
     public IGameState GameState { get; }
 
-    public int LastGameEventUnitSequenceNumber { get; }
+    public GameVersion Version { get; }
 }

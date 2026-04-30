@@ -10,6 +10,8 @@ public interface IGame
 
     public IGameState State { get; }
 
+    public GameVersion Version { get; }
+
     public Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token);
 
     public Task StartAsync(CancellationToken token);

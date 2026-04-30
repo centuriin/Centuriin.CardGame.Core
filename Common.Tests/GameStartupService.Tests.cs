@@ -14,14 +14,28 @@ namespace Centuriin.CardGame.Core.Common.Tests;
 public sealed class GameStartupServiceTests
 {
     [Fact]
-    public void ConstructorShouldThrowWhenSessionssRepositoryIsNull()
+    public void ConstructorShouldThrowWhenFactoryIsNull()
     {
         // Act
         var exception = Record.Exception(() =>
             new GameStartupService(
                 null!,
-                [],
-                Mock.Of<IGameSessionFactory>()));
+                Mock.Of<IGameSessionsRepository>(),
+                []));
+
+        // Assert
+        exception.Should().BeOfType<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ConstructorShouldThrowWhenSessionssRepositoryIsNull()
+    {
+        // Act
+        var exception = Record.Exception(() =>
+            new GameStartupService(
+                Mock.Of<IGameSessionFactory>(),
+                null!,
+                []));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -33,22 +47,8 @@ public sealed class GameStartupServiceTests
         // Act
         var exception = Record.Exception(() =>
             new GameStartupService(
+                Mock.Of<IGameSessionFactory>(),
                 Mock.Of<IGameSessionsRepository>(),
-                null!,
-                Mock.Of<IGameSessionFactory>()));
-
-        // Assert
-        exception.Should().BeOfType<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void ConstructorShouldThrowWhenFactoryIsNull()
-    {
-        // Act
-        var exception = Record.Exception(() =>
-            new GameStartupService(
-                Mock.Of<IGameSessionsRepository>(),
-                [],
                 null!));
 
         // Assert
@@ -99,9 +99,9 @@ public sealed class GameStartupServiceTests
             .Returns(Task.CompletedTask);
 
         var service = new GameStartupService(
+            factoryMock.Object,
             sessionsRepositoryMock.Object,
-            [loaderMock.Object],
-            factoryMock.Object);
+            [loaderMock.Object]);
 
         // Act
         var result = await service.StartupGameAsync(setup, TestContext.Current.CancellationToken);
@@ -119,9 +119,9 @@ public sealed class GameStartupServiceTests
     {
         // Arrange
         var service = new GameStartupService(
+            Mock.Of<IGameSessionFactory>(),
             Mock.Of<IGameSessionsRepository>(),
-            [],
-            Mock.Of<IGameSessionFactory>());
+            []);
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
