@@ -38,7 +38,7 @@ public static class Registrations
             .AddScoped<ICommandValidatationConfigurator, CommandValidatationConfigurator>()
             .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
 
-            .AddSingleton<IGameLoader, ClassicPlayersLoader>()
+            .AddSingleton<IGameLoader, PlayersLoader>()
             .AddSingleton<IGameLoader, ZonesLoader>()
             .AddSingleton<IGameLoader, DecksLoader>();
 

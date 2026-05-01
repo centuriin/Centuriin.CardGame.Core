@@ -117,7 +117,7 @@ public sealed class GameStartupIntegrationTests
 
         var loaders = new List<IGameLoader>
         {
-            new ClassicPlayersLoader(),
+            new PlayersLoader(),
             new ZonesLoader(zonesRepoMock.Object, zonesFactoryMock.Object),
             new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
         };

@@ -26,20 +26,20 @@ public sealed class ZoneFactory : IZoneFactory
 
         var zones = new List<Zone>(templateIds.Count);
 
-        var index = 0;
+        var entityId = EntityId.Default;
         foreach (var templateId in templateIds)
         {
             var template = templates[templateId];
 
-            zones.Add(CreateZone(template, ++index));
+            zones.Add(CreateZone(template, ++entityId));
         }
 
         return zones;
     }
 
-    private static Zone CreateZone(ZoneTemplate template, int zoneId)
+    private static Zone CreateZone(ZoneTemplate template, EntityId zoneId)
     {
-        var zone = new Zone(new(zoneId));
+        var zone = new Zone(zoneId);
 
         zone.Add(
             [..

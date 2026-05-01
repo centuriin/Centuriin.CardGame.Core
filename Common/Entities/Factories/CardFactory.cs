@@ -26,20 +26,20 @@ public sealed class CardFactory : ICardFactory
 
         var cards = new List<Card>(templateIds.Count);
 
-        var index = 0;
+        var entityId = EntityId.Default;
         foreach (var templateId in templateIds)
         {
             var template = templates[templateId];
 
-            cards.Add(CreateCard(template, ++index));
+            cards.Add(CreateCard(template, ++entityId));
         }
 
         return cards;
     }
 
-    private static Card CreateCard(CardTemplate template, int cardId)
+    private static Card CreateCard(CardTemplate template, EntityId cardId)
     {
-        var card = new Card(new(cardId));
+        var card = new Card(cardId);
 
         card.Add(
             [..

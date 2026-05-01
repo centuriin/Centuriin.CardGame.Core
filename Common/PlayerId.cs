@@ -3,7 +3,9 @@
 /// <summary>
 /// External global player identifier.
 /// </summary>
-/// <param name="Value"></param>
+/// <param name="Value">
+/// Value.
+/// </param>
 public readonly record struct PlayerId(Guid Value)
 {
     /// <summary>

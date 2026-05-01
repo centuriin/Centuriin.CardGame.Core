@@ -38,7 +38,7 @@ public sealed class ZonesLoader : IGameLoader
             token);
 
         var zoneTemplates = await CreateZonesAsync(
-            setup.PlayerIds.Count,
+            setup.PlayerIds.Count(x => x != PlayerId.System),
             zoneDefinitions,
             token);
 

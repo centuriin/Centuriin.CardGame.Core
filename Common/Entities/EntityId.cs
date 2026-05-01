@@ -9,4 +9,6 @@
 public readonly record struct EntityId(int Value)
 {
     public static EntityId Default { get; }
+
+    public static EntityId operator ++(EntityId id) => new(id.Value + 1);
 }
