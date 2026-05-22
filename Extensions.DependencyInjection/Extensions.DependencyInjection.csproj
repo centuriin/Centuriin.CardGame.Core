@@ -4,12 +4,24 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+		<IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <PropertyGroup>
 		<AssemblyName>Centuriin.CardGame.Core.Extensions.DependencyInjection</AssemblyName>
 		<RootNamespace>Centuriin.CardGame.Core.Extensions.DependencyInjection</RootNamespace>
     </PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>arabanas</Authors>
+		<Company>Centuriin</Company>
+		<PackageId>Centuriin.CardGame.Core.Extensions.DependencyInjection</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+      <None Remove="LICENSE.txt" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />

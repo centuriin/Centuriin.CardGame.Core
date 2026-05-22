@@ -4,12 +4,24 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<IsPackable>false</IsPackable>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<AssemblyName>Centuriin.CardGame.Core.Drunkard</AssemblyName>
 		<RootNamespace>Centuriin.CardGame.Core.Drunkard</RootNamespace>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>arabanas</Authors>
+		<Company>Centuriin</Company>
+		<PackageId>Centuriin.CardGame.Core.Drunkard</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="LICENSE.txt" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Common\Common.csproj" />
