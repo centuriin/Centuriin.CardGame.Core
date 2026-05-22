@@ -54,7 +54,7 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
                 {
                     _logger.LogDebug(
                         "Rule {RuleName} declined command by reason: {RuleErrorMessage}",
-                        command.GetType().Name,
+                        rule.GetType().Name,
                         result.ErrorMessage);
                 }
 
