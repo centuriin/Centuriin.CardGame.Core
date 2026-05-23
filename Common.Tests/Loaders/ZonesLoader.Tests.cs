@@ -54,9 +54,9 @@ public sealed class ZonesLoaderTests
             new(new(11), ZoneScope.Singleton),
             new(new(22), ZoneScope.PerPlayer),
         };
-        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
+        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
         zonesRepo
-            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync(zoneDefinitions);
 
         var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
@@ -108,9 +108,9 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
-        var zonesRepo = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
+        var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
         zonesRepo
-            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
         var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);

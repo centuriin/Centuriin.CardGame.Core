@@ -17,6 +17,7 @@ public sealed class ZoneFactory : IZoneFactory
 
     public async Task<IReadOnlyCollection<Zone>> CreateAsync(
         IReadOnlyCollection<TemplateId> templateIds,
+        int activePlayersCount,
         CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
@@ -31,7 +32,17 @@ public sealed class ZoneFactory : IZoneFactory
         {
             var template = templates[templateId];
 
-            zones.Add(CreateZone(template, ++entityId));
+            if (template.Scope is ZoneScope.Singleton)
+            {
+                zones.Add(CreateZone(template, ++entityId));
+            }
+            else if (template.Scope is ZoneScope.PerPlayer)
+            {
+                for (var i = 0; i < activePlayersCount; i++)
+                {
+                    zones.Add(CreateZone(template, ++entityId));
+                }
+            }
         }
 
         return zones;

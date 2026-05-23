@@ -40,9 +40,9 @@ public sealed class GameStartupIntegrationTests
         handZone.Add(new ZoneRoleComponent(ZoneRole.Hand), new HasPrimaryCards(3));
 
         var zoneTemplateId = new TemplateId(111);
-        var zonesRepoMock = new Mock<IZoneDefinitionsRepository>(MockBehavior.Strict);
+        var zonesRepoMock = new Mock<IZonesRepository>(MockBehavior.Strict);
         zonesRepoMock
-            .Setup(x => x.GetZoneDefinitionsAsync(gameTypeId, TestContext.Current.CancellationToken))
+            .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
             .ReturnsAsync([new ZoneDefinition(zoneTemplateId, ZoneScope.Singleton)]);
 
         var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);

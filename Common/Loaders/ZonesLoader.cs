@@ -12,15 +12,15 @@ namespace Centuriin.CardGame.Core.Common.Loaders;
 
 public sealed class ZonesLoader : IGameLoader
 {
-    private readonly IZoneDefinitionsRepository _zoneDefinitionsRepository;
+    private readonly IZonesRepository _zonesRepository;
     private readonly IZoneFactory _zonesFactory;
 
     public ZonesLoader(
-        IZoneDefinitionsRepository zonesRepository,
+        IZonesRepository zonesRepository,
         IZoneFactory zonesFactory)
     {
         ArgumentNullException.ThrowIfNull(zonesRepository);
-        _zoneDefinitionsRepository = zonesRepository;
+        _zonesRepository = zonesRepository;
 
         ArgumentNullException.ThrowIfNull(zonesFactory);
         _zonesFactory = zonesFactory;
@@ -33,13 +33,13 @@ public sealed class ZonesLoader : IGameLoader
 
         token.ThrowIfCancellationRequested();
 
-        var zoneDefinitions = await _zoneDefinitionsRepository.GetZoneDefinitionsAsync(
+        var zoneTemplateIds = await _zonesRepository.GetZoneTemplateIdsAsync(
             setup.GameTypeId,
             token);
 
-        var zoneTemplates = await CreateZonesAsync(
+        var zoneTemplates = await _zonesFactory.CreateAsync(
+            zoneTemplateIds,
             setup.PlayerIds.Count(x => x != PlayerId.System),
-            zoneDefinitions,
             token);
 
         AddLinksBeetwenPlayersAndZones(
@@ -58,28 +58,6 @@ public sealed class ZonesLoader : IGameLoader
         {
             gameState.AddEntity(zone);
         }
-    }
-
-    private async Task<IReadOnlyCollection<Zone>> CreateZonesAsync(
-        int playersCount,
-        IReadOnlyCollection<ZoneDefinition> zoneDefinitions,
-        CancellationToken token)
-    {
-        var zoneTemplateIds = new List<TemplateId>();
-
-        foreach (var definition in zoneDefinitions)
-        {
-            if (definition.Scope == ZoneScope.Singleton)
-            {
-                zoneTemplateIds.Add(definition.TemplateId);
-            }
-            else if (definition.Scope == ZoneScope.PerPlayer)
-            {
-                zoneTemplateIds.AddRange(Enumerable.Repeat(definition.TemplateId, playersCount));
-            }
-        }
-
-        return await _zonesFactory.CreateAsync(zoneTemplateIds, token);
     }
 
     private static void AddLinksBeetwenPlayersAndZones(

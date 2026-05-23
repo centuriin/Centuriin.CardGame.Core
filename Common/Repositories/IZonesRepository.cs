@@ -3,9 +3,9 @@ using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Repositories;
 
-public interface IZoneDefinitionsRepository
+public interface IZonesRepository
 {
-    public Task<IReadOnlyCollection<ZoneDefinition>> GetZoneDefinitionsAsync(
+    public Task<IReadOnlyCollection<TemplateId>> GetZoneTemplateIdsAsync(
         GameTypeId gameTypeId,
         CancellationToken token);
 }

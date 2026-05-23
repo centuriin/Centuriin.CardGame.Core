@@ -29,7 +29,7 @@ builder.Services
     .AddCardGameCore()
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
-    .AddSingleton<IZoneDefinitionsRepository, ZoneDefinitionRepo>()
+    .AddSingleton<IZonesRepository, ZoneDefinitionRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
@@ -65,7 +65,7 @@ await sessionsRepository.RemoveByGameIdAsync(g2.Id, CancellationToken.None);
 // todo
 public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand;
 
-public sealed class ZoneDefinitionRepo : IZoneDefinitionsRepository
+public sealed class ZoneDefinitionRepo : IZonesRepository
 {
     public async Task<IReadOnlyCollection<ZoneDefinition>> GetZoneDefinitionsAsync(GameTypeId gameTypeId, CancellationToken token) =>
         [
