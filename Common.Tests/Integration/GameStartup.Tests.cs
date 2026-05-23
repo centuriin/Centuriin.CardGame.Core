@@ -101,7 +101,7 @@ public sealed class GameStartupIntegrationTests
                 dispatcher,
                 Mock.Of<IGameEventsRepository>()));
 
-        var setup = new GameSetup(gameTypeId, [new PlayerId(Guid.NewGuid())]);
+        var setup = new GameSetup(gameTypeId, [PlayerId.System, new PlayerId(Guid.NewGuid())]);
 
         var sessionMock = new Mock<IGameSession>(MockBehavior.Strict);
         sessionMock.SetupGet(x => x.Game).Returns(game);
