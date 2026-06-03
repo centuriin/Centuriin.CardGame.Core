@@ -19,23 +19,26 @@ public sealed class ZonesFactoryTests
         // Arrange
         var templateId1 = new TemplateId(101);
         var templateId2 = new TemplateId(102);
-        var templateIds = new List<TemplateId> { templateId1, templateId1, templateId2 };
+        var templateIds = new List<TemplateId> { templateId1, templateId2 };
 
         var repository = new Mock<ITemplatesRepository<ZoneTemplate>>(MockBehavior.Strict);
         repository
             .Setup(x => x.GetTemplatesByIdsAsync(
-                It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 3),
+                It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 2),
                 TestContext.Current.CancellationToken))
             .ReturnsAsync(
                 [
-                    new ZoneTemplate(templateId1, [new FakeComponent()]),
-                    new ZoneTemplate(templateId2, [new FakeComponent()])
+                    new ZoneTemplate(templateId1, [new FakeComponent()], ZoneScope.PerPlayer),
+                    new ZoneTemplate(templateId2, [new FakeComponent()], ZoneScope.Singleton)
                 ]);
 
         var factory = new ZoneFactory(repository.Object);
 
         // Act
-        var zones = await factory.CreateAsync(templateIds, TestContext.Current.CancellationToken);
+        var zones = await factory.CreateAsync(
+            templateIds, 
+            activePlayersCount: 2,
+            TestContext.Current.CancellationToken);
 
         // Assert
         zones.Should().HaveCount(3);

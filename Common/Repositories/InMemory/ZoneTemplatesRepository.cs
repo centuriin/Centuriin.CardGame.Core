@@ -18,7 +18,8 @@ public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
                         new(1),
                         [
                             new ZoneRoleComponent(ZoneRole.Deck),
-                        ])
+                        ],
+                        ZoneScope.Singleton)
                 },
                 {
                     new(2),
@@ -27,7 +28,8 @@ public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
                         [
                             new ZoneRoleComponent(ZoneRole.Hand),
                             new HasPrimaryCards(3)
-                        ])
+                        ],
+                        ZoneScope.PerPlayer)
                 },
                 {
                     new(4),
@@ -35,7 +37,8 @@ public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
                         new(4),
                         [
                             new ZoneRoleComponent(ZoneRole.Slot),
-                        ])
+                        ],
+                        ZoneScope.PerPlayer)
                 },
         }
         .ToFrozenDictionary();

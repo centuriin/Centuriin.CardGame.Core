@@ -67,11 +67,8 @@ public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
 
 public sealed class ZoneDefinitionRepo : IZonesRepository
 {
-    public async Task<IReadOnlyCollection<ZoneDefinition>> GetZoneDefinitionsAsync(GameTypeId gameTypeId, CancellationToken token) =>
-        [
-            new ZoneDefinition(new(1), ZoneScope.Singleton),
-            new ZoneDefinition(new(2), ZoneScope.PerPlayer)
-        ];
+    public Task<IReadOnlyCollection<TemplateId>> GetZoneTemplateIdsAsync(GameTypeId gameTypeId, CancellationToken token) =>
+        Task.FromResult<IReadOnlyCollection<TemplateId>>([new(1), new(2)]);
 }
 
 public sealed class DecksRepo : IDecksRepository

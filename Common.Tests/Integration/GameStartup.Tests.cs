@@ -43,11 +43,12 @@ public sealed class GameStartupIntegrationTests
         var zonesRepoMock = new Mock<IZonesRepository>(MockBehavior.Strict);
         zonesRepoMock
             .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync([new ZoneDefinition(zoneTemplateId, ZoneScope.Singleton)]);
+            .ReturnsAsync([zoneTemplateId]);
 
         var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
         zonesFactoryMock.Setup(x => x.CreateAsync(
                 It.IsAny<IReadOnlyCollection<TemplateId>>(),
+                activePlayersCount: 1,
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([deckZone, handZone]);
 

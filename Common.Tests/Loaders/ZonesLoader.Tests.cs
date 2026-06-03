@@ -49,22 +49,19 @@ public sealed class ZonesLoaderTests
             .Setup(x => x.AddEntity(It.IsAny<Zone>()))
             .Callback<Zone>(addedEntities.Add);
 
-        var zoneDefinitions = new List<ZoneDefinition>()
-        {
-            new(new(11), ZoneScope.Singleton),
-            new(new(22), ZoneScope.PerPlayer),
-        };
+        var zoneTemplateIds = new TemplateId[] { new(11), new(22) };
         var zonesRepo = new Mock<IZonesRepository>(MockBehavior.Strict);
         zonesRepo
             .Setup(x => x.GetZoneTemplateIdsAsync(gameTypeId, TestContext.Current.CancellationToken))
-            .ReturnsAsync(zoneDefinitions);
+            .ReturnsAsync(zoneTemplateIds);
 
         var zonesFactoryMock = new Mock<IZoneFactory>(MockBehavior.Strict);
         zonesFactoryMock
             .Setup(x => x.CreateAsync(
                 It.Is<IReadOnlyCollection<TemplateId>>(x =>
-                    x.Count == 3
-                    && x.All(x => zoneDefinitions.Select(x => x.TemplateId).Contains(x))),
+                    x.Count == 2
+                    && x.All(x => zoneTemplateIds.Contains(x))),
+                    activePlayersCount: 2,
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([handZone1, handZone2, deckZone]);
 
@@ -117,6 +114,7 @@ public sealed class ZonesLoaderTests
         zonesFactoryMock
             .Setup(x => x.CreateAsync(
                 It.Is<IReadOnlyCollection<TemplateId>>(x => x.Count == 0),
+                activePlayersCount: 0,
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
