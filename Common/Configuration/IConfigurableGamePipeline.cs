@@ -1,6 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
-using Centuriin.CardGame.Core.Common.Systems;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 
 namespace Centuriin.CardGame.Core.Common.Configuration;
 

@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Entities;
+﻿using Centuriin.CardGame.Core.Common.ECS.Components;
+using Centuriin.CardGame.Core.Common.ECS.Entities;
 
 namespace Centuriin.CardGame.Core.Common;
 
@@ -16,12 +16,12 @@ public static class EntityQueryExtensions
 
     public static IEnumerable<EntityBase> WithComponent<TComponent>(
         this IEnumerable<EntityBase> entities,
-        Func<TComponent, bool> preicate)
+        Func<TComponent, bool> predicate)
         where TComponent : ComponentBase
     {
         ArgumentNullException.ThrowIfNull(entities);
-        ArgumentNullException.ThrowIfNull(preicate);
+        ArgumentNullException.ThrowIfNull(predicate);
 
-        return entities.Where(x => x.Has<TComponent>() && preicate(x.Get<TComponent>()));
+        return entities.Where(x => x.Has<TComponent>() && predicate(x.Get<TComponent>()));
     }
 }

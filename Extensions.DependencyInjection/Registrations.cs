@@ -2,14 +2,14 @@
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Entities.Factories;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
+using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
-using Centuriin.CardGame.Core.Common.Repositories;
-using Centuriin.CardGame.Core.Common.Repositories.InMemory;
-using Centuriin.CardGame.Core.Common.Systems;
+using Centuriin.CardGame.Core.Common.Storage.Repositories;
+using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;

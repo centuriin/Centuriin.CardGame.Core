@@ -1,10 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.ECS.Templates;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability;
-using Centuriin.CardGame.Core.Common.Repositories;
-using Centuriin.CardGame.Core.Common.Repositories.InMemory;
-using Centuriin.CardGame.Core.Common.Templates;
+using Centuriin.CardGame.Core.Common.Storage.Repositories;
+using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
@@ -85,5 +85,5 @@ public sealed class GameTypeRepo : IGameTypeRepository
 
 public sealed class EmptyValidator : ICommandValidator
 {
-    public IPrimaryEvent? Validate(IGameState gameStatem, ICommand command) => null!;
+    public IGameEvent? Validate(IGameState gameStatem, ICommand command) => null!;
 }

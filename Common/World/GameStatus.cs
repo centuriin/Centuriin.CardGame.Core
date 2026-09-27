@@ -10,5 +10,5 @@ public enum GameStatus
 
     Finished,
 
-    Dereailed
+    Derailed
 }

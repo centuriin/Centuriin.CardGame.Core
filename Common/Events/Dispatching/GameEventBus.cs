@@ -1,16 +1,12 @@
-﻿using System.Threading.Channels;
+﻿using Centuriin.CardGame.Core.Common.Events.Domain;
 
 namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
 
 public sealed class GameEventBus : IGameEventBus
 {
-    private readonly Channel<IGameEvent> _channel = Channel.CreateUnbounded<IGameEvent>(new()
-    {
-        SingleReader = true,
-        SingleWriter = true
-    });
+    private readonly Queue<IGameEvent> _queue = [];
 
-    public bool TryRead(out IGameEvent @event) => _channel.Reader.TryRead(out @event!);
+    public bool TryRead(out IGameEvent @event) => _queue.TryDequeue(out @event!);
 
-    public void Write(IGameEvent @event) => _channel.Writer.TryWrite(@event);
+    public void Write(IGameEvent @event) => _queue.Enqueue(@event);
 }

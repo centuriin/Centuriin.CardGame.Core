@@ -1,14 +1,14 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Components.Players;
-using Centuriin.CardGame.Core.Common.Components.Zones;
+﻿using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.ECS.Components;
+using Centuriin.CardGame.Core.Common.ECS.Components.Players;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
+using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Entities;
-using Centuriin.CardGame.Core.Common.Entities.Cards;
-using Centuriin.CardGame.Core.Common.Entities.Factories;
-using Centuriin.CardGame.Core.Common.Entities.Players;
-using Centuriin.CardGame.Core.Common.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Loaders;
-using Centuriin.CardGame.Core.Common.Repositories;
-using Centuriin.CardGame.Core.Common.Templates;
+using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;

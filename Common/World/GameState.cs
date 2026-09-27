@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-using Centuriin.CardGame.Core.Common.Entities;
+using Centuriin.CardGame.Core.Common.ECS.Entities;
 
 namespace Centuriin.CardGame.Core.Common.World;
 

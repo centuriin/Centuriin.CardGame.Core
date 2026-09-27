@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Common.Configuration;
@@ -19,7 +19,7 @@ public sealed class CommandValidatationConfigurator :
 
     private Dictionary<Type, List<IGameRule>> GameRules { get; } = [];
 
-    private Dictionary<Type, Func<ICommand, IPrimaryEvent>> EventFactories { get; } = [];
+    private Dictionary<Type, Func<ICommand, IGameEvent>> EventFactories { get; } = [];
 
     private IRuleFactory RuleFactory { get; }
 
@@ -116,7 +116,7 @@ public sealed class CommandValidatationConfigurator :
         }
 
         public IConfigurableCommandValidatation WithFactory<TEvent>(Func<TCommand, TEvent> factory)
-            where TEvent : IPrimaryEvent
+            where TEvent : IGameEvent
         {
             _configurator.ThrowIfInitialized();
 

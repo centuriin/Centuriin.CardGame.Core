@@ -1,5 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Repositories;
+using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;

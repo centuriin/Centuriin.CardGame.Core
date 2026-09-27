@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Components.Players;
-using Centuriin.CardGame.Core.Common.Entities.Players;
+﻿using Centuriin.CardGame.Core.Common.ECS.Components.Players;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands.Rules;

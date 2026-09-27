@@ -22,5 +22,9 @@
 	<ItemGroup>
 	  <None Remove="LICENSE.txt" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Core\" />
+	</ItemGroup>
 
 </Project>

@@ -1,10 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common.Components.Players;
-using Centuriin.CardGame.Core.Common.Entities;
-using Centuriin.CardGame.Core.Common.Entities.Players;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.ECS.Entities;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
+using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
-using Centuriin.CardGame.Core.Common.Systems;
 using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;
@@ -57,10 +57,10 @@ public sealed class SetupTurnFlowSystemTests
         eventsList.Single().Should()
             .Match<TurnFlowDefinedEvent>(e =>
                 e.GameId == gameId &&
-                e.InitialPlayerTrunsOrder.Count == 2 &&
-                e.InitialPlayerTrunsOrder.Contains(p1Id) &&
-                e.InitialPlayerTrunsOrder.Contains(p2Id) &&
-                !e.InitialPlayerTrunsOrder.Contains(systemId) &&
+                e.InitialPlayerTurnsOrder.Count == 2 &&
+                e.InitialPlayerTurnsOrder.Contains(p1Id) &&
+                e.InitialPlayerTurnsOrder.Contains(p2Id) &&
+                !e.InitialPlayerTurnsOrder.Contains(systemId) &&
                 e.IsCycled == true);
     }
 
@@ -91,7 +91,7 @@ public sealed class SetupTurnFlowSystemTests
         eventsList.Single().Should()
             .Match<TurnFlowDefinedEvent>(e =>
                 e.GameId == gameId &&
-                e.InitialPlayerTrunsOrder.Count == 0 &&
+                e.InitialPlayerTurnsOrder.Count == 0 &&
                 e.IsCycled == true);
     }
 }

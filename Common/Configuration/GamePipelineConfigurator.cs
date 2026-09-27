@@ -1,7 +1,7 @@
-﻿using Centuriin.CardGame.Core.Common.Events;
+﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.GameProfiles;
-using Centuriin.CardGame.Core.Common.Systems;
 
 namespace Centuriin.CardGame.Core.Common.Configuration;
 
@@ -9,11 +9,11 @@ public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineCo
 {
     private readonly LinkedList<RegistrationStep> _steps = new();
     private readonly ISystemFactory _factory;
-    private readonly IEventDispatcher _dispatcher;
+    private readonly IDispatcher<IGameEvent> _dispatcher;
 
     public GamePipelineConfigurator(
         ISystemFactory factory,
-        IEventDispatcher dispatcher)
+        IDispatcher<IGameEvent> dispatcher)
     {
         ArgumentNullException.ThrowIfNull(factory);
         _factory = factory;
@@ -116,5 +116,5 @@ public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineCo
     private sealed record RegistrationStep(
         Type SystemType,
         Type EventType,
-        Action<IEventDispatcher, SystemBase> RegisterAction);
+        Action<IDispatcher<IGameEvent>, SystemBase> RegisterAction);
 }

@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;
@@ -25,15 +25,15 @@ public sealed class CommandValidatationConfiguratorTests
             .Returns(fakeRule);
 
         IReadOnlyDictionary<Type, List<IGameRule>> capturedRules = null!;
-        IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> capturedFactories = null!;
+        IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> capturedFactories = null!;
 
         var validatorMock = new Mock<IConfigurableCommandValidator>(MockBehavior.Strict);
         validatorMock
             .Setup(x => x.Configure(
                 It.IsAny<Dictionary<Type, List<IGameRule>>>(),
-                It.IsAny<Dictionary<Type, Func<ICommand, IPrimaryEvent>>>()))
+                It.IsAny<Dictionary<Type, Func<ICommand, IGameEvent>>>()))
             .Callback(
-                (IReadOnlyDictionary<Type, List<IGameRule>> rules, IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> factories) =>
+                (IReadOnlyDictionary<Type, List<IGameRule>> rules, IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> factories) =>
                 {
                     capturedRules = rules;
                     capturedFactories = factories;
@@ -83,7 +83,7 @@ public sealed class CommandValidatationConfiguratorTests
     {
         // Arrange
         var validatorMock = new Mock<IConfigurableCommandValidator>(MockBehavior.Strict);
-        validatorMock.Setup(x => x.Configure(It.IsAny<Dictionary<Type, List<IGameRule>>>(), It.IsAny<Dictionary<Type, Func<ICommand, IPrimaryEvent>>>()));
+        validatorMock.Setup(x => x.Configure(It.IsAny<Dictionary<Type, List<IGameRule>>>(), It.IsAny<Dictionary<Type, Func<ICommand, IGameEvent>>>()));
 
         var configurator = new CommandValidatationConfigurator(
             Mock.Of<IRuleFactory>(),
@@ -108,7 +108,7 @@ public sealed class CommandValidatationConfiguratorTests
         public PlayerId Actor => default;
     }
 
-    public sealed record FakeEvent : IPrimaryEvent
+    public sealed record FakeEvent : IGameEvent
     {
         public GameId GameId => default;
     }

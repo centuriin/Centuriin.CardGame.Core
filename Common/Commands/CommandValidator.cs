@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 
 using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -14,8 +14,8 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
     private IReadOnlyDictionary<Type, List<IGameRule>> RulesMap { get; set; } =
         ImmutableDictionary<Type, List<IGameRule>>.Empty;
 
-    private IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> FactoriesMap { get; set; } =
-        ImmutableDictionary<Type, Func<ICommand, IPrimaryEvent>>.Empty;
+    private IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> FactoriesMap { get; set; } =
+        ImmutableDictionary<Type, Func<ICommand, IGameEvent>>.Empty;
 
     public CommandValidator(ICoreLogger<CommandValidator> logger)
     {
@@ -25,7 +25,7 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
 
     public void Configure(
         IReadOnlyDictionary<Type, List<IGameRule>> rulesMap, 
-        IReadOnlyDictionary<Type, Func<ICommand, IPrimaryEvent>> factoriesMap)
+        IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> factoriesMap)
     {
         ArgumentNullException.ThrowIfNull(rulesMap);
         RulesMap = rulesMap;
@@ -34,7 +34,7 @@ public sealed class CommandValidator : ICommandValidator, IConfigurableCommandVa
         FactoriesMap = factoriesMap;
     }
 
-    public IPrimaryEvent? Validate(IGameState gameState, ICommand command)
+    public IGameEvent? Validate(IGameState gameState, ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 

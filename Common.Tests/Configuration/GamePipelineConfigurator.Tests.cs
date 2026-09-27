@@ -1,8 +1,8 @@
 ﻿using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
-using Centuriin.CardGame.Core.Common.Systems;
 using Centuriin.CardGame.Core.Common.World;
 
 using FluentAssertions;
@@ -21,7 +21,7 @@ public sealed class GamePipelineConfiguratorTests
         // Arrange
         var registrationOrder = new List<SystemBase>();
         var factoryMock = new Mock<ISystemFactory>(MockBehavior.Strict);
-        var dispatcherMock = new Mock<IEventDispatcher>(MockBehavior.Strict);
+        var dispatcherMock = new Mock<IDispatcher<IGameEvent>>(MockBehavior.Strict);
 
         var systemA = new FakeSystemA();
         var systemB = new FakeSystemB();
@@ -73,7 +73,7 @@ public sealed class GamePipelineConfiguratorTests
         factoryMock.Setup(x => x.Create(typeof(FakeSystemB))).Returns(systemB);
         factoryMock.Setup(x => x.Create(typeof(FakeSystemC))).Returns(systemC);
 
-        var dispatcherMock = new Mock<IEventDispatcher>(MockBehavior.Strict);
+        var dispatcherMock = new Mock<IDispatcher<IGameEvent>>(MockBehavior.Strict);
         dispatcherMock
             .Setup(x => x.Register(It.IsAny<FakeSystemA>()))
             .Callback<ISubscriber<FakeEventA>>(s => registrationOrder.Add((SystemBase)s));
@@ -116,7 +116,7 @@ public sealed class GamePipelineConfiguratorTests
             .Returns(newSystem);
 
         var registrationCount = 0;
-        var dispatcherMock = new Mock<IEventDispatcher>(MockBehavior.Strict);
+        var dispatcherMock = new Mock<IDispatcher<IGameEvent>>(MockBehavior.Strict);
         dispatcherMock
             .Setup(x => x.Register(newSystem))
             .Callback(() => registrationCount++);
@@ -141,7 +141,7 @@ public sealed class GamePipelineConfiguratorTests
         // Arrange
         var configurator = new GamePipelineConfigurator(
             Mock.Of<ISystemFactory>(MockBehavior.Strict),
-            Mock.Of<IEventDispatcher>(MockBehavior.Strict));
+            Mock.Of<IDispatcher<IGameEvent>>(MockBehavior.Strict));
 
         // Act
         var exception = Record.Exception(() =>
@@ -161,7 +161,7 @@ public sealed class GamePipelineConfiguratorTests
             .Setup(x => x.Create(It.IsAny<Type>()))
             .Returns(new FakeSystemA());
 
-        var dispatcherMock = new Mock<IEventDispatcher>(MockBehavior.Strict);
+        var dispatcherMock = new Mock<IDispatcher<IGameEvent>>(MockBehavior.Strict);
         dispatcherMock
             .Setup(x => x.Register(It.IsAny<FakeSystemA>()));
 
