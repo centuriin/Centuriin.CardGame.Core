@@ -5,6 +5,6 @@ namespace Centuriin.CardGame.Core.Common.Storage.Repositories;
 public interface IGameEventsRepository
 {
     public Task AddAsync(
-        IReadOnlyCollection<IGameEvent> eventsBatch, 
+        IGameEventsBatch eventsBatch, 
         CancellationToken token);
 }

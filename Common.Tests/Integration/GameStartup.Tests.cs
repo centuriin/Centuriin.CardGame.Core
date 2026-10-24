@@ -1,16 +1,17 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Components;
+using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
+using Centuriin.CardGame.Core.Common.ECS.Entities;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
-using Centuriin.CardGame.Core.Common.Entities;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
+using Centuriin.CardGame.Core.Common.Server;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -83,8 +84,8 @@ public sealed class GameStartupIntegrationTests
                 DebugLogger<DealerSystem>.Instance));
         dispatcher.Register<TurnFlowDefinedEvent>(
             new TurnFlowSystem(
-                gameState, 
-                eventBus, 
+                gameState,
+                eventBus,
                 DebugLogger<TurnFlowSystem>.Instance));
         dispatcher.Register<CardDealtEvent>(
             new CardMovementSystem(
@@ -92,15 +93,14 @@ public sealed class GameStartupIntegrationTests
                 eventBus,
                 DebugLogger<CardMovementSystem>.Instance));
 
-        var game = new ServerGame(
+        var game = new Game(
             gameId,
             GameStatus.Pending,
             gameState,
             Mock.Of<ICommandValidator>(),
             new GameEventApplier(
                 eventBus,
-                dispatcher,
-                Mock.Of<IGameEventsRepository>()));
+                dispatcher));
 
         var setup = new GameSetup(gameTypeId, [PlayerId.System, new PlayerId(Guid.NewGuid())]);
 

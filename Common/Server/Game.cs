@@ -76,7 +76,7 @@ public sealed class Game : IGame
             return null!;
         }
 
-        var eventUnit = _eventApplier.ApplyAsync(@event, token);
+        var eventUnit = _eventApplier.Apply(@event);
 
         Version++;
 
@@ -95,7 +95,7 @@ public sealed class Game : IGame
 
         using var _ = Telemetry.StartGameActivity(this);
 
-        var unit = await _eventApplier.ApplyAsync(new GameStartedEvent(Id), token);
+        //var unit = await _eventApplier.Apply(new GameStartedEvent(Id));
 
         Status = GameStatus.Running;
         Version++;

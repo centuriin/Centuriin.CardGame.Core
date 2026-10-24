@@ -1,9 +1,8 @@
 ﻿using System.Collections.Frozen;
 
-using Centuriin.CardGame.Core.Common.Components.Zones;
+using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 

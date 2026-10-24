@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.ECS.Components.Players;
 using Centuriin.CardGame.Core.Common.ECS.Entities;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
@@ -45,8 +45,8 @@ public sealed class SetupTurnFlowSystemTests
             .Callback((IGameEvent e) => eventsList.Add(e));
 
         var system = new SetupTurnFlowSystem(
-            stateMock.Object, 
-            writer.Object, 
+            stateMock.Object,
+            writer.Object,
             Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
 
         // Act
@@ -80,8 +80,8 @@ public sealed class SetupTurnFlowSystemTests
             .Callback((IGameEvent e) => eventsList.Add(e));
 
         var system = new SetupTurnFlowSystem(
-            stateMock.Object, 
-            writer.Object, 
+            stateMock.Object,
+            writer.Object,
             Mock.Of<ICoreLogger<SetupTurnFlowSystem>>());
 
         // Act

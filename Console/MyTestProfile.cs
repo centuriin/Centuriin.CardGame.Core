@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Console;

@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.ECS.Components;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
-using Centuriin.CardGame.Core.Common.Entities.Factories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 using FluentAssertions;

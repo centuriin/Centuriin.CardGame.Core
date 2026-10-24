@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
-using Centuriin.CardGame.Core.Common.Entities;
+﻿using Centuriin.CardGame.Core.Common.ECS.Entities;
+using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability.Logging;

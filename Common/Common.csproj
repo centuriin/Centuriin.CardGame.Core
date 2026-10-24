@@ -18,13 +18,15 @@
 		<PackageId>Centuriin.CardGame.Core.Common</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-	  <None Remove="LICENSE.txt" />
+	  <Compile Remove="Core\**" />
+	  <EmbeddedResource Remove="Core\**" />
+	  <None Remove="Core\**" />
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Folder Include="Core\" />
+	  <None Remove="LICENSE.txt" />
 	</ItemGroup>
 
 </Project>

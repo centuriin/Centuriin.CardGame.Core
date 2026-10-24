@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
-using Centuriin.CardGame.Core.Common.Components.Zones;
+﻿using Centuriin.CardGame.Core.Common.ECS.Components;
+using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Entities;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;

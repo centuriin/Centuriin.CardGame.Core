@@ -5,9 +5,11 @@ using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
+using Centuriin.CardGame.Core.Common.Server;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
@@ -53,7 +55,7 @@ public static class Registrations
             .AddScoped<IConfigurableCommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
 
             .AddScoped<IGameEventApplier, GameEventApplier>()
-            .AddScoped<IEventDispatcher, EventDispatcher>()
+            .AddScoped(typeof(IDispatcher<>), typeof(Dispatcher<>))
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>();
 

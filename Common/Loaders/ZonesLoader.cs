@@ -1,11 +1,10 @@
-﻿using Centuriin.CardGame.Core.Common.Components;
+﻿using Centuriin.CardGame.Core.Common.ECS.Components;
 using Centuriin.CardGame.Core.Common.ECS.Components.Players;
 using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
-using Centuriin.CardGame.Core.Common.Templates;
 using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Loaders;
