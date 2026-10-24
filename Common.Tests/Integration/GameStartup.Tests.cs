@@ -95,7 +95,7 @@ public sealed class GameStartupIntegrationTests
 
         var game = new Game(
             gameId,
-            GameStatus.Pending,
+            GameStatus.Created,
             gameState,
             Mock.Of<ICommandValidator>(),
             new GameEventApplier(

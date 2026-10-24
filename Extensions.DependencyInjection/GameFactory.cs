@@ -18,7 +18,7 @@ public sealed class GameFactory : IGameFactory
         ActivatorUtilities.CreateInstance<TGame>(
             _serviceProvider, 
             new GameId(Guid.CreateVersion7()), 
-            GameStatus.Pending);
+            GameStatus.Created);
 
     public TGame Create<TGame>(IGameSnapshot snapshot) where TGame : IGame =>
         ActivatorUtilities.CreateInstance<TGame>(

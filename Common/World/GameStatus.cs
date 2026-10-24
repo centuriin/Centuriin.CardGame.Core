@@ -4,11 +4,11 @@ public enum GameStatus
 {
     None,
 
-    Pending,
+    Created,
 
     Running,
 
     Finished,
 
-    Derailed
+    Aborted
 }

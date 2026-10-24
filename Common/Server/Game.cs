@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel;
 
-using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Events.Application;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Server;
 
 public sealed class Game : IGame
 {
-    private readonly ICommandValidator _commandValidator;
     private readonly IGameEventApplier _eventApplier;
+    private readonly IAsyncDispatcher<IApplicationEvent> _dispatcher;
 
     public GameId Id { get; }
 
@@ -24,10 +24,10 @@ public sealed class Game : IGame
         GameId id,
         GameStatus gameStatus,
         IGameState gameState,
-        GameVersion version,
-        ICommandValidator commandValidator,
-        IGameEventApplier eventApplier) :
-        this(id, gameStatus, gameState, commandValidator, eventApplier)
+        IGameEventApplier eventApplier,
+        IAsyncDispatcher<IApplicationEvent> dispatcher,
+        GameVersion version) :
+        this(id, gameStatus, gameState, eventApplier, dispatcher)
     {
         Version = version;
     }
@@ -36,8 +36,8 @@ public sealed class Game : IGame
         GameId id,
         GameStatus gameStatus,
         IGameState gameState,
-        ICommandValidator commandValidator,
-        IGameEventApplier eventApplier)
+        IGameEventApplier eventApplier,
+        IAsyncDispatcher<IApplicationEvent> dispatcher)
     {
         Id = id;
 
@@ -53,51 +53,80 @@ public sealed class Game : IGame
         ArgumentNullException.ThrowIfNull(gameState);
         State = gameState;
 
-        ArgumentNullException.ThrowIfNull(commandValidator);
-        _commandValidator = commandValidator;
-
         ArgumentNullException.ThrowIfNull(eventApplier);
         _eventApplier = eventApplier;
+
+        ArgumentNullException.ThrowIfNull(dispatcher);
+        _dispatcher = dispatcher;
     }
 
-    public async Task<ICommandResult> ExecuteAsync(ICommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-
-        token.ThrowIfCancellationRequested();
-
-        using var _ = Telemetry.StartActivity(command);
-
-        var @event = _commandValidator.Validate(State, command);
-
-        if (@event is null)
-        {
-            // todo fail command
-            return null!;
-        }
-
-        var eventUnit = _eventApplier.Apply(@event);
-
-        Version++;
-
-        // todo make result
-        return null!;
-    }
-
+    /// <inheritdoc/>
     public async Task StartAsync(CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        if (Status is not GameStatus.Pending)
+        if (Status is not GameStatus.Created)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(
+                $"Game status should be {GameStatus.Created}," +
+                $" but current status is {Status}.");
         }
 
-        using var _ = Telemetry.StartGameActivity(this);
+        await _dispatcher.PublishAsync(new GameRunningEvent(Id, Version), token);
 
-        //var unit = await _eventApplier.Apply(new GameStartedEvent(Id));
+        var batch = _eventApplier.Apply(new GameStartedEvent(Id));
+
+        await _dispatcher.PublishAsync(
+            new NewGameEventsBatchCreatedEvent(Id, Version, batch),
+            token);
 
         Status = GameStatus.Running;
+        Version++;
+    }
+
+    /// <inheritdoc/>
+    public async Task AbortAsync(CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+
+        if (Status is GameStatus.Aborted)
+        {
+            return;
+        }
+
+        await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
+
+        Status = GameStatus.Aborted;
+        Version++;
+    }
+
+    /// <inheritdoc/>
+    async Task IGame.ApplyAsync(IGameEvent @event, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+
+        token.ThrowIfCancellationRequested();
+
+        if (Status is not GameStatus.Running)
+        {
+            throw new InvalidOperationException(
+                $"Game status should be {GameStatus.Running}," +
+                $" but current status is {Status}.");
+        }
+
+        if (@event.GameId != Id)
+        {
+            throw new InvalidOperationException("" +
+                $"Event game id {@event.GameId.Value}" +
+                $" is not equal to current game id {Id.Value}.");
+        }
+
+        var batch = _eventApplier.Apply(@event);
+
+        await _dispatcher.PublishAsync(
+            new NewGameEventsBatchCreatedEvent(Id, Version, batch),
+            token);
+
         Version++;
     }
 }
