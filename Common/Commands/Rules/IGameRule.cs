@@ -4,5 +4,5 @@ namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 
 public interface IGameRule
 {
-    public RuleResult Check(IGameState gameState, ICommand command);
+    public bool Check(PlayerId actor, IGameState gameState);
 }

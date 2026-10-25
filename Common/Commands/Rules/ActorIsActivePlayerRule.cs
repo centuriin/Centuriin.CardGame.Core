@@ -6,23 +6,20 @@ namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 
 public sealed class ActorIsActivePlayerRule : IGameRule
 {
-    public RuleResult Check(IGameState gameState, ICommand command)
+    public bool Check(PlayerId actor, IGameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
-        ArgumentNullException.ThrowIfNull(command);
 
         var actorEntityId = gameState.Query<Player>()
-            .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == command.Actor)
+            .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == actor)
             .Select(x => x.Id)
             .Single();
 
         if (gameState.TurnAutomat.ActivePlayer == actorEntityId)
         {
-            return RuleResult.Success();
+            return true;
         }
 
-        return RuleResult.Failure(
-            $"Active player id {gameState.TurnAutomat.ActivePlayer.Value}" +
-            $" and actor player id {actorEntityId.Value} doesn't equals.");
+        return false;
     }
 }

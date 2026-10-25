@@ -9,15 +9,15 @@ public interface IConfigurableGamePipeline
     public IConfigurableSystem Add<TSystem>()
         where TSystem : SystemBase;
 
-    public IConfigurableGamePipeline AddAfter<TBellowSystem, TSystem>()
+    public IConfigurableSystem AddAfter<TBellowSystem, TSystem>()
         where TBellowSystem : SystemBase
         where TSystem : SystemBase;
 
-    public IConfigurableGamePipeline AddBefore<TFollowSystem, TSystem>()
+    public IConfigurableSystem AddBefore<TFollowSystem, TSystem>()
         where TFollowSystem : SystemBase
         where TSystem : SystemBase;
 
-    public IConfigurableGamePipeline Replace<TReplaceableSystem, TSystem>()
+    public IConfigurableSystem Replace<TReplaceableSystem, TSystem>()
         where TReplaceableSystem : SystemBase
         where TSystem : SystemBase;
 }

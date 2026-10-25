@@ -2,6 +2,5 @@
 
 public interface IRuleFactory
 {
-    public TGameRule Create<TGameRule>()
-        where TGameRule : IGameRule;
+    public TGameRule Create<TGameRule>() where TGameRule : IGameRule;
 }

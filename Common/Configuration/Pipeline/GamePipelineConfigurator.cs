@@ -48,35 +48,39 @@ public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineCo
     }
 
     /// <inheritdoc/>
-    public IConfigurableGamePipeline AddAfter<TBellowSystem, TSystem>()
+    public IConfigurableSystem AddAfter<TBellowSystem, TSystem>()
         where TBellowSystem : SystemBase
         where TSystem : SystemBase
     {
         ThrowIfConfigured();
 
+        var configurable = CreateConfigurableSystem<TSystem>();
+
         _steps.AddAfter(
             GetNode<TBellowSystem>(),
-            CreateConfigurableSystem<TSystem>());
+            configurable);
 
-        return this;
+        return configurable;
     }
 
     /// <inheritdoc/>
-    public IConfigurableGamePipeline AddBefore<TFollowSystem, TSystem>()
+    public IConfigurableSystem AddBefore<TFollowSystem, TSystem>()
         where TFollowSystem : SystemBase
         where TSystem : SystemBase
     {
         ThrowIfConfigured();
 
+        var configurable = CreateConfigurableSystem<TSystem>();
+
         _steps.AddBefore(
             GetNode<TFollowSystem>(),
-            CreateConfigurableSystem<TSystem>());
+            configurable);
 
-        return this;
+        return configurable;
     }
 
     /// <inheritdoc/>
-    public IConfigurableGamePipeline Replace<TReplaceableSystem, TSystem>()
+    public IConfigurableSystem Replace<TReplaceableSystem, TSystem>()
         where TReplaceableSystem : SystemBase
         where TSystem : SystemBase
     {
@@ -84,9 +88,11 @@ public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineCo
 
         var node = GetNode<TReplaceableSystem>();
 
-        node.Value = CreateConfigurableSystem<TSystem>();
+        var configurable = CreateConfigurableSystem<TSystem>();
 
-        return this;
+        node.Value = configurable;
+
+        return configurable;
     }
 
     /// <inheritdoc/>
@@ -139,7 +145,7 @@ public sealed class GamePipelineConfigurator : ConfiguratorBase, IGamePipelineCo
 
         public required GamePipelineConfigurator Configurator { get; init; }
 
-        public IGamePipelineConfigurator GamePipeline => Configurator;
+        public IConfigurableGamePipeline GamePipeline => Configurator;
 
         public IConfigurableSystem ForEvent<TEvent>()
             where TEvent : IGameEvent
