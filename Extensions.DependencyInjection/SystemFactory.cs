@@ -14,16 +14,7 @@ public sealed class SystemFactory : ISystemFactory
         _serviceProvider = serviceProvider;
     }
 
-    public SystemBase Create(Type systemType)
-    {
-        ArgumentNullException.ThrowIfNull(systemType);
-
-        if (!systemType.IsAssignableTo(typeof(SystemBase)))
-        {
-            throw new InvalidOperationException();
-        }
-
-        return (SystemBase)ActivatorUtilities.CreateInstance(_serviceProvider, systemType);
-    }
-
+    public TSystem Create<TSystem>()
+        where TSystem : SystemBase
+        => ActivatorUtilities.CreateInstance<TSystem>(_serviceProvider);
 }

@@ -14,20 +14,26 @@ public sealed class CoreLoggerAdapter<T> : Engine.ICoreLogger<T>
         _logger = logger;
     }
 
+    /// <inheritdoc/>
     public bool IsEnabled(Engine.LogLevel logLevel) => _logger.IsEnabled(Map(logLevel));
 
+    /// <inheritdoc/>
     public void LogDebug(string message, params object[] args) =>
         _logger.LogDebug(message, args);
 
+    /// <inheritdoc/>
     public void LogError(string message, params object[] args) =>
         _logger.LogError(message, args);
 
+    /// <inheritdoc/>
     public void LogInformation(string message, params object[] args) =>
         _logger.LogInformation(message, args);
 
+    /// <inheritdoc/>
     public void LogTrace(string message, params object[] args) =>
         _logger.LogTrace(message, args);
 
+    /// <inheritdoc/>
     public void LogWarning(string message, params object[] args) =>
         _logger.LogWarning(message, args);
 
@@ -39,6 +45,7 @@ public sealed class CoreLoggerAdapter<T> : Engine.ICoreLogger<T>
         Engine.LogLevel.Warning => LogLevel.Warning,
         Engine.LogLevel.Error => LogLevel.Error,
 
-        _ => throw new InvalidOperationException()
+        _ => throw new InvalidOperationException(
+            $"Log level {logLevel} can't be mapped to core log level.")
     };
 }

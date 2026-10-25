@@ -48,7 +48,7 @@ public sealed class CommandValidatationConfiguratorTests
             .WithFactory(cmd => new FakeEvent());
 
         // Act
-        configurator.Setup();
+        configurator.Configure();
 
         // Assert
         capturedRules.Should().ContainKey(typeof(FakeCommand));
@@ -90,7 +90,7 @@ public sealed class CommandValidatationConfiguratorTests
             validatorMock.Object);
 
         var commandRules = configurator.AddValidation<FakeCommand>();
-        configurator.Setup();
+        configurator.Configure();
 
         // Act
         var exception = Record.Exception(() =>

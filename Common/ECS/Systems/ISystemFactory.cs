@@ -2,5 +2,5 @@
 
 public interface ISystemFactory
 {
-    public SystemBase Create(Type systemType);
+    public TSystem Create<TSystem>() where TSystem : SystemBase;
 }

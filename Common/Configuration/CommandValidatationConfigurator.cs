@@ -37,7 +37,7 @@ public sealed class CommandValidatationConfigurator :
     public IConfigurableGameRules<TCommand> AddValidation<TCommand>()
         where TCommand : ICommand
     {
-        ThrowIfInitialized();
+        ThrowIfConfigured();
 
         var commandType = typeof(TCommand);
 
@@ -60,7 +60,7 @@ public sealed class CommandValidatationConfigurator :
     public IConfigurableCommandValidatation AddGeneralRule<TGameRule>()
             where TGameRule : IGameRule
     {
-        ThrowIfInitialized();
+        ThrowIfConfigured();
 
         if (!GameRules.TryGetValue(GeneralCommandType, out var rules))
         {
@@ -73,7 +73,7 @@ public sealed class CommandValidatationConfigurator :
         return this;
     }
 
-    protected override void SetupCore() => _configurableValidator.Configure(GameRules, EventFactories);
+    protected override void ConfigureCore() => _configurableValidator.Configure(GameRules, EventFactories);
 
     private IGameRule GetRule<TGameRule>() where TGameRule : IGameRule
     {
@@ -102,7 +102,7 @@ public sealed class CommandValidatationConfigurator :
 
         public IConfigurableGameRules<TCommand> AddRule<TGameRule>() where TGameRule : IGameRule
         {
-            _configurator.ThrowIfInitialized();
+            _configurator.ThrowIfConfigured();
 
             if (!_configurator.GameRules.TryGetValue(CommandType, out var rules))
             {
@@ -118,7 +118,7 @@ public sealed class CommandValidatationConfigurator :
         public IConfigurableCommandValidatation WithFactory<TEvent>(Func<TCommand, TEvent> factory)
             where TEvent : IGameEvent
         {
-            _configurator.ThrowIfInitialized();
+            _configurator.ThrowIfConfigured();
 
             if (_configurator.EventFactories.ContainsKey(CommandType))
             {

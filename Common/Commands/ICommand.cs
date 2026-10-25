@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
@@ -7,4 +8,6 @@ public interface ICommand
     public GameId GameId { get; }
 
     public PlayerId Actor { get; }
+
+    public IGameEvent Execute();
 }

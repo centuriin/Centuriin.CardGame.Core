@@ -50,7 +50,7 @@ public sealed class GamePipelineConfiguratorTests
         configurator.Add<FakeSystemB, FakeEventB>();
 
         // Act
-        configurator.Setup();
+        configurator.Configure();
 
         // Assert
         registrationOrder.Should().HaveCount(2);
@@ -95,7 +95,7 @@ public sealed class GamePipelineConfiguratorTests
 
         // Act
         configurator.AddAfter<FakeSystemA, FakeSystemB, FakeEventB>();
-        configurator.Setup();
+        configurator.Configure();
 
         // Assert
         registrationOrder.Should().SatisfyRespectively(
@@ -129,7 +129,7 @@ public sealed class GamePipelineConfiguratorTests
         configurator.Replace<FakeSystemA, FakeSystemC, FakeEventA>();
 
         // Act
-        configurator.Setup();
+        configurator.Configure();
 
         // Assert
         registrationCount.Should().Be(1);
@@ -169,7 +169,7 @@ public sealed class GamePipelineConfiguratorTests
             factoryMock.Object,
             dispatcherMock.Object);
 
-        configurator.Setup();
+        configurator.Configure();
 
         // Act
         var exception = Record.Exception(() =>

@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.Server;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
@@ -37,13 +38,13 @@ public sealed class GameSessionFactory : IGameSessionFactory
             serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
 
         profile.Configure(pipelineConfigurator);
-        pipelineConfigurator.Setup();
+        pipelineConfigurator.Configure();
 
         var commandValidationConfigurator =
             serviceProvider.GetRequiredService<ICommandValidatationConfigurator>();
 
         profile.Configure(commandValidationConfigurator);
-        commandValidationConfigurator.Setup();
+        commandValidationConfigurator.Configure();
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()

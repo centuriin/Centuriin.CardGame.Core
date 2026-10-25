@@ -28,5 +28,9 @@
 	<ItemGroup>
 	  <None Remove="LICENSE.txt" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Configuration\Commads\" />
+	</ItemGroup>
 
 </Project>

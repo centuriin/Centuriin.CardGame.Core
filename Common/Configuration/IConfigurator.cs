@@ -2,5 +2,5 @@
 
 public interface IConfigurator
 {
-    public void Setup();
+    public void Configure();
 }

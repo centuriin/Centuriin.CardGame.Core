@@ -2,24 +2,24 @@
 
 public abstract class ConfiguratorBase : IConfigurator
 {
-    private bool _isInitialized;
+    private bool _isConfigured;
 
-    public void Setup()
+    public void Configure()
     {
-        ThrowIfInitialized();
+        ThrowIfConfigured();
 
-        SetupCore();
+        ConfigureCore();
 
-        _isInitialized = true;
+        _isConfigured = true;
     }
 
-    protected abstract void SetupCore();
-
-    protected void ThrowIfInitialized()
+    protected void ThrowIfConfigured()
     {
-        if (_isInitialized)
+        if (_isConfigured)
         {
             throw new InvalidOperationException();
         }
     }
+
+    protected abstract void ConfigureCore();
 }
