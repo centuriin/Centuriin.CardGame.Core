@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class RuleFactory : IRuleFactory
+public sealed class RuleFactory : ICommandRuleFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -14,6 +14,6 @@ public sealed class RuleFactory : IRuleFactory
         _serviceProvider = serviceProvider;
     }
 
-    public TGameRule Create<TGameRule>() where TGameRule : IGameRule =>
+    public TGameRule Create<TGameRule>() where TGameRule : ICommandRule =>
         ActivatorUtilities.CreateInstance<TGameRule>(_serviceProvider);
 }

@@ -71,7 +71,7 @@ public static class Registrations
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
 
             .AddScoped<ISystemFactory, SystemFactory>()
-            .AddScoped<IRuleFactory, RuleFactory>()
+            .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>

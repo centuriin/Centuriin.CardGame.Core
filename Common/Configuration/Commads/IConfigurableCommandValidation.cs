@@ -1,11 +1,13 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 
 namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
 
-public interface IConfigurableCommandValidation
+public interface IConfigurableCommandValidation<TCommand>
+    where TCommand : ICommand
 {
     public IConfigurableCommandValidator CommandValidator { get; }
 
-    public IConfigurableCommandValidation AddRule<TRule>()
-        where TRule : IGameRule;
+    public IConfigurableCommandValidation<TCommand> AddRule<TRule>()
+        where TRule : ICommandRule<TCommand>;
 }

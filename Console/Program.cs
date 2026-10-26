@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability;

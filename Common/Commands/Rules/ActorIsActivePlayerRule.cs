@@ -4,14 +4,14 @@ using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 
-public sealed class ActorIsActivePlayerRule : IGameRule
+public sealed class ActorIsActivePlayerRule : ICommandRule<ICommand>
 {
-    public bool Check(PlayerId actor, IGameState gameState)
+    public bool Check(ICommand command, IGameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
 
         var actorEntityId = gameState.Query<Player>()
-            .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == actor)
+            .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == command.Actor)
             .Select(x => x.Id)
             .Single();
 

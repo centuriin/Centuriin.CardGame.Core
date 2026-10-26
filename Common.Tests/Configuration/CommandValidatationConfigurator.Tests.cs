@@ -19,21 +19,21 @@ public sealed class CommandValidatationConfiguratorTests
     {
         // Arrange
         var fakeRule = new FakeRule();
-        var ruleFactoryMock = new Mock<IRuleFactory>(MockBehavior.Strict);
+        var ruleFactoryMock = new Mock<ICommandRuleFactory>(MockBehavior.Strict);
         ruleFactoryMock
             .Setup(x => x.Create<FakeRule>())
             .Returns(fakeRule);
 
-        IReadOnlyDictionary<Type, List<IGameRule>> capturedRules = null!;
+        IReadOnlyDictionary<Type, List<ICommandRule>> capturedRules = null!;
         IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> capturedFactories = null!;
 
         var validatorMock = new Mock<IConfigurableCommandValidator>(MockBehavior.Strict);
         validatorMock
             .Setup(x => x.Configure(
-                It.IsAny<Dictionary<Type, List<IGameRule>>>(),
+                It.IsAny<Dictionary<Type, List<ICommandRule>>>(),
                 It.IsAny<Dictionary<Type, Func<ICommand, IGameEvent>>>()))
             .Callback(
-                (IReadOnlyDictionary<Type, List<IGameRule>> rules, IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> factories) =>
+                (IReadOnlyDictionary<Type, List<ICommandRule>> rules, IReadOnlyDictionary<Type, Func<ICommand, IGameEvent>> factories) =>
                 {
                     capturedRules = rules;
                     capturedFactories = factories;
@@ -63,7 +63,7 @@ public sealed class CommandValidatationConfiguratorTests
     {
         // Arrange
         var configurator = new CommandValidatationConfigurator(
-            Mock.Of<IRuleFactory>(),
+            Mock.Of<ICommandRuleFactory>(),
             Mock.Of<IConfigurableCommandValidator>());
 
         var commandRules = configurator.AddValidation<FakeCommand>();
@@ -83,10 +83,10 @@ public sealed class CommandValidatationConfiguratorTests
     {
         // Arrange
         var validatorMock = new Mock<IConfigurableCommandValidator>(MockBehavior.Strict);
-        validatorMock.Setup(x => x.Configure(It.IsAny<Dictionary<Type, List<IGameRule>>>(), It.IsAny<Dictionary<Type, Func<ICommand, IGameEvent>>>()));
+        validatorMock.Setup(x => x.Configure(It.IsAny<Dictionary<Type, List<ICommandRule>>>(), It.IsAny<Dictionary<Type, Func<ICommand, IGameEvent>>>()));
 
         var configurator = new CommandValidatationConfigurator(
-            Mock.Of<IRuleFactory>(),
+            Mock.Of<ICommandRuleFactory>(),
             validatorMock.Object);
 
         var commandRules = configurator.AddValidation<FakeCommand>();
@@ -113,7 +113,7 @@ public sealed class CommandValidatationConfiguratorTests
         public GameId GameId => default;
     }
 
-    public sealed class FakeRule : IGameRule
+    public sealed class FakeRule : ICommandRule
     {
         public RuleResult Check(IGameState gameState, ICommand command) => 
             throw new NotSupportedException();
