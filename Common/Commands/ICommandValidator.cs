@@ -4,8 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Commands;
 
 public interface ICommandValidator
 {
-    public bool IsValid<TCommand>(TCommand command)
-        where TCommand : ICommand;
+    public bool IsValid(ICommand command);
 
     public void UseValidations(IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations);
 }

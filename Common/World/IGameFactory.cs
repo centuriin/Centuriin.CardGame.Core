@@ -2,7 +2,7 @@
 
 public interface IGameFactory
 {
-    public TGame Create<TGame>()
+    public TGame Create<TGame>(GameTypeId typeId)
         where TGame : IGame;
 
     public TGame Create<TGame>(IGameSnapshot snapshot)

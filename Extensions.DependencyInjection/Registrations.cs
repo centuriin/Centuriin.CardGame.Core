@@ -68,7 +68,7 @@ public static class Registrations
 
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
             
-            .AddScoped<ICommandHandlerFactory, CommandHandlerFactory>()
+            .AddScoped<ICommandExecutorFactory, CommandExecutorFactory>()
             .AddScoped<ISystemFactory, SystemFactory>()
             .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();

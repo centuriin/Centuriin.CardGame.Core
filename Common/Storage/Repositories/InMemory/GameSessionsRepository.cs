@@ -11,7 +11,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
     private bool _disposed;
 
     /// <inheritdoc/>
-    public async ValueTask<IGame> GetGameById(GameId gameId, CancellationToken token)
+    public ValueTask<IGameSession> GetSessionByIdAsync(GameId gameId, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
@@ -22,7 +22,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
             throw new InvalidOperationException();
         }
 
-        return session.Game;
+        return ValueTask.FromResult(session);
     }
 
     /// <inheritdoc/>
@@ -34,7 +34,7 @@ public sealed class GameSessionsRepository : IGameSessionsRepository
 
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        if (!_sessions.TryAdd(session.Game.Id, session))
+        if (!_sessions.TryAdd(session.Id, session))
         {
             throw new InvalidOperationException();
         }

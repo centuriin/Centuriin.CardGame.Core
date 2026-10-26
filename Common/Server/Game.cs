@@ -14,6 +14,8 @@ public sealed class Game : IGame
 
     public GameId Id { get; }
 
+    public GameTypeId TypeId { get; }
+
     public GameStatus Status { get; private set; }
 
     public IGameState State { get; }
@@ -22,24 +24,27 @@ public sealed class Game : IGame
 
     public Game(
         GameId id,
+        GameTypeId typeId,
         GameStatus gameStatus,
         IGameState gameState,
         IGameEventApplier eventApplier,
         IAsyncDispatcher<IApplicationEvent> dispatcher,
         GameVersion version) :
-        this(id, gameStatus, gameState, eventApplier, dispatcher)
+        this(id, typeId, gameStatus, gameState, eventApplier, dispatcher)
     {
         Version = version;
     }
 
     public Game(
         GameId id,
+        GameTypeId typeId,
         GameStatus gameStatus,
         IGameState gameState,
         IGameEventApplier eventApplier,
         IAsyncDispatcher<IApplicationEvent> dispatcher)
     {
         Id = id;
+        TypeId = typeId;
 
         if (!Enum.IsDefined(gameStatus))
         {

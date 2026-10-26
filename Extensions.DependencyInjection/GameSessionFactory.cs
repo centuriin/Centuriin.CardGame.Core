@@ -1,63 +1,57 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Configuration.Commads;
-using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
+using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Server;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class GameSessionFactory : IGameSessionFactory
+internal sealed class GameSessionFactory : IGameSessionFactory
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IGameProfilesRepository _profilesRepository;
-    private readonly IGameConfigurationFactory _gameConfigurationFactory;
 
-    public GameSessionFactory(
-        IServiceScopeFactory serviceProvider,
-        IGameProfilesRepository profilesRepository,
-        IGameConfigurationFactory gameConfigurationFactory)
+    public GameSessionFactory(IServiceScopeFactory serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceScopeFactory = serviceProvider;
-
-        ArgumentNullException.ThrowIfNull(profilesRepository);
-        _profilesRepository = profilesRepository;
-
-        ArgumentNullException.ThrowIfNull(gameConfigurationFactory);
-        _gameConfigurationFactory = gameConfigurationFactory;
     }
 
-    public async ValueTask<IGameSession> CreateAsync(GameSetup setup, CancellationToken token)
+    public async ValueTask<IGameSession> CreateAsync(
+        GameSetup setup,
+        IGameConfiguration gameConfiguration,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
 
         var scope = _serviceScopeFactory.CreateScope();
 
-        var serviceProvider = scope.ServiceProvider;
+        try
+        {
+            var services = scope.ServiceProvider;
 
-        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(
-            setup.GameTypeId, 
-            token);
+            gameConfiguration.Apply(
+                services.GetRequiredService<IGameConfigurationContext>());
 
-        var gameConfiguration = _gameConfigurationFactory.CreateFromProfile(profile);
+            var game = services.GetRequiredService<IGameFactory>()
+                .Create<Game>(setup.GameTypeId);
 
-        var configurationContext = serviceProvider
-            .GetRequiredService<IGameConfigurationContext>();
+            var executor = services.GetRequiredService<ICommandExecutorFactory>()
+                .Create(game);
 
-        gameConfiguration.Apply(configurationContext);
+            foreach (var loader in services.GetServices<IGameLoader>())
+            {
+                await loader.LoadAsync(setup, game.State, token);
+            }
 
-        var game = serviceProvider
-            .GetRequiredService<IGameFactory>()
-            .Create<Game>();
-
-        var commandHandler = serviceProvider
-            .GetRequiredService<ICommandHandlerFactory>()
-            .Create(game);
-
-        return new GameSession(scope, game, commandHandler);
+            await game.StartAsync(token);
+            return new GameSession(scope, game, executor);
+        }
+        catch
+        {
+            scope.Dispose();
+            throw;
+        }
     }
 }

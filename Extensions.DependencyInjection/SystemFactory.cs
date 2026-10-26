@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class SystemFactory : ISystemFactory
+internal sealed class SystemFactory : ISystemFactory
 {
     private readonly IServiceProvider _serviceProvider;
 

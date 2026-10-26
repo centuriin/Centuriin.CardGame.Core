@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Loaders;
+﻿using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -8,21 +8,33 @@ public sealed class GameStartupService : IGameStartupService
 {
     private readonly IGameSessionFactory _gameSessionFactory;
     private readonly IGameSessionsRepository _sessionsRepository;
-    private readonly IEnumerable<IGameLoader> _loaders;
+
+    private readonly IGameProfilesRepository _profilesRepository;
+
+    private readonly IGameConfigurationRepository _gameConfigurationRepository;
+    private readonly IGameConfigurationFactory _gameConfigurationFactory;
 
     public GameStartupService(
         IGameSessionFactory gameSessionFactory,
         IGameSessionsRepository sessionsRepository,
-        IEnumerable<IGameLoader> loaders)
+        IGameProfilesRepository profilesRepository,
+        IGameConfigurationRepository gameConfigurationRepository,
+        IGameConfigurationFactory gameConfigurationFactory)
     {
         ArgumentNullException.ThrowIfNull(sessionsRepository);
         _sessionsRepository = sessionsRepository;
 
-        ArgumentNullException.ThrowIfNull(loaders);
-        _loaders = loaders;
-
         ArgumentNullException.ThrowIfNull(gameSessionFactory);
         _gameSessionFactory = gameSessionFactory;
+
+        ArgumentNullException.ThrowIfNull(profilesRepository);
+        _profilesRepository = profilesRepository;
+
+        ArgumentNullException.ThrowIfNull(gameConfigurationRepository);
+        _gameConfigurationRepository = gameConfigurationRepository;
+
+        ArgumentNullException.ThrowIfNull(gameConfigurationFactory);
+        _gameConfigurationFactory = gameConfigurationFactory;
     }
 
     public async Task<IGameSession> StartupGameAsync(GameSetup setup, CancellationToken token)
@@ -31,17 +43,28 @@ public sealed class GameStartupService : IGameStartupService
 
         token.ThrowIfCancellationRequested();
 
-        var session = await _gameSessionFactory.CreateAsync(setup, token);
+        var gameConfiguration = await _gameConfigurationRepository.FindAsync(
+            setup.GameTypeId,
+            token)
+            ?? _gameConfigurationFactory.CreateFromProfile(
+                await _profilesRepository.GetProfileByGameTypIdAsync(
+                    setup.GameTypeId,
+                    token));
 
-        await _sessionsRepository.AddAsync(session, token);
+        var session = await _gameSessionFactory.CreateAsync(
+            setup, 
+            gameConfiguration,
+            token);
 
-        foreach (var loader in _loaders)
+        try
         {
-            await loader.LoadAsync(setup, session.Game.State, token);
+            await _sessionsRepository.AddAsync(session, token);
+            return session;
         }
-
-        await session.Game.StartAsync(token);
-
-        return session;
+        catch
+        {
+            session.Dispose();
+            throw;
+        }
     }
 }

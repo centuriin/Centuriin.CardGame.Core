@@ -22,8 +22,7 @@ public sealed class CommandValidator : ICommandValidator
     }
 
     /// <inheritdoc/>
-    public bool IsValid<TCommand>(TCommand command)
-        where TCommand : ICommand
+    public bool IsValid(ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -45,7 +44,7 @@ public sealed class CommandValidator : ICommandValidator
                 command.GetType().Name);
         }
 
-        foreach (var rule in rules.Cast<ICommandRule<TCommand>>())
+        foreach (var rule in rules)
         {
             if (rule.Check(command, _gameState))
             {
@@ -72,7 +71,7 @@ public sealed class CommandValidator : ICommandValidator
     }
 
     /// <inheritdoc/>
-    void ICommandValidator.UseValidations(
+    public void UseValidations(
         IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations)
     {
         ArgumentNullException.ThrowIfNull(validations);

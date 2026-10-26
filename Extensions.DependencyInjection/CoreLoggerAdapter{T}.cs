@@ -4,7 +4,7 @@ using Engine = Centuriin.CardGame.Core.Common.Observability.Logging;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class CoreLoggerAdapter<T> : Engine.ICoreLogger<T>
+internal sealed class CoreLoggerAdapter<T> : Engine.ICoreLogger<T>
 {
     private readonly ILogger<T> _logger;
 

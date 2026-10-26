@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 public interface IGameSessionsRepository : IDisposable
 {
-    public ValueTask<IGame> GetGameById(GameId gameId, CancellationToken token);
+    public ValueTask<IGameSession> GetSessionByIdAsync(GameId gameId, CancellationToken token);
 
     public ValueTask AddAsync(IGameSession session, CancellationToken token);
 

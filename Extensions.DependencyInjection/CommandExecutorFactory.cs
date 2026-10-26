@@ -5,19 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class CommandHandlerFactory : ICommandHandlerFactory
+internal sealed class CommandExecutorFactory : ICommandExecutorFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public CommandHandlerFactory(IServiceProvider serviceProvider)
+    public CommandExecutorFactory(IServiceProvider serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceProvider = serviceProvider;
     }
 
     /// <inheritdoc/>
-    public ICommandHandler Create(IGame game) =>
-        ActivatorUtilities.CreateInstance<CommandHandler>(
+    public ICommandExecutor Create(IGame game) =>
+        ActivatorUtilities.CreateInstance<CommandExecutor>(
             _serviceProvider,
             game);
 }

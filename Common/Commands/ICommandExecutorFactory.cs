@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
-public interface ICommandHandlerFactory
+public interface ICommandExecutorFactory
 {
-    public ICommandHandler Create(IGame game);
+    public ICommandExecutor Create(IGame game);
 }

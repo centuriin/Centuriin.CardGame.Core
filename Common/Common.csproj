@@ -20,6 +20,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include = "Centuriin.CardGame.Core.Common.Tests"/>
+	</ItemGroup>
+	
+	<ItemGroup>
 	  <Compile Remove="Core\**" />
 	  <EmbeddedResource Remove="Core\**" />
 	  <None Remove="Core\**" />

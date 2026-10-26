@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
-public sealed class GameFactory : IGameFactory
+internal sealed class GameFactory : IGameFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -14,15 +14,20 @@ public sealed class GameFactory : IGameFactory
         _serviceProvider = serviceProvider;
     }
 
-    public TGame Create<TGame>() where TGame : IGame =>
+    public TGame Create<TGame>(GameTypeId typeId) 
+        where TGame : IGame =>
         ActivatorUtilities.CreateInstance<TGame>(
             _serviceProvider, 
             new GameId(Guid.CreateVersion7()), 
+            typeId,
             GameStatus.Created);
 
-    public TGame Create<TGame>(IGameSnapshot snapshot) where TGame : IGame =>
+    public TGame Create<TGame>(IGameSnapshot snapshot) 
+        where TGame : IGame =>
         ActivatorUtilities.CreateInstance<TGame>(
             _serviceProvider, 
+            snapshot.GameId,
+            snapshot.TypeId,
             snapshot.GameStatus, 
             snapshot.GameState,
             snapshot.Version);

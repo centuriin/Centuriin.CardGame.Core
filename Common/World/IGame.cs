@@ -6,6 +6,8 @@ public interface IGame
 {
     public GameId Id { get; }
 
+    public GameTypeId TypeId { get; }
+
     public GameStatus Status { get; }
 
     public IGameState State { get; }

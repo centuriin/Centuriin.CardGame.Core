@@ -3,12 +3,12 @@ using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
-public sealed class CommandHandler : ICommandHandler
+public sealed class CommandExecutor : ICommandExecutor
 {
     private readonly IGame _game;
     private readonly ICommandValidator _validator;
 
-    public CommandHandler(IGame game, ICommandValidator validator)
+    public CommandExecutor(IGame game, ICommandValidator validator)
     {
         ArgumentNullException.ThrowIfNull(game);
         _game = game;
@@ -18,7 +18,7 @@ public sealed class CommandHandler : ICommandHandler
     }
 
     /// <inheritdoc/>
-    public async Task HandleAsync(ICommand command, CancellationToken token)
+    public async Task<CommandResult> ExecuteAsync(ICommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -29,11 +29,9 @@ public sealed class CommandHandler : ICommandHandler
         if (_validator.IsValid(command))
         {
             await _game.ApplyAsync(command.YieldDomainEvent(), token);
+            return new CommandResult(true, _game.Version);
         }
 
-        else
-        {
-            // Todo raise other application event
-        }
+        return new CommandResult(false, _game.Version);
     }
 }
