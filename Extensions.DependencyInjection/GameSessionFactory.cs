@@ -1,4 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.Server;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
@@ -32,7 +34,9 @@ public sealed class GameSessionFactory : IGameSessionFactory
 
         var serviceProvider = scope.ServiceProvider;
 
-        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(setup.GameTypeId, token);
+        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(
+            setup.GameTypeId, 
+            token);
 
         var pipelineConfigurator =
             serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
@@ -40,16 +44,20 @@ public sealed class GameSessionFactory : IGameSessionFactory
         profile.Configure(pipelineConfigurator);
         pipelineConfigurator.Configure();
 
-        var commandValidationConfigurator =
-            serviceProvider.GetRequiredService<ICommandValidatationConfigurator>();
+        var commandValidatorConfigurator =
+            serviceProvider.GetRequiredService<ICommandValidatorConfigurator>();
 
-        profile.Configure(commandValidationConfigurator);
-        commandValidationConfigurator.Configure();
+        profile.Configure(commandValidatorConfigurator);
+        commandValidatorConfigurator.Configure();
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()
             .Create<Game>();
 
-        return new GameSession(game, scope);
+        var commandHandler = serviceProvider
+            .GetRequiredService<ICommandHandlerFactory>()
+            .Create(game);
+
+        return new GameSession(scope, game, commandHandler);
     }
 }

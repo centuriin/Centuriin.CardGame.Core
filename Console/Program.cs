@@ -1,6 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability;
@@ -50,21 +49,26 @@ var p3 = new PlayerId(Guid.NewGuid());
 var p4 = new PlayerId(Guid.NewGuid());
 
 var g1 = await startup.StartupGameAsync(
-    new GameSetup(new(1), [PlayerId.System, p1, p2]), 
+    new GameSetup(new(1), [PlayerId.System, p1, p2]),
     CancellationToken.None);
 
-await g1.ExecuteAsync(new FakeCommand(g1.Id, p1), CancellationToken.None);
+await g1.CommandHandler.HandleAsync(
+    new FakeCommand(g1.Game.Id, p1),
+    CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g1.Id, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g1.Game.Id, CancellationToken.None);
 
 var g2 = await startup.StartupGameAsync(
-    new GameSetup(new(1), [PlayerId.System, p3, p4]), 
+    new GameSetup(new(1), [PlayerId.System, p3, p4]),
     CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g2.Id, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g2.Game.Id, CancellationToken.None);
 
 // todo
-public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand;
+public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
+{
+    public IGameEvent YieldDomainEvent() => new GameStartedEvent(GameId);
+}
 
 public sealed class ZoneDefinitionRepo : IZonesRepository
 {
@@ -82,9 +86,4 @@ public sealed class GameTypeRepo : IGameTypeRepository
 {
     public Task<GameTypeId> GetGameTypeIdByKey(string key) =>
         Task.FromResult<GameTypeId>(new(1));
-}
-
-public sealed class EmptyValidator : ICommandValidator
-{
-    public IGameEvent? Validate(IGameState gameStatem, ICommand command) => null!;
 }

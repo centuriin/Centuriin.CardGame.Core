@@ -3,7 +3,9 @@ using Centuriin.CardGame.Core.Common.Commands.Rules;
 
 namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
 
-public sealed class CommandValidationConfigurator : ConfiguratorBase, IConfigurableCommandValidator
+public sealed class CommandValidationConfigurator : 
+    ConfiguratorBase, 
+    ICommandValidatorConfigurator
 {
     private readonly ICommandRuleFactory _ruleFactory;
     private readonly ICommandValidator _validator;

@@ -1,8 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
-using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Console;
@@ -11,22 +9,21 @@ public sealed class MyTestProfile : IGameProfile
 {
     public string Key => "TEST";
 
-    public void Configure(IConfigurableGamePipeline configurablePipeLine)
+    public void Configure(IConfigurableGamePipeline configurableGamePipeLine)
     {
-        ArgumentNullException.ThrowIfNull(configurablePipeLine);
+        ArgumentNullException.ThrowIfNull(configurableGamePipeLine);
 
-        _ = configurablePipeLine
+        _ = configurableGamePipeLine
             .UseDefaultProfile();
     }
 
-    public void Configure(IConfigurableCommandValidatation configurableCommandValidatation)
+    public void Configure(IConfigurableCommandValidator configurableGamePipeLine)
     {
-        ArgumentNullException.ThrowIfNull(configurableCommandValidatation);
+        ArgumentNullException.ThrowIfNull(configurableGamePipeLine);
 
-        _ = configurableCommandValidatation
-            .UseDefaultProfile()
+        _ = configurableGamePipeLine
+            .AddGeneralRule<ActorIsActivePlayerRule>()
             .AddValidation<FakeCommand>()
-                .AddRule<ActorIsActivePlayerRule>()
-                .WithFactory(x => new GameStartedEvent(x.GameId));
+                .AddRule<ActorIsActivePlayerRule>();
     }
 }

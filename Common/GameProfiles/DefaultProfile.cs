@@ -1,5 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Domain;
@@ -14,20 +14,34 @@ internal sealed class DefaultProfile : IGameProfile
 
     private DefaultProfile() { }
 
-    public void Configure(IConfigurableGamePipeline pipeline)
+    /// <inheritdoc/>
+    public void Configure(IConfigurableGamePipeline configurableGamePipeline)
     {
-        ArgumentNullException.ThrowIfNull(pipeline);
+        ArgumentNullException.ThrowIfNull(configurableGamePipeline);
 
-        _ = pipeline
-            .Add<SetupTurnFlowSystem, GameStartedEvent>()
-            .Add<DealerSystem, GameStartedEvent>()
-            .Add<TurnFlowSystem, TurnFlowDefinedEvent>()
-            .Add<CardMovementSystem, CardDealtEvent>();
+        _ = configurableGamePipeline
+            .Add<SetupTurnFlowSystem>()
+                .ForEvent<GameStartedEvent>()
+                .GamePipeline
+
+            .Add<DealerSystem>()
+                .ForEvent<GameStartedEvent>()
+                .GamePipeline
+
+            .Add<TurnFlowSystem>()
+                .ForEvent<TurnFlowDefinedEvent>()
+                .GamePipeline
+
+            .Add<CardMovementSystem>()
+                .ForEvent<CardDealtEvent>();
     }
 
-    public void Configure(IConfigurableCommandValidatation configurableCommandValidatation)
+    /// <inheritdoc/>
+    public void Configure(IConfigurableCommandValidator configurableCommandValidator)
     {
-        _ = configurableCommandValidatation
+        ArgumentNullException.ThrowIfNull(configurableCommandValidator);
+
+        _ = configurableCommandValidator
             .AddGeneralRule<ActorIsActivePlayerRule>();
     }
 }

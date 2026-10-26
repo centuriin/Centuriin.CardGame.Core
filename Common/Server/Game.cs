@@ -73,15 +73,11 @@ public sealed class Game : IGame
         }
 
         Status = GameStatus.Running;
-        Version++;
-
         var batch = _eventApplier.Apply(new GameStartedEvent(Id));
 
-        await _dispatcher.PublishAsync(new GameRunningEvent(Id, Version), token);
+        Version++;
 
-        await _dispatcher.PublishAsync(
-            new NewGameEventsBatchCreatedEvent(Id, Version, batch),
-            token);
+        await _dispatcher.PublishAsync(new GameRunningEvent(Id, Version, batch), token);
     }
 
     /// <inheritdoc/>
@@ -95,6 +91,7 @@ public sealed class Game : IGame
         }
 
         Status = GameStatus.Aborted;
+
         Version++;
 
         await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
@@ -121,9 +118,9 @@ public sealed class Game : IGame
                 $" is not equal to current game id {Id.Value}.");
         }
 
-        Version++;
-
         var batch = _eventApplier.Apply(@event);
+
+        Version++;
 
         await _dispatcher.PublishAsync(
             new NewGameEventsBatchCreatedEvent(Id, Version, batch),

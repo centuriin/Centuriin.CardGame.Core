@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
@@ -24,7 +24,7 @@ public static class Registrations
     public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
-            .AddSingleton<IGameStartupService, GameStartupService>()
+            .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddBootStrappers()
 
@@ -38,12 +38,12 @@ public static class Registrations
 
     private static IServiceCollection AddBootStrappers(this IServiceCollection services) =>
         services
-            .AddScoped<ICommandValidatationConfigurator, CommandValidatationConfigurator>()
+            .AddScoped<ICommandValidatorConfigurator, CommandValidationConfigurator>()
             .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
 
-            .AddSingleton<IGameLoader, PlayersLoader>()
-            .AddSingleton<IGameLoader, ZonesLoader>()
-            .AddSingleton<IGameLoader, DecksLoader>();
+            .AddScoped<IGameLoader, PlayersLoader>()
+            .AddScoped<IGameLoader, ZonesLoader>()
+            .AddScoped<IGameLoader, DecksLoader>();
 
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services
@@ -51,25 +51,26 @@ public static class Registrations
             .AddScoped<IGameEventBusReader>(sp => sp.GetRequiredService<IGameEventBus>())
             .AddScoped<IGameEventBusWriter>(sp => sp.GetRequiredService<IGameEventBus>())
 
-            .AddScoped<CommandValidator>()
-            .AddScoped<ICommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
-            .AddScoped<IConfigurableCommandValidator>(sp => sp.GetRequiredService<CommandValidator>())
+            .AddScoped<ICommandValidator, CommandValidator>()
 
             .AddScoped<IGameEventApplier, GameEventApplier>()
             .AddScoped(typeof(IDispatcher<>), typeof(Dispatcher<>))
+            .AddSingleton(typeof(IAsyncDispatcher<>), typeof(AsyncDispatcher<>))
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>();
 
     private static IServiceCollection AddStorage(this IServiceCollection services) =>
         services
-            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>();
+            .AddScoped<IGameProfilesRepository, GameProfilesRepository>();
 
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
-            .AddSingleton<IZoneFactory, ZoneFactory>()
-            .AddSingleton<ICardFactory, CardFactory>()
-            .AddSingleton<IGameSessionFactory, GameSessionFactory>()
+            .AddScoped<IZoneFactory, ZoneFactory>()
+            .AddScoped<ICardFactory, CardFactory>()
 
+            .AddSingleton<IGameSessionFactory, GameSessionFactory>()
+            
+            .AddScoped<ICommandHandlerFactory, CommandHandlerFactory>()
             .AddScoped<ISystemFactory, SystemFactory>()
             .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
