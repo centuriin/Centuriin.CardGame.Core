@@ -6,7 +6,7 @@ namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
 public interface IConfigurableCommandValidation<TCommand>
     where TCommand : ICommand
 {
-    public IConfigurableCommandValidator CommandValidator { get; }
+    public IConfigurableCommandValidations CommandValidator { get; }
 
     public IConfigurableCommandValidation<TCommand> AddRule<TRule>()
         where TRule : ICommandRule<TCommand>;

@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Common.Observability;
+using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
@@ -22,6 +23,8 @@ public sealed class CommandHandler : ICommandHandler
         ArgumentNullException.ThrowIfNull(command);
 
         token.ThrowIfCancellationRequested();
+
+        using var _ = Telemetry.StartActivity(command);
 
         if (_validator.IsValid(command))
         {

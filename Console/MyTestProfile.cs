@@ -17,11 +17,11 @@ public sealed class MyTestProfile : IGameProfile
             .UseDefaultProfile();
     }
 
-    public void Configure(IConfigurableCommandValidator configurableGamePipeLine)
+    public void Configure(IConfigurableCommandValidations configurableCommandValidations)
     {
-        ArgumentNullException.ThrowIfNull(configurableGamePipeLine);
+        ArgumentNullException.ThrowIfNull(configurableCommandValidations);
 
-        _ = configurableGamePipeLine
+        _ = configurableCommandValidations
             .AddGeneralRule<ActorIsActivePlayerRule>()
             .AddValidation<FakeCommand>()
                 .AddRule<ActorIsActivePlayerRule>();

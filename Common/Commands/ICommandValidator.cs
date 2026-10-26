@@ -7,5 +7,5 @@ public interface ICommandValidator
     public bool IsValid<TCommand>(TCommand command)
         where TCommand : ICommand;
 
-    internal void Setup(IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations);
+    public void UseValidations(IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations);
 }

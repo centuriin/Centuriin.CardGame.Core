@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
@@ -38,9 +39,6 @@ public static class Registrations
 
     private static IServiceCollection AddBootStrappers(this IServiceCollection services) =>
         services
-            .AddScoped<ICommandValidatorConfigurator, CommandValidationConfigurator>()
-            .AddScoped<IGamePipelineConfigurator, GamePipelineConfigurator>()
-
             .AddScoped<IGameLoader, PlayersLoader>()
             .AddScoped<IGameLoader, ZonesLoader>()
             .AddScoped<IGameLoader, DecksLoader>();
@@ -61,7 +59,7 @@ public static class Registrations
 
     private static IServiceCollection AddStorage(this IServiceCollection services) =>
         services
-            .AddScoped<IGameProfilesRepository, GameProfilesRepository>();
+            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>();
 
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
@@ -77,6 +75,8 @@ public static class Registrations
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
+            .AddSingleton<IGameConfigurationFactory, GameConfigurationFactory>()
+            .AddScoped<IGameConfigurationContext,  GameConfigurationContext>()
             .Scan(s => s
                 .FromApplicationDependencies()
                 .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)

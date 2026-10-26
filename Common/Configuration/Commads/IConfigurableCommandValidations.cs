@@ -3,11 +3,11 @@ using Centuriin.CardGame.Core.Common.Commands.Rules;
 
 namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
 
-public interface IConfigurableCommandValidator
+public interface IConfigurableCommandValidations
 {
     public IConfigurableCommandValidation<TCommand> AddValidation<TCommand>()
         where TCommand : ICommand;
 
-    public IConfigurableCommandValidator AddGeneralRule<TRule>()
+    public IConfigurableCommandValidations AddGeneralRule<TRule>()
         where TRule : ICommandRule<ICommand>;
 }

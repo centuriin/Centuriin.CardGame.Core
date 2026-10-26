@@ -10,7 +10,6 @@ public sealed class CommandValidator : ICommandValidator
     private readonly IGameState _gameState;
     private IReadOnlyDictionary<Type, IEnumerable<ICommandRule>>? _commandValidationMap;
 
-
     public CommandValidator(
         ICoreLogger<CommandValidator> logger,
         IGameState gameState)
@@ -73,7 +72,7 @@ public sealed class CommandValidator : ICommandValidator
     }
 
     /// <inheritdoc/>
-    void ICommandValidator.Setup(
+    void ICommandValidator.UseValidations(
         IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations)
     {
         ArgumentNullException.ThrowIfNull(validations);

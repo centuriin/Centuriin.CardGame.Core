@@ -1,4 +1,3 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 
@@ -8,7 +7,7 @@ public interface IGameProfile
 {
     public string Key { get; }
 
-    public void Configure(IConfigurableGamePipeline configurableGamePipeLine);
+    public void Configure(IConfigurableGamePipeline configurableGamePipeline);
 
-    public void Configure(IConfigurableCommandValidator configurableCommandValidator);
+    public void Configure(IConfigurableCommandValidations configurableCommandValidations);
 }

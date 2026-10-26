@@ -2,5 +2,5 @@
 
 public interface IGameEventsBatch
 {
-    public IReadOnlyCollection<IGameEvent> Events { get; }
+    public IReadOnlyList<IGameEvent> Events { get; }
 }

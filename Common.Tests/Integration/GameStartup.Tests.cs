@@ -7,6 +7,7 @@ using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
+using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Loaders;
@@ -97,10 +98,10 @@ public sealed class GameStartupIntegrationTests
             gameId,
             GameStatus.Created,
             gameState,
-            Mock.Of<ICommandValidator>(),
             new GameEventApplier(
                 eventBus,
-                dispatcher));
+                dispatcher),
+            new AsyncDispatcher<IApplicationEvent>());
 
         var setup = new GameSetup(gameTypeId, [PlayerId.System, new PlayerId(Guid.NewGuid())]);
 

@@ -28,7 +28,10 @@ public static class Telemetry
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var activity = Source.StartActivity("ExecuteCommand");
+        var activity = Source.StartActivity(
+            "ExecuteCommand",
+            ActivityKind.Internal);
+
         activity?.SetTag("command.type", command.GetType().Name);
         activity?.SetTag("game.id", command.GameId.Value);
         activity?.SetTag("actor.id", command.Actor.Value);

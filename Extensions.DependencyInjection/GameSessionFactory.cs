@@ -14,16 +14,21 @@ public sealed class GameSessionFactory : IGameSessionFactory
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IGameProfilesRepository _profilesRepository;
+    private readonly IGameConfigurationFactory _gameConfigurationFactory;
 
     public GameSessionFactory(
         IServiceScopeFactory serviceProvider,
-        IGameProfilesRepository profilesRepository)
+        IGameProfilesRepository profilesRepository,
+        IGameConfigurationFactory gameConfigurationFactory)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceScopeFactory = serviceProvider;
 
         ArgumentNullException.ThrowIfNull(profilesRepository);
         _profilesRepository = profilesRepository;
+
+        ArgumentNullException.ThrowIfNull(gameConfigurationFactory);
+        _gameConfigurationFactory = gameConfigurationFactory;
     }
 
     public async ValueTask<IGameSession> CreateAsync(GameSetup setup, CancellationToken token)
@@ -38,17 +43,12 @@ public sealed class GameSessionFactory : IGameSessionFactory
             setup.GameTypeId, 
             token);
 
-        var pipelineConfigurator =
-            serviceProvider.GetRequiredService<IGamePipelineConfigurator>();
+        var gameConfiguration = _gameConfigurationFactory.CreateFromProfile(profile);
 
-        profile.Configure(pipelineConfigurator);
-        pipelineConfigurator.Configure();
+        var configurationContext = serviceProvider
+            .GetRequiredService<IGameConfigurationContext>();
 
-        var commandValidatorConfigurator =
-            serviceProvider.GetRequiredService<ICommandValidatorConfigurator>();
-
-        profile.Configure(commandValidatorConfigurator);
-        commandValidatorConfigurator.Configure();
+        gameConfiguration.Apply(configurationContext);
 
         var game = serviceProvider
             .GetRequiredService<IGameFactory>()

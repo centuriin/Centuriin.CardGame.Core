@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
@@ -8,13 +8,13 @@ namespace Centuriin.CardGame.Core.Common.GameProfiles;
 
 internal sealed class DefaultProfile : IGameProfile
 {
-    public static DefaultProfile Instance { get; } = new();
-
-    public string Key => throw new NotSupportedException("Default profile not supported key.");
-
     private DefaultProfile() { }
 
-    /// <inheritdoc/>
+    public static DefaultProfile Instance { get; } = new();
+
+    public string Key => 
+        throw new NotSupportedException("Default profile not supported key.");
+
     public void Configure(IConfigurableGamePipeline configurableGamePipeline)
     {
         ArgumentNullException.ThrowIfNull(configurableGamePipeline);
@@ -35,13 +35,11 @@ internal sealed class DefaultProfile : IGameProfile
             .Add<CardMovementSystem>()
                 .ForEvent<CardDealtEvent>();
     }
-
-    /// <inheritdoc/>
-    public void Configure(IConfigurableCommandValidator configurableCommandValidator)
+    public void Configure(IConfigurableCommandValidations configurableCommandValidations)
     {
-        ArgumentNullException.ThrowIfNull(configurableCommandValidator);
+        ArgumentNullException.ThrowIfNull(configurableCommandValidations);
 
-        _ = configurableCommandValidator
+        configurableCommandValidations
             .AddGeneralRule<ActorIsActivePlayerRule>();
     }
 }

@@ -41,9 +41,9 @@ public sealed class GameEventApplier : IGameEventApplier
 
     private sealed class GameEventsBatch : IGameEventsBatch
     {
-        public IReadOnlyCollection<IGameEvent> Events { get; }
+        public IReadOnlyList<IGameEvent> Events { get; }
 
-        public GameEventsBatch(IReadOnlyCollection<IGameEvent> gameEvents)
+        public GameEventsBatch(IReadOnlyList<IGameEvent> gameEvents)
         {
             ArgumentNullException.ThrowIfNull(gameEvents);
             Events = gameEvents;
