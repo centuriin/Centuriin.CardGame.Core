@@ -14,9 +14,9 @@ public interface IGame
 
     public GameVersion Version { get; }
 
-    public Task StartAsync(CancellationToken token);
-
-    public Task AbortAsync(CancellationToken token);
+    internal Task StartAsync(CancellationToken token);
 
     internal Task ApplyAsync(IGameEvent @event, CancellationToken token);
+
+    internal Task AbortAsync(CancellationToken token);
 }

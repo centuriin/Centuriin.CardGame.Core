@@ -1,15 +1,21 @@
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 
-internal sealed class ConfigurableGamePipeline : IGamePipeline
+internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
 {
     private bool _isFrozen;
 
     private readonly LinkedList<ConfigurableSystem> _steps = new();
+
+    public IReadOnlyCollection<ConfigurableSystem> Freeze()
+    {
+        _isFrozen = true;
+
+        return _steps;
+    }
 
     public IConfigurableGamePipeline UseDefaultProfile()
     {
@@ -20,7 +26,7 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
         return this;
     }
 
-    public IConfigurableSystem Add<TSystem>() 
+    public IConfigurableSystem Add<TSystem>()
         where TSystem : SystemBase
     {
         ThrowIfFrozen();
@@ -31,7 +37,7 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
     }
 
     public IConfigurableSystem AddAfter<TBellowSystem, TSystem>()
-        where TBellowSystem : SystemBase 
+        where TBellowSystem : SystemBase
         where TSystem : SystemBase
     {
         ThrowIfFrozen();
@@ -60,7 +66,7 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
     }
 
     public IConfigurableSystem Replace<TReplaceableSystem, TSystem>()
-        where TReplaceableSystem : SystemBase 
+        where TReplaceableSystem : SystemBase
         where TSystem : SystemBase
     {
         ThrowIfFrozen();
@@ -80,53 +86,11 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
         return configurable;
     }
 
-    
-    
-    public void Freeze() => _isFrozen = true;
-
-    public void Apply(IDispatcher<IGameEvent> dispatcher, ISystemFactory factory)
-    {
-        if (!_isFrozen)
-        {
-            throw new InvalidOperationException("Configuration must be frozen.");
-        }
-
-        foreach (var step in _steps)
-        {
-            var system = step.Create.Invoke(factory);
-
-            foreach (var subscribe in step.Subscriptions.Values)
-            {
-                subscribe.Invoke(dispatcher, system);
-            }   
-        }
-    }
-
-    private ConfigurableSystem Create<TSystem>() 
-        where TSystem : SystemBase 
+    private ConfigurableSystem Create<TSystem>()
+        where TSystem : SystemBase
         => new(this, typeof(TSystem), factory => factory.Create<TSystem>());
 
-    private void ThrowIfFrozen()
-    {
-        if (_isFrozen)
-        {
-            throw new InvalidOperationException(
-                "Game pipeline builder is already built.");
-        }
-    }
-
-    
-    
-    private void ThrowIfExists<TSystem>() where TSystem : SystemBase
-    {
-        if (FindNode<TSystem>() is not null)
-        {
-            throw new InvalidOperationException(
-                $"System {typeof(TSystem).Name} already added.");
-        }
-    }
-
-    private LinkedListNode<ConfigurableSystem>? FindNode<TSystem>() 
+    private LinkedListNode<ConfigurableSystem>? FindNode<TSystem>()
         where TSystem : SystemBase
     {
         for (var node = _steps.First; node is not null; node = node.Next)
@@ -140,26 +104,48 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
         return null;
     }
 
-    private LinkedListNode<ConfigurableSystem> GetNode<TSystem>() 
-        where TSystem : SystemBase 
-        => FindNode<TSystem>() 
+    private LinkedListNode<ConfigurableSystem> GetNode<TSystem>()
+        where TSystem : SystemBase
+        => FindNode<TSystem>()
             ?? throw new InvalidOperationException(
                 $"System {typeof(TSystem).Name} does not exist.");
 
-    private sealed class ConfigurableSystem(
+    private void ThrowIfFrozen()
+    {
+        if (_isFrozen)
+        {
+            throw new InvalidOperationException(
+                "Game pipeline builder is already built.");
+        }
+    }
+
+    private void ThrowIfExists<TSystem>() where TSystem : SystemBase
+    {
+        if (FindNode<TSystem>() is not null)
+        {
+            throw new InvalidOperationException(
+                $"System {typeof(TSystem).Name} already added.");
+        }
+    }
+
+    internal sealed class ConfigurableSystem(
         ConfigurableGamePipeline configurator,
         Type systemType,
         Func<ISystemFactory, SystemBase> create) : IConfigurableSystem
     {
-        public IConfigurableGamePipeline GamePipeline => configurator;
+        private readonly HashSet<Type> _eventTypes = [];
+
+        private readonly List<Action<IDispatcher<IGameEvent>, SystemBase>> _subscriptions = [];
+
+        public IConfigurableGamePipeline Pipeline => configurator;
 
         public Type SystemType => systemType;
-        
-        public Func<ISystemFactory, SystemBase> Create => create;
-        
-        public Dictionary<Type, Action<IDispatcher<IGameEvent>, SystemBase>> Subscriptions { get; } = [];        
 
-        public IConfigurableSystem ForEvent<TEvent>() 
+        public Func<ISystemFactory, SystemBase> Create => create;
+
+        public IReadOnlyCollection<Action<IDispatcher<IGameEvent>, SystemBase>> Subscriptions => _subscriptions;
+
+        public IConfigurableSystem ForEvent<TEvent>()
             where TEvent : IGameEvent
         {
             configurator.ThrowIfFrozen();
@@ -174,16 +160,16 @@ internal sealed class ConfigurableGamePipeline : IGamePipeline
                     $" to {eventType.Name}.");
             }
 
-            if (Subscriptions.ContainsKey(eventType))
+            if (!_eventTypes.Add(eventType))
             {
                 throw new InvalidOperationException(
                     $"Event {eventType.Name} for system" +
                     $" {systemType.Name} already added.");
             }
 
-            Subscriptions[eventType] =
-                (dispatcher, system) => 
-                    dispatcher.Register((ISubscriber<TEvent>)system);
+            _subscriptions.Add(
+                (dispatcher, system) =>
+                    dispatcher.Register((ISubscriber<TEvent>)system));
 
             return this;
         }

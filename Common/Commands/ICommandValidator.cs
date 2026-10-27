@@ -1,4 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+﻿using System.Collections.Immutable;
+
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 
 namespace Centuriin.CardGame.Core.Common.Commands;
 
@@ -6,5 +8,5 @@ public interface ICommandValidator
 {
     public bool IsValid(ICommand command);
 
-    public void UseValidations(IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations);
+    public void AddValidation(Type commandType, ImmutableList<ICommandRule> rules);
 }

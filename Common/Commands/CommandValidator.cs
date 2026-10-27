@@ -1,4 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+﻿using System.Collections.Immutable;
+
+using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -8,7 +10,7 @@ public sealed class CommandValidator : ICommandValidator
 {
     private readonly ICoreLogger<CommandValidator> _logger;
     private readonly IGameState _gameState;
-    private IReadOnlyDictionary<Type, IEnumerable<ICommandRule>>? _commandValidationMap;
+    private readonly Dictionary<Type, ImmutableList<ICommandRule>> _validationMap = [];
 
     public CommandValidator(
         ICoreLogger<CommandValidator> logger,
@@ -22,16 +24,28 @@ public sealed class CommandValidator : ICommandValidator
     }
 
     /// <inheritdoc/>
+    public void AddValidation(
+        Type commandType, 
+        ImmutableList<ICommandRule> rules)
+    {
+        ArgumentNullException.ThrowIfNull(commandType);
+        ArgumentNullException.ThrowIfNull(rules);
+
+        if (_validationMap.TryGetValue(commandType, out var _))
+        {
+            throw new InvalidOperationException(
+                $"Validation for {commandType.Name} already added.");
+        }
+
+        _validationMap[commandType] = rules;
+    }
+
+    /// <inheritdoc/>
     public bool IsValid(ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        if (_commandValidationMap is null)
-        {
-            throw new InvalidOperationException("Validations must be added.");
-        }
-
-        if (!_commandValidationMap.TryGetValue(command.GetType(), out var rules))
+        if (!_validationMap.TryGetValue(command.GetType(), out var rules))
         {
             throw new InvalidOperationException(
                 $"Can not validate command {command.GetType().Name}, no rules exists.");
@@ -68,19 +82,5 @@ public sealed class CommandValidator : ICommandValidator
         }
 
         return true;
-    }
-
-    /// <inheritdoc/>
-    public void UseValidations(
-        IReadOnlyDictionary<Type, IEnumerable<ICommandRule>> validations)
-    {
-        ArgumentNullException.ThrowIfNull(validations);
-
-        if (_commandValidationMap is not null)
-        {
-            throw new InvalidOperationException("Validations already added.");
-        }
-
-        _commandValidationMap = validations;
     }
 }

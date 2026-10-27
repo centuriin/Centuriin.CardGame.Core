@@ -8,7 +8,6 @@ using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.GameProfiles;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Server;

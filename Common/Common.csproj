@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include = "Centuriin.CardGame.Core.Common.Tests"/>
+		<InternalsVisibleTo Include="Centuriin.CardGame.Core.Common.Tests" />
 	</ItemGroup>
 	
 	<ItemGroup>

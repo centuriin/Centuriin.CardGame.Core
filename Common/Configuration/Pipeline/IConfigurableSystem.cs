@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 
 public interface IConfigurableSystem
 {
-    public IConfigurableGamePipeline GamePipeline { get; }
+    public IConfigurableGamePipeline Pipeline { get; }
 
     public IConfigurableSystem ForEvent<TEvent>()
         where TEvent : IGameEvent;

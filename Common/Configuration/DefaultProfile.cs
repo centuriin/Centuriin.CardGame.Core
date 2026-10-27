@@ -4,7 +4,7 @@ using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 
-namespace Centuriin.CardGame.Core.Common.GameProfiles;
+namespace Centuriin.CardGame.Core.Common.Configuration;
 
 internal sealed class DefaultProfile : IGameProfile
 {
@@ -22,20 +22,20 @@ internal sealed class DefaultProfile : IGameProfile
         _ = configurableGamePipeline
             .Add<SetupTurnFlowSystem>()
                 .ForEvent<GameStartedEvent>()
-                .GamePipeline
+                .Pipeline
 
             .Add<DealerSystem>()
                 .ForEvent<GameStartedEvent>()
-                .GamePipeline
+                .Pipeline
 
             .Add<TurnFlowSystem>()
                 .ForEvent<TurnFlowDefinedEvent>()
-                .GamePipeline
+                .Pipeline
 
             .Add<CardMovementSystem>()
                 .ForEvent<CardDealtEvent>();
     }
-    public void Configure(IConfigurableCommandValidations configurableCommandValidations)
+    public void Configure(IConfigurableCommandValidator configurableCommandValidations)
     {
         ArgumentNullException.ThrowIfNull(configurableCommandValidations);
 

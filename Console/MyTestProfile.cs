@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Configuration;
 using Centuriin.CardGame.Core.Common.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
-using Centuriin.CardGame.Core.Common.GameProfiles;
 
 namespace Centuriin.CardGame.Core.Console;
 
@@ -17,7 +17,7 @@ public sealed class MyTestProfile : IGameProfile
             .UseDefaultProfile();
     }
 
-    public void Configure(IConfigurableCommandValidations configurableCommandValidations)
+    public void Configure(IConfigurableCommandValidator configurableCommandValidations)
     {
         ArgumentNullException.ThrowIfNull(configurableCommandValidations);
 

@@ -2,11 +2,13 @@ using Centuriin.CardGame.Core.Common.Commands;
 
 namespace Centuriin.CardGame.Core.Common.World;
 
-public interface IGameSession : IDisposable
+public interface IGameSession
 {
     public GameId Id { get; }
 
     public GameTypeId GameTypeId { get; }
+
+    public Task StartAsync(CancellationToken token);
 
     public Task<CommandResult> ExecuteAsync(ICommand command, CancellationToken token);
 

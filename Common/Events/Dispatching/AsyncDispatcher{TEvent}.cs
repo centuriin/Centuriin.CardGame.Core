@@ -4,7 +4,7 @@ public sealed class AsyncDispatcher<TEvent> : IAsyncDispatcher<TEvent>, IAsyncDi
 {
     private bool _disposed;
 
-    private readonly Dictionary<Type, ISubscribersGroup> _handlersMap = [];
+    private readonly OrderedDictionary<Type, ISubscribersGroup> _handlersMap = [];
 
     /// <inheritdoc/>
     public void Register<T>(IAsyncSubscriber<T> subscriber)
@@ -68,7 +68,10 @@ public sealed class AsyncDispatcher<TEvent> : IAsyncDispatcher<TEvent>, IAsyncDi
             .Where(x => x.Key.IsAssignableFrom(actualType))
             .Select(x => x.Value);
 
-        await Task.WhenAll(groups.Select(x => x.DeliverAsync(@event, token)));
+        foreach (var group in groups)
+        {
+            await group.DeliverAsync(@event, token);
+        }
     }
 
     /// <inheritdoc/>
@@ -96,9 +99,10 @@ public sealed class AsyncDispatcher<TEvent> : IAsyncDispatcher<TEvent>, IAsyncDi
 
         public async Task DeliverAsync(TEvent @event, CancellationToken token)
         {
-            await Task.WhenAll(Subscribers
-                .Select(x => Task.Run(async () => 
-                    await x.OnEventAsync((T)@event!, token), token)));
+            foreach (var subscriber in Subscribers)
+            {
+                await subscriber.OnEventAsync((T)@event!, token);
+            }
         }
     }
 }
