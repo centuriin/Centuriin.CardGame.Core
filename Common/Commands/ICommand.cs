@@ -9,5 +9,5 @@ public interface ICommand
 
     public PlayerId Actor { get; }
 
-    public IGameEvent YieldDomainEvent();
+    public IGameEvent YieldGameEvent();
 }

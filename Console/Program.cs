@@ -70,7 +70,7 @@ await sessionsRepository.RemoveByGameIdAsync(g2.Id, CancellationToken.None);
 // todo
 public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
 {
-    public IGameEvent YieldDomainEvent() => new GameStartedEvent(GameId);
+    public IGameEvent YieldGameEvent() => new GameStartedEvent(GameId);
 }
 
 public sealed class ZoneDefinitionRepo : IZonesRepository

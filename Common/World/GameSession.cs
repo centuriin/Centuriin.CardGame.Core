@@ -3,6 +3,7 @@ using Centuriin.CardGame.Core.Common.Observability;
 
 namespace Centuriin.CardGame.Core.Common.World;
 
+// Todo: create other DI collection for game 
 public sealed class GameSession : IGameSession
 {
     private readonly IGame _game;
@@ -38,7 +39,7 @@ public sealed class GameSession : IGameSession
 
         if (_validator.IsValid(command))
         {
-            await _game.ApplyAsync(command.YieldDomainEvent(), token);
+            await _game.ApplyAsync(command.YieldGameEvent(), token);
 
             return new(true, _game.Version);
         }

@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Common.ECS.Components.Players;
-using Centuriin.CardGame.Core.Common.ECS.Entities;
 
 namespace Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 
