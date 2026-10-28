@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel;
 
+using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Server;
+namespace Centuriin.CardGame.Core.Common.Root;
 
 public sealed class Game : IGame
 {
     private readonly IGameEventApplier _eventApplier;
-    private readonly IAsyncDispatcher<IApplicationEvent> _dispatcher;
+    private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
 
     public GameId Id { get; }
 
@@ -28,20 +29,7 @@ public sealed class Game : IGame
         GameStatus gameStatus,
         IGameState gameState,
         IGameEventApplier eventApplier,
-        IAsyncDispatcher<IApplicationEvent> dispatcher,
-        GameVersion version) :
-        this(id, typeId, gameStatus, gameState, eventApplier, dispatcher)
-    {
-        Version = version;
-    }
-
-    public Game(
-        GameId id,
-        GameTypeId typeId,
-        GameStatus gameStatus,
-        IGameState gameState,
-        IGameEventApplier eventApplier,
-        IAsyncDispatcher<IApplicationEvent> dispatcher)
+        IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
         Id = id;
         TypeId = typeId;
@@ -103,7 +91,7 @@ public sealed class Game : IGame
     }
 
     /// <inheritdoc/>
-    async Task IGame.ApplyAsync(IGameEvent @event, CancellationToken token)
+    public async Task ApplyAsync(IGameEvent @event, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -130,5 +118,17 @@ public sealed class Game : IGame
         await _dispatcher.PublishAsync(
             new NewGameEventsBatchCreatedEvent(Id, Version, batch),
             token);
+    }
+
+    /// <inheritdoc/>
+    public async Task RestoreAsync(IRestorationContext restorationContext, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(restorationContext);
+
+        _eventApplier.SilentApply(restorationContext.RestorationBatch);
+
+        Version = restorationContext.GameVersion;
+
+        await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
     }
 }

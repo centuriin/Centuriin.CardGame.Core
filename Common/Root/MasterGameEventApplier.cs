@@ -1,25 +1,24 @@
-﻿using Centuriin.CardGame.Core.Common.Events.Dispatching;
+﻿using System.Collections;
+
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 
-namespace Centuriin.CardGame.Core.Common.Server;
+namespace Centuriin.CardGame.Core.Common.Root;
 
-public sealed class GameEventApplier : IGameEventApplier
+public sealed class MasterGameEventApplier : GameEventApplierBase
 {
     private readonly IGameEventBus _eventBus;
-    private readonly IDispatcher<IGameEvent> _gameEventDispatcher;
 
-    public GameEventApplier(
+    public MasterGameEventApplier(
         IGameEventBus eventBus,
-        IDispatcher<IGameEvent> gameEventDispatcher)
+        IDispatcher<IGameEvent> dispatcher)
+        : base(dispatcher)
     {
         ArgumentNullException.ThrowIfNull(eventBus);
         _eventBus = eventBus;
-
-        ArgumentNullException.ThrowIfNull(gameEventDispatcher);
-        _gameEventDispatcher = gameEventDispatcher;
     }
 
-    public IGameEventsBatch Apply(IGameEvent @event)
+    public override IGameEventsBatch Apply(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -28,15 +27,23 @@ public sealed class GameEventApplier : IGameEventApplier
             @event
         };
 
-        _gameEventDispatcher.Publish(@event);
+        Dispatcher.Publish(@event);
 
         while (_eventBus.TryRead(out var nextEvent))
         {
-            _gameEventDispatcher.Publish(nextEvent);
+            Dispatcher.Publish(nextEvent);
             eventsBatch.Add(nextEvent);
         }
 
         return new GameEventsBatch(eventsBatch);
+    }
+
+    public override void SilentApply(IGameEventsBatch batch)
+    {
+        base.SilentApply(batch);
+
+        // Make sure that event bus is empty
+        _eventBus.Clear();
     }
 
     private sealed class GameEventsBatch : IGameEventsBatch
@@ -48,5 +55,9 @@ public sealed class GameEventApplier : IGameEventApplier
             ArgumentNullException.ThrowIfNull(gameEvents);
             Events = gameEvents;
         }
+
+        public IEnumerator<IGameEvent> GetEnumerator() => Events.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

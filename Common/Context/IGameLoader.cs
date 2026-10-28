@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.Initialization;
+﻿namespace Centuriin.CardGame.Core.Common.Context;
 
 public interface IGameLoader
 {

@@ -9,11 +9,11 @@ public sealed class GameEventRepository : IGameEventsRepository, IDisposable
 {
     private bool _disposed;
 
-    private readonly IAsyncDispatcher<IApplicationEvent> _dispatcher;
+    private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
 
     public readonly List<IGameEventsBatch> Events = [];
 
-    public GameEventRepository(IAsyncDispatcher<IApplicationEvent> dispatcher)
+    public GameEventRepository(IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
         ArgumentNullException.ThrowIfNull(dispatcher);
         _dispatcher = dispatcher;

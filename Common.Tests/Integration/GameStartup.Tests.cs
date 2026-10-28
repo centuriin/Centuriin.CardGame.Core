@@ -101,7 +101,7 @@ public sealed class GameStartupIntegrationTests
             new GameEventApplier(
                 eventBus,
                 dispatcher),
-            new AsyncDispatcher<IApplicationEvent>());
+            new AsyncDispatcher<IGameApplicationEvent>());
 
         var setup = new GameSetup(gameTypeId, [PlayerId.System, new PlayerId(Guid.NewGuid())]);
 
