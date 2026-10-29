@@ -7,17 +7,15 @@ public sealed class GameRunningEvent : IGameApplicationEvent
 {
     public GameId GameId { get; }
 
-    public GameVersion GameVersion { get; }
-
     public IGameEventsBatch InitialEventsBatch { get; }
 
+    public GameVersion GameVersion => InitialEventsBatch.CurrentVersion;
+
     public GameRunningEvent(
-        GameId gameId, 
-        GameVersion gameVersion, 
+        GameId gameId,
         IGameEventsBatch initialEventsBatch)
     {
         GameId = gameId;
-        GameVersion = gameVersion;
 
         ArgumentNullException.ThrowIfNull(initialEventsBatch);
         InitialEventsBatch = initialEventsBatch;

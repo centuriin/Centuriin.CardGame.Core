@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Observability;
+using Centuriin.CardGame.Core.Common.Root;
 
 namespace Centuriin.CardGame.Core.Common.World;
 

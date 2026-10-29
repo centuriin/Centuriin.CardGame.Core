@@ -7,17 +7,15 @@ public sealed class NewGameEventsBatchCreatedEvent : IGameApplicationEvent
 {
     public GameId GameId { get; }
 
-    public GameVersion GameVersion { get; }
-
     public IGameEventsBatch Batch { get; }
+
+    public GameVersion GameVersion => Batch.CurrentVersion;
 
     public NewGameEventsBatchCreatedEvent(
         GameId gameId,
-        GameVersion gameVersion,
         IGameEventsBatch batch)
     {
         GameId = gameId;
-        GameVersion = gameVersion;
 
         ArgumentNullException.ThrowIfNull(batch);
         Batch = batch;

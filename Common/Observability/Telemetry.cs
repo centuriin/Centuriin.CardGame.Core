@@ -2,7 +2,7 @@
 
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.World;
+using Centuriin.CardGame.Core.Common.Root;
 
 namespace Centuriin.CardGame.Core.Common.Observability;
 

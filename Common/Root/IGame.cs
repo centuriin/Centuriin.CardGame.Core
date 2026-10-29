@@ -1,7 +1,8 @@
 ﻿using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.World;
+namespace Centuriin.CardGame.Core.Common.Root;
 
 public interface IGame
 {

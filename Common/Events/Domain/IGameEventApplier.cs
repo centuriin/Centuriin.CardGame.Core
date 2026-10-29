@@ -2,7 +2,7 @@
 
 public interface IGameEventApplier
 {
-    public IGameEventsBatch Apply(IGameEvent @event);
+    public IReadOnlyList<IGameEvent> Apply(IGameEvent @event);
 
-    public void SilentApply(IGameEventsBatch batch);
+    public void SilentApply(IReadOnlyList<IGameEvent> batch);
 }

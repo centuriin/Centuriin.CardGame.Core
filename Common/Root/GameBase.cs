@@ -8,9 +8,10 @@ using Centuriin.CardGame.Core.Common.World;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
-public sealed class Game : IGame
+public abstract class GameBase : IGame
 {
-    private readonly IGameEventApplier _eventApplier;
+    private GameVersion _version = GameVersion.Default;
+
     private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
 
     public GameId Id { get; }
@@ -19,35 +20,52 @@ public sealed class Game : IGame
 
     public GameStatus Status { get; private set; }
 
-    public IGameState State { get; }
+    public IGameState State { get; private set; }
 
-    public GameVersion Version { get; private set; } = GameVersion.Default;
+    public GameVersion Version
+    {
+        get => _version;
 
-    public Game(
+        private set
+        {
+            if (value.Value < Version.Value)
+            {
+                throw new InvalidOperationException(
+                    $"New game version {value.Value} can't be less" +
+                    $" than current {Version.Value}.");
+            }
+
+            _version = value;
+        }
+    }
+
+    protected IGameEventApplier EventApplier { get; }
+
+    protected GameBase(
         GameId id,
         GameTypeId typeId,
-        GameStatus gameStatus,
-        IGameState gameState,
+        GameStatus status,
+        IGameState state,
         IGameEventApplier eventApplier,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
         Id = id;
         TypeId = typeId;
 
-        if (!Enum.IsDefined(gameStatus))
+        if (!Enum.IsDefined(status))
         {
             throw new InvalidEnumArgumentException(
-                nameof(gameStatus),
-                (int)gameStatus,
+                nameof(status),
+                (int)status,
                 typeof(GameStatus));
         }
-        Status = gameStatus;
+        Status = status;
 
-        ArgumentNullException.ThrowIfNull(gameState);
-        State = gameState;
+        ArgumentNullException.ThrowIfNull(state);
+        State = state;
 
         ArgumentNullException.ThrowIfNull(eventApplier);
-        _eventApplier = eventApplier;
+        EventApplier = eventApplier;
 
         ArgumentNullException.ThrowIfNull(dispatcher);
         _dispatcher = dispatcher;
@@ -66,28 +84,12 @@ public sealed class Game : IGame
         }
 
         Status = GameStatus.Running;
-        var batch = _eventApplier.Apply(new GameStartedEvent(Id));
 
-        Version++;
+        var batch = await StartCoreAsync(token);
 
-        await _dispatcher.PublishAsync(new GameRunningEvent(Id, Version, batch), token);
-    }
+        Version = batch.CurrentVersion;
 
-    /// <inheritdoc/>
-    public async Task AbortAsync(CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        if (Status is GameStatus.Aborted)
-        {
-            return;
-        }
-
-        Status = GameStatus.Aborted;
-
-        Version++;
-
-        await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
+        await _dispatcher.PublishAsync(new GameRunningEvent(Id, batch), token);
     }
 
     /// <inheritdoc/>
@@ -111,24 +113,53 @@ public sealed class Game : IGame
                 $" is not equal to current game id {Id.Value}.");
         }
 
-        var batch = _eventApplier.Apply(@event);
+        var batch = await ApplyCoreAsync(@event, token);
 
-        Version++;
+        Version = batch.CurrentVersion;
 
         await _dispatcher.PublishAsync(
-            new NewGameEventsBatchCreatedEvent(Id, Version, batch),
+            new NewGameEventsBatchCreatedEvent(Id, batch),
             token);
     }
 
     /// <inheritdoc/>
-    public async Task RestoreAsync(IRestorationContext restorationContext, CancellationToken token)
+    public async Task AbortAsync(CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+
+        if (Status is GameStatus.Aborted)
+        {
+            return;
+        }
+
+        Status = GameStatus.Aborted;
+
+        var batch = await AbortCoreAsync(token);
+
+        Version = batch.CurrentVersion;
+
+        await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
+    }
+
+    /// <inheritdoc/>
+    public async Task RestoreAsync(
+        IRestorationContext restorationContext,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(restorationContext);
 
-        _eventApplier.SilentApply(restorationContext.RestorationBatch);
+        EventApplier.SilentApply(restorationContext.RestorationBatch);
 
         Version = restorationContext.GameVersion;
 
         await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
     }
+
+    protected abstract Task<IGameEventsBatch> StartCoreAsync(CancellationToken token);
+
+    protected abstract Task<IGameEventsBatch> ApplyCoreAsync(
+        IGameEvent @event,
+        CancellationToken token);
+
+    protected abstract Task<IGameEventsBatch> AbortCoreAsync(CancellationToken token);
 }
