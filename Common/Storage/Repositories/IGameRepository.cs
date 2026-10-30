@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Centuriin.CardGame.Core.Common.World;
+using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories;
 

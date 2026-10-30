@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.World;
+﻿namespace Centuriin.CardGame.Core.Common;
 
 public enum GameStatus
 {

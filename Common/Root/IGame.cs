@@ -1,6 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Context;
-using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
@@ -18,9 +17,9 @@ public interface IGame
 
     public Task StartAsync(CancellationToken token);
 
-    public Task ApplyAsync(IGameEvent @event, CancellationToken token);
+    public Task ExecuteAsync(ICommand command, CancellationToken token);
 
     public Task AbortAsync(CancellationToken token);
 
-    public Task RestoreAsync(IRestorationContext restorationContext, CancellationToken token);
+    public Task RestoreAsync(CancellationToken token);
 }

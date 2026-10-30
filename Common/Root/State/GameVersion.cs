@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Common.World;
+﻿namespace Centuriin.CardGame.Core.Common.Root.State;
 
 public readonly record struct GameVersion
 {

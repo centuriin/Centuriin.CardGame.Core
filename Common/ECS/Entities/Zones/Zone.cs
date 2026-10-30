@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
+﻿namespace Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 
 public sealed class Zone : EntityBase, IEquatable<Zone>
 {
@@ -20,4 +18,6 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
 
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
+
+    protected override EntityBase CopyCore() => new Zone(Id);
 }

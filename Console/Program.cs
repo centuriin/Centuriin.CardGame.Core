@@ -1,6 +1,8 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.ECS.Entities;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability;
@@ -15,6 +17,13 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 
 using Serilog;
+
+var cards = new List<Card>();
+
+var copy = new EntityCopy<Card>(new(new(111)));
+
+cards.Add(copy!);
+
 
 var builder = Host.CreateApplicationBuilder(args);
 

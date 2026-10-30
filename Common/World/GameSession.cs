@@ -40,7 +40,7 @@ public sealed class GameSession : IGameSession
 
         if (_validator.IsValid(command))
         {
-            await _game.ApplyAsync(command.YieldGameEvent(), token);
+            await _game.ExecuteAsync(command.YieldGameEvent(), token);
 
             return new(true, _game.Version);
         }

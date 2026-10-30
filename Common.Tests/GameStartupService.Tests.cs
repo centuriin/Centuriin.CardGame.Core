@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Root;
+using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 

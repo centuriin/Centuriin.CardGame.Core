@@ -2,7 +2,7 @@
 
 using Centuriin.CardGame.Core.Common.ECS.Entities;
 
-namespace Centuriin.CardGame.Core.Common.World;
+namespace Centuriin.CardGame.Core.Common.Root.State;
 
 public sealed class GameState : IGameState
 {
@@ -51,4 +51,10 @@ public sealed class GameState : IGameState
 
         return (IEnumerable<TEntity>)dict!.Values;
     }
+
+    EntityCopy<TEntity> IReadOnlyGameState.Get<TEntity>(EntityId id) =>
+        new((TEntity)Get<TEntity>(id).Copy());
+
+    IEnumerable<EntityCopy<TEntity>> IReadOnlyGameState.Query<TEntity>() =>
+        Query<TEntity>().Select(x => new EntityCopy<TEntity>((TEntity)x.Copy()));
 }

@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
 
+using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.World;
+using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
@@ -20,7 +21,7 @@ public abstract class GameBase : IGame
 
     public GameStatus Status { get; private set; }
 
-    public IGameState State { get; private set; }
+    public IReadOnlyGameState State { get; private set; }
 
     public GameVersion Version
     {
@@ -45,7 +46,7 @@ public abstract class GameBase : IGame
         GameId id,
         GameTypeId typeId,
         GameStatus status,
-        IGameState state,
+        IReadOnlyGameState state,
         IGameEventApplier eventApplier,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
@@ -93,9 +94,9 @@ public abstract class GameBase : IGame
     }
 
     /// <inheritdoc/>
-    public async Task ApplyAsync(IGameEvent @event, CancellationToken token)
+    public async Task ExecuteAsync(ICommand command, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(command);
 
         token.ThrowIfCancellationRequested();
 
@@ -106,10 +107,10 @@ public abstract class GameBase : IGame
                 $" but current status is {Status}.");
         }
 
-        if (@event.GameId != Id)
+        if (command.GameId != Id)
         {
             throw new InvalidOperationException("" +
-                $"Event game id {@event.GameId.Value}" +
+                $"Event game id {command.GameId.Value}" +
                 $" is not equal to current game id {Id.Value}.");
         }
 
@@ -142,15 +143,14 @@ public abstract class GameBase : IGame
     }
 
     /// <inheritdoc/>
-    public async Task RestoreAsync(
-        IRestorationContext restorationContext,
-        CancellationToken token)
+    public async Task RestoreAsync(CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(restorationContext);
+        token.ThrowIfCancellationRequested();
 
-        EventApplier.SilentApply(restorationContext.RestorationBatch);
+        var batch = await RestoreCoreAsync(token);
 
-        Version = restorationContext.GameVersion;
+        EventApplier.SilentApply(batch.Events);
+        Version = batch.CurrentVersion;
 
         await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
     }
@@ -162,4 +162,6 @@ public abstract class GameBase : IGame
         CancellationToken token);
 
     protected abstract Task<IGameEventsBatch> AbortCoreAsync(CancellationToken token);
+
+    protected abstract Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token);
 }

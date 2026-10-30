@@ -79,4 +79,12 @@ public abstract class EntityBase
     /// </typeparam>
     public void Remove<T>()
         where T : ComponentBase => Components.Remove(typeof(T));
+
+    /// <summary>
+    /// Returns its copy.
+    /// </summary>
+    /// <returns>
+    /// Copy.
+    /// </returns>
+    public abstract EntityBase Copy();
 }
