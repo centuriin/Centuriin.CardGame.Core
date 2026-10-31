@@ -1,8 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Observability;
-using Centuriin.CardGame.Core.Common.Root;
 
-namespace Centuriin.CardGame.Core.Common.World;
+namespace Centuriin.CardGame.Core.Common.Root;
 
 // Todo: create other DI collection for game 
 public sealed class GameSession : IGameSession
@@ -51,4 +50,6 @@ public sealed class GameSession : IGameSession
     /// <inheritdoc/>
     public async Task AbortAsync(CancellationToken token) =>
         await _game.AbortAsync(token);
+
+    public void Dispose() { }
 }

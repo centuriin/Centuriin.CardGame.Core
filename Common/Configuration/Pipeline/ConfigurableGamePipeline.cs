@@ -181,9 +181,9 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
             }
             if (typeof(IProducingSubscriber<TEvent>).IsAssignableFrom(systemType))
             {
-                _consumingSubscriptions.Add(
+                _producingSubscriptions.Add(
                     (dispatcher, system) =>
-                        dispatcher.Register((IConsumingSubscriber<TEvent>)system));
+                        dispatcher.Register((IProducingSubscriber<TEvent>)system));
             }
 
             return this;

@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Common.Root;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories;
 

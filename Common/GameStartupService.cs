@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
+﻿using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -6,30 +6,19 @@ namespace Centuriin.CardGame.Core.Common;
 
 public sealed class GameStartupService : IGameStartupService
 {
-    private readonly IGameSessionFactory _gameSessionFactory;
+    private readonly IGameSessionFactory _sessionFactory;
     private readonly IGameSessionsRepository _sessionsRepository;
 
-    private readonly IGameProfilesRepository _profilesRepository;
-
-    private readonly IEnumerable<IGameConfigurationInitializer> _configurationInitializers;
 
     public GameStartupService(
-        IGameSessionFactory gameSessionFactory,
-        IGameSessionsRepository sessionsRepository,
-        IGameProfilesRepository profilesRepository,
-        IEnumerable<IGameConfigurationInitializer> gameConfigurationInitializers)
+        IGameSessionFactory sessionFactory,
+        IGameSessionsRepository sessionsRepository)
     {
+        ArgumentNullException.ThrowIfNull(sessionFactory);
+        _sessionFactory = sessionFactory;
+
         ArgumentNullException.ThrowIfNull(sessionsRepository);
         _sessionsRepository = sessionsRepository;
-
-        ArgumentNullException.ThrowIfNull(gameSessionFactory);
-        _gameSessionFactory = gameSessionFactory;
-
-        ArgumentNullException.ThrowIfNull(profilesRepository);
-        _profilesRepository = profilesRepository;
-
-        ArgumentNullException.ThrowIfNull(gameConfigurationInitializers);
-        _configurationInitializers = gameConfigurationInitializers;
     }
 
     public async Task<IGameSession> StartupGameAsync(GameSetup setup, CancellationToken token)
@@ -38,19 +27,7 @@ public sealed class GameStartupService : IGameStartupService
 
         token.ThrowIfCancellationRequested();
 
-        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(
-            setup.GameTypeId,
-            token);
-
-        foreach (var configIntiailizer in _configurationInitializers)
-        {
-            configIntiailizer.Initialize(profile);
-        }
-
-        var session = await _gameSessionFactory.CreateAsync(
-            setup, 
-            gameConfiguration,
-            token);
+        var session = await _sessionFactory.CreateAsync(setup, token);
 
         try
         {

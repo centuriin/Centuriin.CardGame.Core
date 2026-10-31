@@ -2,6 +2,8 @@
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration;
+using Centuriin.CardGame.Core.Common.Configuration.Commads;
+using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events;
@@ -81,6 +83,9 @@ public static class Registrations
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
+            .AddScoped<IGameConfigurationInitializer, GamePipelineInitializer>()
+            .AddScoped<IGameConfigurationInitializer, GameCommandValidatorInitializer>()
+
             .Scan(s => s
                 .FromApplicationDependencies()
                 .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
