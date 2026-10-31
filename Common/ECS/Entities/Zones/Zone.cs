@@ -19,5 +19,5 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
 
-    protected override EntityBase CopyCore() => new Zone(Id);
+    public override Zone Copy() => new Zone(Id);
 }

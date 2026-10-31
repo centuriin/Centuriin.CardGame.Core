@@ -15,6 +15,6 @@ internal sealed class SystemFactory : ISystemFactory
     }
 
     public TSystem Create<TSystem>()
-        where TSystem : SystemBase
+        where TSystem : ISystem
         => ActivatorUtilities.CreateInstance<TSystem>(_serviceProvider);
 }

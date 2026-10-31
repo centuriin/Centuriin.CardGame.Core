@@ -11,15 +11,13 @@ public sealed class GameStartupService : IGameStartupService
 
     private readonly IGameProfilesRepository _profilesRepository;
 
-    private readonly IGameConfigurationRepository _gameConfigurationRepository;
-    private readonly IGameConfigurationFactory _gameConfigurationFactory;
+    private readonly IEnumerable<IGameConfigurationInitializer> _configurationInitializers;
 
     public GameStartupService(
         IGameSessionFactory gameSessionFactory,
         IGameSessionsRepository sessionsRepository,
         IGameProfilesRepository profilesRepository,
-        IGameConfigurationRepository gameConfigurationRepository,
-        IGameConfigurationFactory gameConfigurationFactory)
+        IEnumerable<IGameConfigurationInitializer> gameConfigurationInitializers)
     {
         ArgumentNullException.ThrowIfNull(sessionsRepository);
         _sessionsRepository = sessionsRepository;
@@ -30,11 +28,8 @@ public sealed class GameStartupService : IGameStartupService
         ArgumentNullException.ThrowIfNull(profilesRepository);
         _profilesRepository = profilesRepository;
 
-        ArgumentNullException.ThrowIfNull(gameConfigurationRepository);
-        _gameConfigurationRepository = gameConfigurationRepository;
-
-        ArgumentNullException.ThrowIfNull(gameConfigurationFactory);
-        _gameConfigurationFactory = gameConfigurationFactory;
+        ArgumentNullException.ThrowIfNull(gameConfigurationInitializers);
+        _configurationInitializers = gameConfigurationInitializers;
     }
 
     public async Task<IGameSession> StartupGameAsync(GameSetup setup, CancellationToken token)
@@ -43,13 +38,14 @@ public sealed class GameStartupService : IGameStartupService
 
         token.ThrowIfCancellationRequested();
 
-        var gameConfiguration = await _gameConfigurationRepository.FindAsync(
+        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(
             setup.GameTypeId,
-            token)
-            ?? _gameConfigurationFactory.CreateFromProfile(
-                await _profilesRepository.GetProfileByGameTypIdAsync(
-                    setup.GameTypeId,
-                    token));
+            token);
+
+        foreach (var configIntiailizer in _configurationInitializers)
+        {
+            configIntiailizer.Initialize(profile);
+        }
 
         var session = await _gameSessionFactory.CreateAsync(
             setup, 

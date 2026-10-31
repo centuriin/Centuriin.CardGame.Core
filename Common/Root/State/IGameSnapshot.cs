@@ -8,7 +8,5 @@ public interface IGameSnapshot
 
     public GameStatus GameStatus { get; }
 
-    public IGameState GameState { get; }
-
     public GameVersion Version { get; }
 }

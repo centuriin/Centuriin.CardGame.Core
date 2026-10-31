@@ -28,5 +28,5 @@ public sealed class Player : EntityBase, IEquatable<Player>
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
 
-    protected override EntityBase CopyCore() => new Player(Id);
+    public override Player Copy() => new Player(Id);
 }

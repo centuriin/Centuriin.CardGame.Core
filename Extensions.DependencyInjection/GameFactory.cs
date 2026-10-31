@@ -17,21 +17,18 @@ internal sealed class GameFactory : IGameFactory
         _serviceProvider = serviceProvider;
     }
 
-    public TGame Create<TGame>(GameTypeId typeId) 
-        where TGame : IGame =>
-        ActivatorUtilities.CreateInstance<TGame>(
-            _serviceProvider, 
-            new GameId(Guid.CreateVersion7()), 
+    public IGame CreateMaster(GameTypeId typeId) =>
+        ActivatorUtilities.CreateInstance<MasterGame>(
+            _serviceProvider,
+            new GameId(Guid.CreateVersion7()),
             typeId,
             GameStatus.Created);
 
-    public TGame Create<TGame>(IGameSnapshot snapshot) 
-        where TGame : IGame =>
-        ActivatorUtilities.CreateInstance<TGame>(
-            _serviceProvider, 
+    public IGame CreateReplica(IGameSnapshot snapshot) =>
+        ActivatorUtilities.CreateInstance<ReplicaGame>(
+            _serviceProvider,
             snapshot.GameId,
             snapshot.TypeId,
-            snapshot.GameStatus, 
-            snapshot.GameState,
+            snapshot.GameStatus,
             snapshot.Version);
 }

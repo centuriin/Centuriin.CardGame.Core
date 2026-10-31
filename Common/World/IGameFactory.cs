@@ -5,9 +5,7 @@ namespace Centuriin.CardGame.Core.Common.World;
 
 public interface IGameFactory
 {
-    public TGame Create<TGame>(GameTypeId typeId)
-        where TGame : IGame;
+    public IGame CreateMaster(GameTypeId typeId);
 
-    public TGame Create<TGame>(IGameSnapshot snapshot)
-        where TGame : IGame;
+    public IGame CreateReplica(IGameSnapshot snapshot);
 }

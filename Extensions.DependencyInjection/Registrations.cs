@@ -2,17 +2,13 @@
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Configuration.Commads;
-using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
-using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root.State;
-using Centuriin.CardGame.Core.Common.Server;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
@@ -52,8 +48,18 @@ public static class Registrations
 
             .AddScoped<ICommandValidator, CommandValidator>()
 
-            .AddScoped<IGameEventApplier, GameEventApplier>()
-            .AddScoped(typeof(IDispatcher<>), typeof(Dispatcher<>))
+            .AddScoped(typeof(GameEventCoordinator))
+            .AddScoped<IGameEventApplier>(sp => 
+                sp.GetRequiredService<GameEventCoordinator>())
+            .AddScoped<IGameEventProducer>(sp =>
+                sp.GetRequiredService<GameEventCoordinator>())
+
+            .AddScoped(typeof(GameEventDispatcher))
+            .AddScoped<IConsumingSubscriberDispatcher>(sp =>
+                sp.GetRequiredService<GameEventDispatcher>())
+            .AddScoped<IProducingSubcriberDispatcher>(sp =>
+                sp.GetRequiredService<GameEventDispatcher>())
+
             .AddSingleton(typeof(IAsyncDispatcher<>), typeof(AsyncDispatcher<>))
             .AddScoped<ITurnAutomat, TurnAutomat>()
             .AddScoped<IGameState, GameState>();
@@ -68,16 +74,13 @@ public static class Registrations
             .AddScoped<ICardFactory, CardFactory>()
 
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
-            
-            .AddScoped<ICommandExecutorFactory, CommandExecutorFactory>()
+
             .AddScoped<ISystemFactory, SystemFactory>()
             .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
-            .AddSingleton<IGameConfigurationFactory, GameConfigurationFactory>()
-            .AddScoped<IGameConfigurationContext,  GameConfigurationContext>()
             .Scan(s => s
                 .FromApplicationDependencies()
                 .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
