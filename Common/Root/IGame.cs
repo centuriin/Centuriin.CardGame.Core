@@ -11,8 +11,6 @@ public interface IGame
 
     public GameStatus Status { get; }
 
-    public IGameState State { get; }
-
     public GameVersion Version { get; }
 
     public Task StartAsync(CancellationToken token);

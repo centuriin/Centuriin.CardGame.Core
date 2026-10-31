@@ -7,17 +7,17 @@ public interface IConfigurableGamePipeline
     public IConfigurableGamePipeline UseDefaultProfile();
 
     public IConfigurableSystem Add<TSystem>()
-        where TSystem : SystemBase;
+        where TSystem : ISystem;
 
     public IConfigurableSystem AddAfter<TBellowSystem, TSystem>()
-        where TBellowSystem : SystemBase
-        where TSystem : SystemBase;
+        where TBellowSystem : ISystem
+        where TSystem : ISystem;
 
     public IConfigurableSystem AddBefore<TFollowSystem, TSystem>()
-        where TFollowSystem : SystemBase
-        where TSystem : SystemBase;
+        where TFollowSystem : ISystem
+        where TSystem : ISystem;
 
     public IConfigurableSystem Replace<TReplaceableSystem, TSystem>()
-        where TReplaceableSystem : SystemBase
-        where TSystem : SystemBase;
+        where TReplaceableSystem : ISystem
+        where TSystem : ISystem;
 }

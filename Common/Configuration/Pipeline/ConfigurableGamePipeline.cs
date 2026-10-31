@@ -27,7 +27,7 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     public IConfigurableSystem Add<TSystem>()
-        where TSystem : SystemBase
+        where TSystem : ISystem
     {
         ThrowIfFrozen();
 
@@ -37,8 +37,8 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     public IConfigurableSystem AddAfter<TBellowSystem, TSystem>()
-        where TBellowSystem : SystemBase
-        where TSystem : SystemBase
+        where TBellowSystem : ISystem
+        where TSystem : ISystem
     {
         ThrowIfFrozen();
 
@@ -52,7 +52,8 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     public IConfigurableSystem AddBefore<TFollowSystem, TSystem>()
-        where TFollowSystem : SystemBase where TSystem : SystemBase
+        where TFollowSystem : ISystem
+        where TSystem : ISystem
     {
         ThrowIfFrozen();
 
@@ -66,8 +67,8 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     public IConfigurableSystem Replace<TReplaceableSystem, TSystem>()
-        where TReplaceableSystem : SystemBase
-        where TSystem : SystemBase
+        where TReplaceableSystem : ISystem
+        where TSystem : ISystem
     {
         ThrowIfFrozen();
 
@@ -87,11 +88,11 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     private ConfigurableSystem Create<TSystem>()
-        where TSystem : SystemBase
+        where TSystem : ISystem
         => new(this, typeof(TSystem), factory => factory.Create<TSystem>());
 
     private LinkedListNode<ConfigurableSystem>? FindNode<TSystem>()
-        where TSystem : SystemBase
+        where TSystem : ISystem
     {
         for (var node = _steps.First; node is not null; node = node.Next)
         {
@@ -105,7 +106,7 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     }
 
     private LinkedListNode<ConfigurableSystem> GetNode<TSystem>()
-        where TSystem : SystemBase
+        where TSystem : ISystem
         => FindNode<TSystem>()
             ?? throw new InvalidOperationException(
                 $"System {typeof(TSystem).Name} does not exist.");
@@ -119,7 +120,8 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
         }
     }
 
-    private void ThrowIfExists<TSystem>() where TSystem : SystemBase
+    private void ThrowIfExists<TSystem>()
+        where TSystem : ISystem
     {
         if (FindNode<TSystem>() is not null)
         {
@@ -131,19 +133,22 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
     internal sealed class ConfigurableSystem(
         ConfigurableGamePipeline configurator,
         Type systemType,
-        Func<ISystemFactory, SystemBase> create) : IConfigurableSystem
+        Func<ISystemFactory, ISystem> create) : IConfigurableSystem
     {
         private readonly HashSet<Type> _eventTypes = [];
 
-        private readonly List<Action<IDispatcher<IGameEvent>, SystemBase>> _subscriptions = [];
+        private readonly List<Action<IConsumingSubscriberDispatcher, ISystem>> _consumingSubscriptions = [];
+        private readonly List<Action<IProducingSubcriberDispatcher, ISystem>> _producingSubscriptions = [];
 
         public IConfigurableGamePipeline Pipeline => configurator;
 
         public Type SystemType => systemType;
 
-        public Func<ISystemFactory, SystemBase> Create => create;
+        public Func<ISystemFactory, ISystem> Create => create;
 
-        public IReadOnlyCollection<Action<IDispatcher<IGameEvent>, SystemBase>> Subscriptions => _subscriptions;
+        public IReadOnlyCollection<Action<IConsumingSubscriberDispatcher, ISystem>> ConsumingSubscriptions => _consumingSubscriptions;
+        
+        public IReadOnlyCollection<Action<IProducingSubcriberDispatcher, ISystem>> ProducingSubscriptions => _producingSubscriptions;
 
         public IConfigurableSystem ForEvent<TEvent>()
             where TEvent : IGameEvent
@@ -152,14 +157,6 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
 
             var eventType = typeof(TEvent);
 
-            if (!typeof(ISubscriber<TEvent>).IsAssignableFrom(systemType))
-            {
-
-                throw new InvalidOperationException(
-                    $"System {systemType.Name} does not subscribe" +
-                    $" to {eventType.Name}.");
-            }
-
             if (!_eventTypes.Add(eventType))
             {
                 throw new InvalidOperationException(
@@ -167,9 +164,27 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
                     $" {systemType.Name} already added.");
             }
 
-            _subscriptions.Add(
-                (dispatcher, system) =>
-                    dispatcher.Register((ISubscriber<TEvent>)system));
+            if (!typeof(IConsumingSubscriber<TEvent>).IsAssignableFrom(systemType)
+                && !typeof(IProducingSubscriber<TEvent>).IsAssignableFrom(systemType))
+            {
+                throw new InvalidOperationException(
+                    $"System {systemType.Name} does not subscribe" +
+                    $" to {eventType.Name}.");
+            }
+
+            if (typeof(IConsumingSubscriber<TEvent>).IsAssignableFrom(systemType))
+            {
+                _consumingSubscriptions.Add(
+                    (dispatcher, system) =>
+                        dispatcher.Register((IConsumingSubscriber<TEvent>)system));
+
+            }
+            if (typeof(IProducingSubscriber<TEvent>).IsAssignableFrom(systemType))
+            {
+                _consumingSubscriptions.Add(
+                    (dispatcher, system) =>
+                        dispatcher.Register((IConsumingSubscriber<TEvent>)system));
+            }
 
             return this;
         }

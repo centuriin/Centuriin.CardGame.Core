@@ -6,33 +6,33 @@ using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.ECS.Systems;
 
 public sealed class DealerSystem :
-    SystemBase,
-    ISubscriber<GameStartedEvent>
+    ISystem,
+    IProducingSubscriber<GameStartedEvent>
 {
-    public DealerSystem(
-        IGameState gameState,
-        IGameEventBusWriter eventBusWriter,
-        ICoreLogger<DealerSystem> logger) : 
-        base(gameState, eventBusWriter, logger)
+    public void OnEvent(
+        GameStartedEvent @event,
+        IReadOnlyGameState readOnlyGameState,
+        IGameEventBusWriter eventBusWriter)
     {
-    }
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(readOnlyGameState);
+        ArgumentNullException.ThrowIfNull(eventBusWriter);
 
-    public void OnEvent(GameStartedEvent @event)
-    {
-        ValidateAndLog(@event);
-
-        var playersDecks = GameState
+        var playersDecks = readOnlyGameState
             .Query<Card>()
-            .ToLookup(k => k.Get<OwnerComponent>().CurrentOwnerId, v => v.Id)
-            .ToDictionary(k => k.Key, v => new Queue<EntityId>(v.Shuffle()));
+            .ToLookup(
+                k => k.Get<OwnerComponent>().CurrentOwnerId,
+                v => v.Id)
+            .ToDictionary(
+                k => k.Key,
+                v => new Queue<EntityId>(v.Shuffle()));
 
-        foreach (var zone in GameState.Query<Zone>().WithComponent<HasPrimaryCards>())
+        foreach (var zone in readOnlyGameState.Query<Zone>().WithComponent<HasPrimaryCards>())
         {
             var cardCount = zone.Get<HasPrimaryCards>().Count;
             var zoneOwner = zone.Get<OwnerComponent>().CurrentOwnerId;
@@ -50,7 +50,7 @@ public sealed class DealerSystem :
                     pickedCardId,
                     zone.Get<OwnerComponent>().CurrentOwnerId);
 
-                EventBusWriter.Write(childEvent);
+                eventBusWriter.Write(childEvent);
             }
         }
     }

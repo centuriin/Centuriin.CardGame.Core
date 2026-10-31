@@ -10,6 +10,8 @@ public sealed class GameState : IGameState
 
     public ITurnAutomat TurnAutomat { get; }
 
+    IReadOnlyTurnAutomat IReadOnlyGameState.TurnAutomat => TurnAutomat;
+
     public GameState(ITurnAutomat turnAutomat)
     {
         ArgumentNullException.ThrowIfNull(turnAutomat);
@@ -52,9 +54,9 @@ public sealed class GameState : IGameState
         return (IEnumerable<TEntity>)dict!.Values;
     }
 
-    EntityCopy<TEntity> IReadOnlyGameState.Get<TEntity>(EntityId id) =>
-        new((TEntity)Get<TEntity>(id).Copy());
+    TEntity IReadOnlyGameState.Get<TEntity>(EntityId id) =>
+        (TEntity)Get<TEntity>(id).Copy();
 
-    IEnumerable<EntityCopy<TEntity>> IReadOnlyGameState.Query<TEntity>() =>
-        Query<TEntity>().Select(x => new EntityCopy<TEntity>((TEntity)x.Copy()));
+    IEnumerable<TEntity> IReadOnlyGameState.Query<TEntity>() =>
+        Query<TEntity>().Select(x => (TEntity)x.Copy());
 }

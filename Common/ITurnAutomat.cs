@@ -2,18 +2,11 @@
 
 namespace Centuriin.CardGame.Core.Common;
 
-public interface ITurnAutomat
+public interface ITurnAutomat : IReadOnlyTurnAutomat
 {
-    public EntityId ActivePlayer { get; }
-
-    public bool IsCycled { get; }
-
-
     public void DropCycle();
 
     public void DropQueueAfter(EntityId playerId);
-
-    public IEnumerable<EntityId> GetEnumarable();
 
     public void MoveNext();
 

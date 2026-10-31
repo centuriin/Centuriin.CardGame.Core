@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
@@ -20,8 +20,6 @@ public abstract class GameBase : IGame
     public GameTypeId TypeId { get; }
 
     public GameStatus Status { get; private set; }
-
-    public IReadOnlyGameState State { get; private set; }
 
     public GameVersion Version
     {
@@ -46,7 +44,6 @@ public abstract class GameBase : IGame
         GameId id,
         GameTypeId typeId,
         GameStatus status,
-        IReadOnlyGameState state,
         IGameEventApplier eventApplier,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
@@ -61,9 +58,6 @@ public abstract class GameBase : IGame
                 typeof(GameStatus));
         }
         Status = status;
-
-        ArgumentNullException.ThrowIfNull(state);
-        State = state;
 
         ArgumentNullException.ThrowIfNull(eventApplier);
         EventApplier = eventApplier;
@@ -88,7 +82,7 @@ public abstract class GameBase : IGame
 
         var batch = await StartCoreAsync(token);
 
-        Version = batch.CurrentVersion;
+        Version = batch.CurrentGameVersion;
 
         await _dispatcher.PublishAsync(new GameRunningEvent(Id, batch), token);
     }
@@ -114,9 +108,9 @@ public abstract class GameBase : IGame
                 $" is not equal to current game id {Id.Value}.");
         }
 
-        var batch = await ApplyCoreAsync(@event, token);
+        var batch = await ExecuteCoreAsync(command, token);
 
-        Version = batch.CurrentVersion;
+        Version = batch.CurrentGameVersion;
 
         await _dispatcher.PublishAsync(
             new NewGameEventsBatchCreatedEvent(Id, batch),
@@ -137,7 +131,7 @@ public abstract class GameBase : IGame
 
         var batch = await AbortCoreAsync(token);
 
-        Version = batch.CurrentVersion;
+        Version = batch.CurrentGameVersion;
 
         await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
     }
@@ -147,18 +141,31 @@ public abstract class GameBase : IGame
     {
         token.ThrowIfCancellationRequested();
 
+        if (Status is not GameStatus.Created)
+        {
+            throw new InvalidOperationException(
+                $"Game status should be {GameStatus.Created}," +
+                $" but current status is {Status}.");
+        }
+
+        Status = GameStatus.Running;
+
         var batch = await RestoreCoreAsync(token);
 
-        EventApplier.SilentApply(batch.Events);
-        Version = batch.CurrentVersion;
+        foreach (var @event in batch)
+        {
+            EventApplier.Apply(@event);
+        }
+
+        Version = batch.CurrentGameVersion;
 
         await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
     }
 
     protected abstract Task<IGameEventsBatch> StartCoreAsync(CancellationToken token);
 
-    protected abstract Task<IGameEventsBatch> ApplyCoreAsync(
-        IGameEvent @event,
+    protected abstract Task<IGameEventsBatch> ExecuteCoreAsync(
+        ICommand command,
         CancellationToken token);
 
     protected abstract Task<IGameEventsBatch> AbortCoreAsync(CancellationToken token);

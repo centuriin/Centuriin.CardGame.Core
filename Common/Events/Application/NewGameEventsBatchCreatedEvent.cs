@@ -9,7 +9,7 @@ public sealed class NewGameEventsBatchCreatedEvent : IGameApplicationEvent
 
     public IGameEventsBatch Batch { get; }
 
-    public GameVersion GameVersion => Batch.CurrentVersion;
+    public GameVersion GameVersion => Batch.CurrentGameVersion;
 
     public NewGameEventsBatchCreatedEvent(
         GameId gameId,

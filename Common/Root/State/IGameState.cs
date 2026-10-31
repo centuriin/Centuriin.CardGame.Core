@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Root.State;
 
 public interface IGameState : IReadOnlyGameState
 {
-    public ITurnAutomat TurnAutomat { get; }
+    public new ITurnAutomat TurnAutomat { get; }
 
     public void AddEntity<TEntity>(TEntity entity)
         where TEntity : EntityBase;

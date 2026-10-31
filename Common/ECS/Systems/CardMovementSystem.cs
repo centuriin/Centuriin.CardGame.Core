@@ -1,34 +1,29 @@
 ﻿using Centuriin.CardGame.Core.Common.ECS.Components;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
-using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.ECS.Systems;
 
 public sealed class CardMovementSystem :
-    SystemBase,
-    ISubscriber<CardDealtEvent>
+    ISystem,
+    IConsumingSubscriber<CardDealtEvent>
 {
-    public CardMovementSystem(
-        IGameState gameState,
-        IGameEventBusWriter eventBusWriter,
-        ICoreLogger<CardMovementSystem> logger) :
-        base(gameState, eventBusWriter, logger)
+    public CardMovementSystem()
     {
     }
 
-    public void OnEvent(CardDealtEvent @event)
+    public void OnEvent(CardDealtEvent @event, IGameState gameState)
     {
-        ValidateAndLog(@event);
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(gameState);
 
-        var zone = GameState.Get<Zone>(@event.NewZoneId);
+        var zone = gameState.Get<Zone>(@event.NewZoneId);
         var newOwnerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
-        var card = GameState.Get<Card>(@event.CardId);
+        var card = gameState.Get<Card>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId);
         card.Get<ZoneComponent>().ChangeZoneId(zone.Id);
     }

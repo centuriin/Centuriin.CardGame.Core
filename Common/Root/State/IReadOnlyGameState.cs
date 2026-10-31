@@ -5,6 +5,11 @@ namespace Centuriin.CardGame.Core.Common.Root.State;
 public interface IReadOnlyGameState
 {
     /// <summary>
+    /// Read only turn automat.
+    /// </summary>
+    public IReadOnlyTurnAutomat TurnAutomat { get; }
+
+    /// <summary>
     /// Gets entity copy from mutable state.
     /// </summary>
     /// <typeparam name="TEntity">
@@ -16,7 +21,7 @@ public interface IReadOnlyGameState
     /// <returns>
     /// Entity copy.
     /// </returns>
-    public EntityCopy<TEntity> Get<TEntity>(EntityId id)
+    public TEntity Get<TEntity>(EntityId id)
         where TEntity : EntityBase;
 
     /// <summary>
@@ -28,6 +33,6 @@ public interface IReadOnlyGameState
     /// <returns>
     /// Entity copy.
     /// </returns>
-    public IEnumerable<EntityCopy<TEntity>> Query<TEntity>()
+    public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
 }

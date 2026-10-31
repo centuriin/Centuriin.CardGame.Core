@@ -1,62 +1,67 @@
 ﻿using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.ECS.Systems;
 
 public sealed class TurnFlowSystem :
-    SystemBase,
-    ISubscriber<TurnFlowDefinedEvent>,
-    ISubscriber<TurnEndedEvent>
+    ISystem,
+    IConsumingSubscriber<TurnFlowDefinedEvent>,
+    IProducingSubscriber<TurnFlowDefinedEvent>,
+    IConsumingSubscriber<TurnEndedEvent>,
+    IProducingSubscriber<TurnEndedEvent>
 {
-    public TurnFlowSystem(
-        IGameState gameState,
-        IGameEventBusWriter eventBusWriter,
-        ICoreLogger<TurnFlowSystem> logger) :
-        base(gameState, eventBusWriter, logger)
+    public void OnEvent(TurnFlowDefinedEvent @event, IGameState gameState)
     {
-    }
-
-    public void OnEvent(TurnFlowDefinedEvent @event)
-    {
-        ValidateAndLog(@event);
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(gameState);
 
         if (@event.IsCycled)
         {
-            GameState.TurnAutomat.SetCycle(@event.InitialPlayerTurnsOrder);
+            gameState.TurnAutomat.SetCycle(@event.InitialPlayerTurnsOrder);
         }
         else
         {
-            GameState.TurnAutomat.SetNext(@event.InitialPlayerTurnsOrder);
+            gameState.TurnAutomat.SetNext(@event.InitialPlayerTurnsOrder);
         }
-
-        if (Logger.IsEnabled(LogLevel.Debug))
-        {
-            Logger.LogDebug(
-                "Turn flow defined in order {PlayersOrder} and cycled {IsCycled}",
-                string.Join(' ', @event.InitialPlayerTurnsOrder.Select(x => x.Value)),
-                @event.IsCycled);
-        }
-
-        EventBusWriter.Write(new TurnStartedEvent(@event.GameId, GameState.TurnAutomat.ActivePlayer));
     }
 
-    public void OnEvent(TurnEndedEvent @event)
+    public void OnEvent(
+        TurnFlowDefinedEvent @event,
+        IReadOnlyGameState readOnlyGameState,
+        IGameEventBusWriter eventBusWriter)
     {
-        ValidateAndLog(@event);
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(readOnlyGameState);
+        ArgumentNullException.ThrowIfNull(eventBusWriter);
 
-        GameState.TurnAutomat.MoveNext();
+        eventBusWriter.Write(
+            new TurnStartedEvent(
+                @event.GameId,
+                readOnlyGameState.TurnAutomat.ActivePlayer));
+    }
 
-        if (Logger.IsEnabled(LogLevel.Debug))
-        {
-            Logger.LogDebug(
-                "End turn for {PreviosPlayerId} and active player {CurrentPlayerId}",
-                @event.PlayerId.Value,
-                GameState.TurnAutomat.ActivePlayer.Value);
-        }
+    public void OnEvent(TurnEndedEvent @event, IGameState gameState)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(gameState);
 
-        EventBusWriter.Write(new TurnStartedEvent(@event.GameId, GameState.TurnAutomat.ActivePlayer));
+        gameState.TurnAutomat.MoveNext();
+    }
+
+    public void OnEvent(
+        TurnEndedEvent @event,
+        IReadOnlyGameState readOnlyGameState,
+        IGameEventBusWriter eventBusWriter)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(readOnlyGameState);
+        ArgumentNullException.ThrowIfNull(eventBusWriter);
+
+        eventBusWriter.Write(
+            new TurnStartedEvent(
+                @event.GameId,
+                readOnlyGameState.TurnAutomat.ActivePlayer));
     }
 }

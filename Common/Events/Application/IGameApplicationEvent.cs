@@ -2,7 +2,7 @@
 
 namespace Centuriin.CardGame.Core.Common.Events.Application;
 
-public interface IGameApplicationEvent : IApplicationEvent
+public interface IGameApplicationEvent
 {
     public GameId GameId { get; }
 

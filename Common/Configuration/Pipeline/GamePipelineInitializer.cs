@@ -1,21 +1,25 @@
 ﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
-using Centuriin.CardGame.Core.Common.Events.Domain;
 
 namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 
 public sealed class GamePipelineInitializer : IGameConfigurationInitializer
 {
-    private readonly IDispatcher<IGameEvent> _dispatcher;
+    private readonly IConsumingSubscriberDispatcher _consumingDispatcher;
+    private readonly IProducingSubcriberDispatcher _producingDispatcher;
     private readonly ISystemFactory _systemFactory;
     private readonly ConfigurableGamePipeline _configurableGamePipeline = new();
 
     public GamePipelineInitializer(
-        IDispatcher<IGameEvent> dispatcher,
+        IConsumingSubscriberDispatcher consumingDispatcher,
+        IProducingSubcriberDispatcher producingDispatcher,
         ISystemFactory systemFactory)
     {
-        ArgumentNullException.ThrowIfNull(dispatcher);
-        _dispatcher = dispatcher;
+        ArgumentNullException.ThrowIfNull(consumingDispatcher);
+        _consumingDispatcher = consumingDispatcher;
+
+        ArgumentNullException.ThrowIfNull(producingDispatcher);
+        _producingDispatcher = producingDispatcher;
 
         ArgumentNullException.ThrowIfNull(systemFactory);
         _systemFactory = systemFactory;
@@ -33,9 +37,14 @@ public sealed class GamePipelineInitializer : IGameConfigurationInitializer
         {
             var system = configurableSystem.Create.Invoke(_systemFactory);
 
-            foreach (var subscription in configurableSystem.Subscriptions)
+            foreach (var subscription in configurableSystem.ConsumingSubscriptions)
             {
-                subscription.Invoke(_dispatcher, system);
+                subscription.Invoke(_consumingDispatcher, system);
+            }
+
+            foreach (var subscription in configurableSystem.ProducingSubscriptions)
+            {
+                subscription.Invoke(_producingDispatcher, system);
             }
         }
     }

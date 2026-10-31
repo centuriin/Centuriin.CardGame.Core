@@ -34,6 +34,4 @@ public sealed class Card : EntityBase, IEquatable<Card>
 
         return copy;
     }
-
-    public override TEntity Copy<TEntity>() => throw new NotImplementedException();
 }
