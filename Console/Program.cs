@@ -1,8 +1,10 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Observability;
+using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
@@ -33,7 +35,10 @@ builder.Services
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
-    .AddSingleton<IGameEventsRepository, GameEventRepository>();
+    .AddSingleton<IGameEventsRepository, GameEventRepository>()
+    
+    .AddSingleton<IGameContextAccessor<IRestorationContext>, ContextAccessor>()
+    .AddSingleton<IMasterGameBridge, MasterGameBridge>();
 
 var host = builder.Build();
 
@@ -53,17 +58,17 @@ var g1 = await startup.StartupGameAsync(
     CancellationToken.None);
 
 await g1.ExecuteAsync(
-    new FakeCommand(g1.Id, p1),
+    new FakeCommand(g1.GameId, p1),
     CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g1.Id, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g1.GameId, CancellationToken.None);
 
 var g2 = await startup.StartupGameAsync(
     new GameSetup(new(1), [PlayerId.System, p3, p4]),
     CancellationToken.None);
 
 await g2.AbortAsync(CancellationToken.None);
-await sessionsRepository.RemoveByGameIdAsync(g2.Id, CancellationToken.None);
+await sessionsRepository.RemoveByGameIdAsync(g2.GameId, CancellationToken.None);
 
 // todo
 public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
@@ -87,4 +92,17 @@ public sealed class GameTypeRepo : IGameTypeRepository
 {
     public Task<GameTypeId> GetGameTypeIdByKey(string key) =>
         Task.FromResult<GameTypeId>(new(1));
+}
+
+public sealed class ContextAccessor : IGameContextAccessor<IRestorationContext>
+{
+    public Task<IRestorationContext> GetContextAsync(CancellationToken token) => throw new NotImplementedException();
+}
+
+public sealed class MasterGameBridge : IMasterGameBridge
+{
+    public Task<IGameEventsBatch> AbortAsync(CancellationToken token) => throw new NotImplementedException();
+    public Task<IGameEventsBatch> ExecuteAsync(ICommand command, CancellationToken token) => throw new NotImplementedException();
+    public Task<IGameEventsBatch> RestoreAsync(CancellationToken token) => throw new NotImplementedException();
+    public Task<IGameEventsBatch> StartAsync(CancellationToken token) => throw new NotImplementedException();
 }

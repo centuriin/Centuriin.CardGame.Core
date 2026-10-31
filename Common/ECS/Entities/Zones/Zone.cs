@@ -19,5 +19,11 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
 
-    public override Zone Copy() => new Zone(Id);
+    public override Zone Copy()
+    {
+        var copy = new Zone(Id);
+        copy.Add(Components.Values.Select(x => x.Copy()));
+
+        return copy;
+    }
 }

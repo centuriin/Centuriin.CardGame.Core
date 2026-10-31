@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Root;
 
 public interface IGameSession : IDisposable
 {
-    public GameId Id { get; }
+    public GameId GameId { get; }
 
     public GameTypeId GameTypeId { get; }
 

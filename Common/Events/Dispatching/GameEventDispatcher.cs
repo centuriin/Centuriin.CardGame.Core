@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -12,16 +13,21 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
 
     private readonly IGameState _gameState;
     private readonly IGameEventBusWriter _eventBusWriter;
+    private readonly ICoreLogger<GameEventDispatcher> _logger;
 
     public GameEventDispatcher(
         IGameState gameState,
-        IGameEventBusWriter eventBusWriter)
+        IGameEventBusWriter eventBusWriter,
+        ICoreLogger<GameEventDispatcher> logger)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         _gameState = gameState;
 
         ArgumentNullException.ThrowIfNull(eventBusWriter);
         _eventBusWriter = eventBusWriter;
+
+        ArgumentNullException.ThrowIfNull(logger);
+        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -41,7 +47,7 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         }
         else
         {
-            var group = new ProducingSubscribersGroup<TEvent>();
+            var group = new ProducingSubscribersGroup<TEvent> { Logger = _logger };
             group.Subscribers.Add(subscriber);
 
             _producingSubscribers[eventType] = group;
@@ -65,7 +71,7 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         }
         else
         {
-            var group = new ConsumingSubscribersGroup<TEvent>();
+            var group = new ConsumingSubscribersGroup<TEvent> { Logger = _logger };
             group.Subscribers.Add(subscriber);
 
             _consumingSubscribers[eventType] = group;
@@ -192,6 +198,8 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
     private sealed class ProducingSubscribersGroup<TEvent> : IProducingSubscriberGroup
         where TEvent : IGameEvent
     {
+        public required ICoreLogger Logger { get; init; }
+
         public List<IProducingSubscriber<TEvent>> Subscribers { get; } = [];
 
         public void Deliver(
@@ -201,6 +209,14 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         {
             foreach (var subscriber in Subscribers)
             {
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(
+                        "System {SystemType} reacts on event {EventType}",
+                        subscriber.GetType().Name,
+                        @event.GetType().Name);
+                }
+
                 subscriber.OnEvent((TEvent)@event, readOnlyGameState, eventBusWriter);
             }
         }
@@ -209,6 +225,8 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
     private sealed class ConsumingSubscribersGroup<TEvent> : IConsumingSubscriberGroup
         where TEvent : IGameEvent
     {
+        public required ICoreLogger Logger { get; init; }
+
         public List<IConsumingSubscriber<TEvent>> Subscribers { get; } = [];
 
         public void Deliver(
@@ -217,6 +235,14 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         {
             foreach (var subscriber in Subscribers)
             {
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(
+                        "System {SystemType} applies {EventType}",
+                        subscriber.GetType().Name,
+                        @event.GetType().Name);
+                }
+
                 subscriber.OnEvent((TEvent)@event, readOnlyGameState);
             }
         }

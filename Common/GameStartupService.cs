@@ -32,6 +32,9 @@ public sealed class GameStartupService : IGameStartupService
         try
         {
             await _sessionsRepository.AddAsync(session, token);
+
+            await session.StartAsync(token);
+
             return session;
         }
         catch

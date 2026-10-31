@@ -30,6 +30,6 @@ public sealed class SetupTurnFlowSystem :
             new TurnFlowDefinedEvent(
                 @event.GameId,
                 orderedPlayerIds,
-                IsCycled: true));
+                isCycled: true));
     }
 }

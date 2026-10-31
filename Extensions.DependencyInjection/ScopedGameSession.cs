@@ -13,13 +13,13 @@ internal sealed class ScopedGameSession : IGameSession
     private readonly IServiceScope _scope;
     private readonly GameSession _session;
 
-    public GameId Id => _session.Id;
+    public GameId GameId => _session.GameId;
 
     public GameTypeId GameTypeId => _session.GameTypeId;
 
     public ScopedGameSession(IServiceScope scope, GameSession session)
     {
-        ArgumentNullException.ThrowIfNull(_scope);
+        ArgumentNullException.ThrowIfNull(scope);
         _scope = scope;
 
         ArgumentNullException.ThrowIfNull(session);
@@ -44,5 +44,7 @@ internal sealed class ScopedGameSession : IGameSession
 
         _session.Dispose();
         _scope.Dispose();
+
+        _isDisposed = true;
     }
 }

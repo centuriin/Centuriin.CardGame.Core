@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Root;
 
 namespace Centuriin.CardGame.Core.Common.Observability;
@@ -13,24 +12,28 @@ public static class Telemetry
     private static ActivitySource Source { get; } =
         new ActivitySource(ACTIVITY_SOURCE_NAME);
 
-    internal static IDisposable? StartActivity(IGameEvent @event)
+    internal static Activity? StartGameSessionActivity(IGameSession session)
     {
-        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(session);
 
-        var activity = Source.StartActivity("ApplyEvent");
-        activity?.SetTag("event.type", @event.GetType().Name);
-        activity?.SetTag("game.id", @event.GameId.Value);
+        var activity = Source.StartActivity(
+            "GameSession",
+            ActivityKind.Internal);
+
+        activity?.SetTag("game.id", session.GameId.Value);
+        activity?.SetTag("game.type_id", session.GameTypeId.Value);
 
         return activity;
     }
 
-    internal static IDisposable? StartActivity(ICommand command)
+    internal static IDisposable? StartCommandActivity(ICommand command, ActivityContext context)
     {
         ArgumentNullException.ThrowIfNull(command);
 
         var activity = Source.StartActivity(
             "ExecuteCommand",
-            ActivityKind.Internal);
+            ActivityKind.Internal,
+            parentContext: context);
 
         activity?.SetTag("command.type", command.GetType().Name);
         activity?.SetTag("game.id", command.GameId.Value);
@@ -39,12 +42,32 @@ public static class Telemetry
         return activity;
     }
 
-    internal static IDisposable? StartGameActivity(IGame game)
+    internal static IDisposable? StartGameActivity(IGame game, ActivityContext context)
     {
         ArgumentNullException.ThrowIfNull(game);
 
-        var activity = Source.StartActivity("GameStart");
+        var activity = Source.StartActivity(
+            "StartGame", 
+            ActivityKind.Internal,
+            parentContext: context);
+
         activity?.SetTag("game.id", game.Id.Value);
+        activity?.SetTag("game.type_id", game.TypeId.Value);
+
+        return activity;
+    }
+
+    internal static IDisposable? StartAbortGameActivity(IGame game, ActivityContext context)
+    {
+        ArgumentNullException.ThrowIfNull(game);
+
+        var activity = Source.StartActivity(
+            "AbortGame", 
+            ActivityKind.Internal,
+            parentContext: context);
+
+        activity?.SetTag("game.id", game.Id.Value);
+        activity?.SetTag("game.type_id", game.TypeId.Value);
 
         return activity;
     }
