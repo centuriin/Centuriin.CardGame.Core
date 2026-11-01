@@ -40,7 +40,10 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
     {
         ThrowIfFrozen();
 
-        var configurable = new ConfigurableCommandValidation<TCommand>(this, []);
+        var configurable = new ConfigurableCommandValidation<TCommand>()
+        {
+            Configurable = this
+        };
 
         if (!_validations.TryAdd(typeof(TCommand), configurable))
         {
@@ -65,23 +68,25 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
         public List<Func<ICommandRuleFactory, ICommandRule>> Rules { get; }
     }
 
-    private sealed class ConfigurableCommandValidation<TCommand>(
-        ConfigurableCommandValidator configurator,
-        List<Func<ICommandRuleFactory, ICommandRule>> rules) :
+    private sealed class ConfigurableCommandValidation<TCommand> :
         IConfigurableCommandValidation<TCommand>,
         IConfigurableCommandValidation
         where TCommand : ICommand
     {
         private readonly HashSet<Type> _ruleTypes = [];
 
-        public IConfigurableCommandValidator CommandValidator => configurator;
+        private readonly List<Func<ICommandRuleFactory, ICommandRule>> _rules = [];
 
-        public List<Func<ICommandRuleFactory, ICommandRule>> Rules { get; } = [];
+        public required ConfigurableCommandValidator Configurable { get; init; }
+
+        public IConfigurableCommandValidator CommandValidator => Configurable;
+
+        public List<Func<ICommandRuleFactory, ICommandRule>> Rules => _rules;
 
         public IConfigurableCommandValidation<TCommand> AddRule<TRule>()
             where TRule : ICommandRule<TCommand>
         {
-            configurator.ThrowIfFrozen();
+            Configurable.ThrowIfFrozen();
 
             if (!_ruleTypes.Add(typeof(TRule)))
             {
@@ -90,7 +95,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
                     $"Rule {typeof(TRule).Name} for command" +
                     $" {typeof(TCommand).Name} already added.");
             }
-            rules.Add(factory => factory.Create<TRule>());
+            _rules.Add(factory => factory.Create<TRule>());
 
             return this;
         }

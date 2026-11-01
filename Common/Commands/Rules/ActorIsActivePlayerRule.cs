@@ -6,7 +6,7 @@ namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 
 public sealed class ActorIsActivePlayerRule : ICommandRule<ICommand>
 {
-    public bool Check(ICommand command, IGameState gameState)
+    public bool Check(ICommand command, IReadOnlyGameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
 

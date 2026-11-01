@@ -30,6 +30,7 @@ internal sealed class DefaultProfile : IGameProfile
 
             .Add<TurnFlowSystem>()
                 .ForEvent<TurnFlowDefinedEvent>()
+                .ForEvent<TurnEndedEvent>()
                 .Pipeline
 
             .Add<CardMovementSystem>()

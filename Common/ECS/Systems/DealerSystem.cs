@@ -48,7 +48,7 @@ public sealed class DealerSystem :
                 var childEvent = new CardDealtEvent(
                     @event.GameId,
                     pickedCardId,
-                    zone.Get<OwnerComponent>().CurrentOwnerId);
+                    zone.Id);
 
                 eventBusWriter.Write(childEvent);
             }

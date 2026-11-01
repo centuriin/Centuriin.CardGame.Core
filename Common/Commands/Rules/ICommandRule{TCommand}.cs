@@ -5,8 +5,8 @@ namespace Centuriin.CardGame.Core.Common.Commands.Rules;
 public interface ICommandRule<in TCommand> : ICommandRule
     where TCommand : ICommand
 {
-    public bool Check(TCommand command, IGameState gameState);
+    public bool Check(TCommand command, IReadOnlyGameState gameState);
 
-    bool ICommandRule.Check(ICommand command, IGameState gameState) =>
+    bool ICommandRule.Check(ICommand command, IReadOnlyGameState gameState) =>
         Check((TCommand)command, gameState);
 }

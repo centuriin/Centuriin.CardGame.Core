@@ -25,6 +25,8 @@ public static class Registrations
     public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
+            .AddSingleton(typeof(IAsyncDispatcher<>), typeof(AsyncDispatcher<>))
+
             .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddBootStrappers()
@@ -46,8 +48,10 @@ public static class Registrations
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services
             .AddScoped<IGameEventBus, GameEventBus>()
-            .AddScoped<IGameEventBusReader>(sp => sp.GetRequiredService<IGameEventBus>())
-            .AddScoped<IGameEventBusWriter>(sp => sp.GetRequiredService<IGameEventBus>())
+            .AddScoped<IGameEventBusReader>(sp => 
+                sp.GetRequiredService<IGameEventBus>())
+            .AddScoped<IGameEventBusWriter>(sp => 
+                sp.GetRequiredService<IGameEventBus>())
 
             .AddScoped<ICommandValidator, CommandValidator>()
 
@@ -63,9 +67,13 @@ public static class Registrations
             .AddScoped<IProducingSubcriberDispatcher>(sp =>
                 sp.GetRequiredService<GameEventDispatcher>())
 
-            .AddSingleton(typeof(IAsyncDispatcher<>), typeof(AsyncDispatcher<>))
-            .AddScoped<ITurnAutomat, TurnAutomat>()
-            .AddScoped<IGameState, GameState>();
+            .AddScoped(typeof(GameState))
+            .AddScoped<IGameState>(sp => 
+                sp.GetRequiredService<GameState>())
+            .AddScoped<IReadOnlyGameState>(sp => 
+                sp.GetRequiredService<GameState>())
+
+            .AddScoped<ITurnAutomat, TurnAutomat>();
 
     private static IServiceCollection AddStorage(this IServiceCollection services) =>
         services

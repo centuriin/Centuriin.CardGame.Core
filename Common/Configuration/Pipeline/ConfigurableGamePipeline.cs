@@ -61,7 +61,7 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
 
         var configurable = Create<TSystem>();
 
-        _steps.AddAfter(GetNode<TFollowSystem>(), configurable);
+        _steps.AddBefore(GetNode<TFollowSystem>(), configurable);
 
         return configurable;
     }

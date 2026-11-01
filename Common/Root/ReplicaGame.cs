@@ -25,12 +25,34 @@ public sealed class ReplicaGame : GameBase
 
     protected override async Task<IGameEventsBatch> StartCoreAsync(
         CancellationToken token)
-        => await _masterGameBridge.StartAsync(token);
+    {
+        var initialBatch = await _masterGameBridge.StartAsync(token);
+
+        foreach (var @event in initialBatch)
+        {
+            EventApplier.Apply(@event);
+        }
+
+        return initialBatch;
+    }
 
     protected override async Task<IGameEventsBatch> ExecuteCoreAsync(
         ICommand command,
         CancellationToken token)
-        => await _masterGameBridge.ExecuteAsync(command, token);
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        token.ThrowIfCancellationRequested();
+
+        var batch = await _masterGameBridge.ExecuteAsync(command, token);
+
+        foreach (var @event in batch)
+        {
+            EventApplier.Apply(@event);
+        }
+
+        return batch;
+    }
 
     protected override async Task<IGameEventsBatch> AbortCoreAsync(
         CancellationToken token)

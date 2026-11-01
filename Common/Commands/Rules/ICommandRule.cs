@@ -4,5 +4,5 @@ using Centuriin.CardGame.Core.Common.Root.State;
 
 public interface ICommandRule
 {
-    public bool Check(ICommand command, IGameState gameState);
+    public bool Check(ICommand command, IReadOnlyGameState gameState);
 }

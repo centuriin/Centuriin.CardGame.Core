@@ -9,12 +9,12 @@ namespace Centuriin.CardGame.Core.Common.Commands;
 public sealed class CommandValidator : ICommandValidator
 {
     private readonly ICoreLogger<CommandValidator> _logger;
-    private readonly IGameState _gameState;
+    private readonly IReadOnlyGameState _gameState;
     private readonly Dictionary<Type, ImmutableList<ICommandRule>> _validationMap = [];
 
     public CommandValidator(
         ICoreLogger<CommandValidator> logger,
-        IGameState gameState)
+        IReadOnlyGameState gameState)
     {
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
