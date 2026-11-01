@@ -36,7 +36,7 @@ builder.Services
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
     .AddSingleton<IGameEventsRepository, GameEventRepository>()
-    
+
     .AddSingleton<IGameContextAccessor<IRestorationContext>, ContextAccessor>()
     .AddSingleton<IMasterGameBridge, MasterGameBridge>();
 

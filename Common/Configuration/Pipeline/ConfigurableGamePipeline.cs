@@ -147,7 +147,7 @@ internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
         public Func<ISystemFactory, ISystem> Create => create;
 
         public IReadOnlyCollection<Action<IConsumingSubscriberDispatcher, ISystem>> ConsumingSubscriptions => _consumingSubscriptions;
-        
+
         public IReadOnlyCollection<Action<IProducingSubcriberDispatcher, ISystem>> ProducingSubscriptions => _producingSubscriptions;
 
         public IConfigurableSystem ForEvent<TEvent>()

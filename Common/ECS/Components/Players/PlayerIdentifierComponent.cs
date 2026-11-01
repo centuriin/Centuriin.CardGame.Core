@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Components;
-
-namespace Centuriin.CardGame.Core.Common.ECS.Components.Players;
+﻿namespace Centuriin.CardGame.Core.Common.ECS.Components.Players;
 
 /// <summary>
 /// Describes link on external (global) player.

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
 using Centuriin.CardGame.Core.Common.Root;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 

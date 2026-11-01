@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 

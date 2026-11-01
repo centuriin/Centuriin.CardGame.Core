@@ -47,7 +47,7 @@ public static class Telemetry
         ArgumentNullException.ThrowIfNull(game);
 
         var activity = Source.StartActivity(
-            "StartGame", 
+            "StartGame",
             ActivityKind.Internal,
             parentContext: context);
 
@@ -62,7 +62,7 @@ public static class Telemetry
         ArgumentNullException.ThrowIfNull(game);
 
         var activity = Source.StartActivity(
-            "AbortGame", 
+            "AbortGame",
             ActivityKind.Internal,
             parentContext: context);
 

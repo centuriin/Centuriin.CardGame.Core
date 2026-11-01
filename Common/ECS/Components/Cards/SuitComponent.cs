@@ -1,5 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Components;
-using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
+﻿using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 
 namespace Centuriin.CardGame.Core.Common.ECS.Components.Cards;
 

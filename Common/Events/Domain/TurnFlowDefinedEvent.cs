@@ -11,8 +11,8 @@ public sealed class TurnFlowDefinedEvent : IGameEvent
     public bool IsCycled { get; }
 
     public TurnFlowDefinedEvent(
-        GameId gameId, 
-        IReadOnlyCollection<EntityId> initialPlayerTurnsOrder, 
+        GameId gameId,
+        IReadOnlyCollection<EntityId> initialPlayerTurnsOrder,
         bool isCycled)
     {
         GameId = gameId;

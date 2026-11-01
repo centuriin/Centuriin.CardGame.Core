@@ -1,16 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.ECS.Components;
-using Centuriin.CardGame.Core.Common.ECS.Components.Players;
-using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
-using Centuriin.CardGame.Core.Common.ECS.Entities;
-using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
-using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
-using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
-using Centuriin.CardGame.Core.Common.ECS.Systems;
-using Centuriin.CardGame.Core.Common.Events;
-using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Observability.Logging;
-using Centuriin.CardGame.Core.Common.Root.State;
+﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
 
 namespace Centuriin.CardGame.Core.Drunkard;
 

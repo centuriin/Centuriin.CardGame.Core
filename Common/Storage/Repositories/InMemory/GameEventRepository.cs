@@ -1,7 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 
@@ -33,7 +32,7 @@ public sealed class GameEventRepository : IGameEventsRepository, IDisposable
     }
 
     public async Task OnEventAsync(
-        NewGameEventsBatchCreatedEvent @event, 
+        NewGameEventsBatchCreatedEvent @event,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(@event);

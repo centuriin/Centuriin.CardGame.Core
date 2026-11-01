@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Events.Dispatching;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Moq;
 

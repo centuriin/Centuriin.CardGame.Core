@@ -8,6 +8,6 @@ public interface IGameEventsRepository :
     IAsyncSubscriber<NewGameEventsBatchCreatedEvent>
 {
     public Task AddAsync(
-        IGameEventsBatch eventsBatch, 
+        IGameEventsBatch eventsBatch,
         CancellationToken token);
 }

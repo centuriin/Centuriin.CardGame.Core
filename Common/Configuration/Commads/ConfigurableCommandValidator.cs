@@ -10,7 +10,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
     private bool _isFrozen;
 
     private readonly Dictionary<Type, IConfigurableCommandValidation> _validations = [];
-    
+
     private readonly Dictionary<Type, Func<ICommandRuleFactory, ICommandRule>> _generalRules = [];
 
     public IReadOnlyDictionary<Type, ImmutableList<Func<ICommandRuleFactory, ICommandRule>>> Freeze()
@@ -35,7 +35,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
         return this;
     }
 
-    public IConfigurableCommandValidation<TCommand> AddValidation<TCommand>() 
+    public IConfigurableCommandValidation<TCommand> AddValidation<TCommand>()
         where TCommand : ICommand
     {
         ThrowIfFrozen();
@@ -47,7 +47,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
             throw new InvalidOperationException(
                 $"Command {typeof(TCommand).Name} already added.");
         }
-        
+
         return configurable;
     }
 
@@ -67,7 +67,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
 
     private sealed class ConfigurableCommandValidation<TCommand>(
         ConfigurableCommandValidator configurator,
-        List<Func<ICommandRuleFactory, ICommandRule>> rules) : 
+        List<Func<ICommandRuleFactory, ICommandRule>> rules) :
         IConfigurableCommandValidation<TCommand>,
         IConfigurableCommandValidation
         where TCommand : ICommand
@@ -78,7 +78,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
 
         public List<Func<ICommandRuleFactory, ICommandRule>> Rules { get; } = [];
 
-        public IConfigurableCommandValidation<TCommand> AddRule<TRule>() 
+        public IConfigurableCommandValidation<TCommand> AddRule<TRule>()
             where TRule : ICommandRule<TCommand>
         {
             configurator.ThrowIfFrozen();

@@ -12,7 +12,7 @@ internal sealed class DefaultProfile : IGameProfile
 
     public static DefaultProfile Instance { get; } = new();
 
-    public string Key => 
+    public string Key =>
         throw new NotSupportedException("Default profile not supported key.");
 
     public void Configure(IConfigurableGamePipeline configurableGamePipeline)

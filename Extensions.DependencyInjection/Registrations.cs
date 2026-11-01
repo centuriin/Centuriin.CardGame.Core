@@ -10,6 +10,7 @@ using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
+using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
@@ -51,7 +52,7 @@ public static class Registrations
             .AddScoped<ICommandValidator, CommandValidator>()
 
             .AddScoped(typeof(GameEventCoordinator))
-            .AddScoped<IGameEventApplier>(sp => 
+            .AddScoped<IGameEventApplier>(sp =>
                 sp.GetRequiredService<GameEventCoordinator>())
             .AddScoped<IGameEventProducer>(sp =>
                 sp.GetRequiredService<GameEventCoordinator>())

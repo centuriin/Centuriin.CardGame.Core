@@ -25,7 +25,7 @@ public sealed class CommandValidator : ICommandValidator
 
     /// <inheritdoc/>
     public void AddValidation(
-        Type commandType, 
+        Type commandType,
         ImmutableList<ICommandRule> rules)
     {
         ArgumentNullException.ThrowIfNull(commandType);

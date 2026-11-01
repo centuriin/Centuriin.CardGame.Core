@@ -3,6 +3,6 @@
 namespace Centuriin.CardGame.Core.Common.Events.Domain;
 
 public sealed record class CardDealtEvent(
-    GameId GameId, 
-    EntityId CardId, 
+    GameId GameId,
+    EntityId CardId,
     EntityId NewZoneId) : IGameEvent;
