@@ -1,12 +1,15 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
 public interface IGame
 {
-    public GameDescription Description { get; }
+    public GameId Id { get; }
 
     public GameStatus Status { get; }
+
+    public GameVersion Version { get; }
 
     public Task StartAsync(CancellationToken token);
 

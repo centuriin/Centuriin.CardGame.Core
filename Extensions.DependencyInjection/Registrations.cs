@@ -92,7 +92,7 @@ public static class Registrations
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
-            .AddScoped<IGameConfigurationLoader, GamePipelineInitializer>()
+            .AddScoped<IGameConfigurationLoader, GamePipelineLoader>()
             .AddScoped<IGameConfigurationLoader, GameCommandValidatorLoader>()
 
             .Scan(s => s

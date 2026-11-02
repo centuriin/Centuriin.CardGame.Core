@@ -1,19 +1,25 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.Context;
 
 namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 
 public sealed class GameCommandValidatorLoader : IGameLoader
 {
+    private readonly IGameContextAccessor<IGameProfileContext> _profileContextAccessor;
     private readonly ICommandRuleFactory _factory;
     private readonly ICommandValidator _validator;
 
     private readonly ConfigurableCommandValidator _configurableValidator = new();
 
     public GameCommandValidatorLoader(
+        IGameContextAccessor<IGameProfileContext> profileContextAccessor,
         ICommandRuleFactory factory,
         ICommandValidator validator)
     {
+        ArgumentNullException.ThrowIfNull(profileContextAccessor);
+        _profileContextAccessor = profileContextAccessor;
+
         ArgumentNullException.ThrowIfNull(factory);
         _factory = factory;
 
@@ -22,9 +28,12 @@ public sealed class GameCommandValidatorLoader : IGameLoader
     }
 
     /// <inheritdoc/>
-    public Task LoadAsync(IGameProfile profile)
+    public async Task LoadAsync(GameId gameId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(profile);
+        token.ThrowIfCancellationRequested();
+
+        var profile = (await _profileContextAccessor.GetContextAsync(gameId, token))
+            .Profile;
 
         profile.Configure(_configurableValidator);
 

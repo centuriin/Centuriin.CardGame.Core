@@ -13,13 +13,13 @@ public sealed class ReplicaGame : GameBase
     private readonly IMasterGameBridge _masterGameBridge;
 
     public ReplicaGame(
-        GameDescription description,
+        GameId gameId,
         GameStatus status,
         IGameContextAccessor<IRestorationContext> restorationContextAccessor,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher,
         IGameEventApplier eventApplier,
         IMasterGameBridge masterGameBridge)
-        : base(description, status, restorationContextAccessor, dispatcher)
+        : base(gameId, status, restorationContextAccessor, dispatcher)
     {
         ArgumentNullException.ThrowIfNull(eventApplier);
         _eventApplier = eventApplier;

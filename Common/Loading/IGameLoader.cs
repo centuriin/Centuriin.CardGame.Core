@@ -2,5 +2,5 @@
 
 public interface IGameLoader
 {
-    public Task LoadAsync(GameDescription gameDescription, CancellationToken token);
+    public Task LoadAsync(GameId gameId, CancellationToken token);
 }

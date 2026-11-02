@@ -1,20 +1,26 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
+﻿using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 
 namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 
-public sealed class GamePipelineInitializer : IGameConfigurationLoader
+public sealed class GamePipelineLoader : IGameLoader
 {
+    private readonly IGameContextAccessor<IGameProfileContext> _profileContextAccessor;
     private readonly IConsumingSubscriberDispatcher _consumingDispatcher;
     private readonly IProducingSubcriberDispatcher _producingDispatcher;
     private readonly ISystemFactory _systemFactory;
     private readonly ConfigurableGamePipeline _configurableGamePipeline = new();
 
-    public GamePipelineInitializer(
+    public GamePipelineLoader(
+        IGameContextAccessor<IGameProfileContext> profileContextAccessor,
         IConsumingSubscriberDispatcher consumingDispatcher,
         IProducingSubcriberDispatcher producingDispatcher,
         ISystemFactory systemFactory)
     {
+        ArgumentNullException.ThrowIfNull(profileContextAccessor);
+        _profileContextAccessor = profileContextAccessor;
+
         ArgumentNullException.ThrowIfNull(consumingDispatcher);
         _consumingDispatcher = consumingDispatcher;
 
@@ -25,9 +31,12 @@ public sealed class GamePipelineInitializer : IGameConfigurationLoader
         _systemFactory = systemFactory;
     }
 
-    public void Initialize(IGameProfile profile)
+    public async Task LoadAsync(GameId gameId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(profile);
+        token.ThrowIfCancellationRequested();
+
+        var profile = (await _profileContextAccessor.GetContextAsync(gameId, token))
+            .Profile;
 
         profile.Configure(_configurableGamePipeline);
 

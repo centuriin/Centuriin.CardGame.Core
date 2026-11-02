@@ -21,9 +21,9 @@ public sealed class EntityLoader<TEntity> : IGameLoader
         _contextAccessor = contextAccessor;
     }
 
-    public async Task LoadAsync(GameDescription gameDescription, CancellationToken token)
+    public async Task LoadAsync(GameId gameId, CancellationToken token)
     {
-        var initialStateContext = await _contextAccessor.GetContextAsync(gameDescription, token);
+        var initialStateContext = await _contextAccessor.GetContextAsync(gameId, token);
 
         var entities = initialStateContext.GetEntities<TEntity>();
 

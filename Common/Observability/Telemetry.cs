@@ -21,7 +21,6 @@ public static class Telemetry
             ActivityKind.Internal);
 
         activity?.SetTag("game.id", session.GameId.Value);
-        activity?.SetTag("game.type_id", session.GameTypeId.Value);
 
         return activity;
     }
@@ -51,7 +50,7 @@ public static class Telemetry
             ActivityKind.Internal,
             parentContext: context);
 
-        activity?.SetTag("game.id", game.Description.GameId.Value);
+        activity?.SetTag("game.id", game.Id.Value);
 
         return activity;
     }
@@ -65,7 +64,7 @@ public static class Telemetry
             ActivityKind.Internal,
             parentContext: context);
 
-        activity?.SetTag("game.id", game.Description.GameId.Value);
+        activity?.SetTag("game.id", game.Id.Value);
 
         return activity;
     }

@@ -2,7 +2,5 @@
 
 public interface IGameContext
 {
-    public GameDescription GameDescription { get; }
-
-    public void ThrowIfNotApplicable(GameDescription gameDescription);
+    public GameId GameId { get; }
 }

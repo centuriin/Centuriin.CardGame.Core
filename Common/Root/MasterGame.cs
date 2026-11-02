@@ -14,13 +14,13 @@ public sealed class MasterGame : GameBase
     private readonly IGameEventProducer _eventProducer;
 
     public MasterGame(
-        GameDescription description,
+        GameId id,
         GameStatus status,
         IGameContextAccessor<IRestorationContext> gameContextAccessor,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher,
         IGameEventApplier eventApplier,
         IGameEventProducer eventProducer)
-        : base(description, status, gameContextAccessor, dispatcher)
+        : base(id, status, gameContextAccessor, dispatcher)
     {
         ArgumentNullException.ThrowIfNull(eventApplier);
         _eventApplier = eventApplier;
@@ -32,7 +32,7 @@ public sealed class MasterGame : GameBase
     protected override Task<IGameEventsBatch> StartCoreAsync(
         CancellationToken token)
     {
-        var appliedEvents = _eventProducer.Produce(new GameStartedEvent(Description.GameId));
+        var appliedEvents = _eventProducer.Produce(new GameStartedEvent(Id));
 
         return Task.FromResult<IGameEventsBatch>(
             new GameEventsBatch(IncrementVersion(), appliedEvents));
@@ -55,8 +55,7 @@ public sealed class MasterGame : GameBase
 
     protected override async Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token)
     {
-        var context = await RestorationContextAccessor.GetContextAsync(Description, token);
-        context.ThrowIfNotApplicable(Description);
+        var context = await RestorationContextAccessor.GetContextAsync(Id, token);
 
         foreach (var @event in context.RestorationBatch)
         {

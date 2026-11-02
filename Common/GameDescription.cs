@@ -2,4 +2,4 @@
 
 namespace Centuriin.CardGame.Core.Common;
 
-public sealed record class GameDescription(GameId GameId, GameVersion GameVersion);
+public sealed record class GameDescription(GameId GameId);

@@ -16,7 +16,7 @@ public sealed class GameSession : IGameSession
     private readonly IGame _game;
     private readonly ICommandValidator _validator;
 
-    public GameId GameId => _game.Description.GameId;
+    public GameId GameId => _game.Id;
 
     public GameSession(
         IGame game,
@@ -57,10 +57,10 @@ public sealed class GameSession : IGameSession
         {
             await _game.ExecuteAsync(command, token);
 
-            return new(true, _game.Description.GameVersion);
+            return new(true, _game.Version);
         }
 
-        return new(false, _game.Description.GameVersion);
+        return new(false, _game.Version);
     }
 
     /// <inheritdoc/>
