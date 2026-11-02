@@ -96,7 +96,7 @@ public sealed class GameTypeRepo : IGameTypeRepository
 
 public sealed class ContextAccessor : IGameContextAccessor<IRestorationContext>
 {
-    public Task<IRestorationContext> GetContextAsync(CancellationToken token) => throw new NotImplementedException();
+    public Task<IRestorationContext> GetContextAsync(GameId gameId, CancellationToken token) => throw new NotImplementedException();
 }
 
 public sealed class MasterGameBridge : IMasterGameBridge

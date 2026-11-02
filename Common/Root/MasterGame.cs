@@ -56,7 +56,7 @@ public sealed class MasterGame : GameBase
 
     protected override async Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token)
     {
-        var context = await _gameContextAccessor.GetContextAsync(token);
+        var context = await _gameContextAccessor.GetContextAsync(Id, token);
 
         context.ThrowIfNotApplicable(this);
 
