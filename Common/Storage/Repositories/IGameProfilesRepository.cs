@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
+﻿using Centuriin.CardGame.Core.Common.Loading.Configuration;
 
 namespace Centuriin.CardGame.Core.Common.Storage.Repositories;
 

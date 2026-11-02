@@ -1,9 +1,9 @@
 ﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 
-public sealed class GamePipelineInitializer : IGameConfigurationInitializer
+public sealed class GamePipelineInitializer : IGameConfigurationLoader
 {
     private readonly IConsumingSubscriberDispatcher _consumingDispatcher;
     private readonly IProducingSubcriberDispatcher _producingDispatcher;

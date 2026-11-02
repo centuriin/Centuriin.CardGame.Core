@@ -10,30 +10,29 @@ namespace Centuriin.CardGame.Core.Common.Root;
 
 public sealed class MasterGame : GameBase
 {
-    private readonly IGameContextAccessor<IRestorationContext> _gameContextAccessor;
-    private readonly IGameEventProducer _gameEventProducer;
+    private readonly IGameEventApplier _eventApplier;
+    private readonly IGameEventProducer _eventProducer;
 
     public MasterGame(
-        GameId id,
-        GameTypeId typeId,
+        GameDescription description,
         GameStatus status,
         IGameContextAccessor<IRestorationContext> gameContextAccessor,
+        IAsyncDispatcher<IGameApplicationEvent> dispatcher,
         IGameEventApplier eventApplier,
-        IGameEventProducer gameEventProducer,
-        IAsyncDispatcher<IGameApplicationEvent> dispatcher)
-        : base(id, typeId, status, eventApplier, dispatcher)
+        IGameEventProducer eventProducer)
+        : base(description, status, gameContextAccessor, dispatcher)
     {
-        ArgumentNullException.ThrowIfNull(gameContextAccessor);
-        _gameContextAccessor = gameContextAccessor;
+        ArgumentNullException.ThrowIfNull(eventApplier);
+        _eventApplier = eventApplier;
 
-        ArgumentNullException.ThrowIfNull(gameEventProducer);
-        _gameEventProducer = gameEventProducer;
+        ArgumentNullException.ThrowIfNull(eventProducer);
+        _eventProducer = eventProducer;
     }
 
     protected override Task<IGameEventsBatch> StartCoreAsync(
         CancellationToken token)
     {
-        var appliedEvents = _gameEventProducer.Produce(new GameStartedEvent(Id));
+        var appliedEvents = _eventProducer.Produce(new GameStartedEvent(Description.GameId));
 
         return Task.FromResult<IGameEventsBatch>(
             new GameEventsBatch(IncrementVersion(), appliedEvents));
@@ -45,7 +44,7 @@ public sealed class MasterGame : GameBase
     {
         var @event = command.YieldGameEvent();
 
-        var appliedEvents = _gameEventProducer.Produce(@event);
+        var appliedEvents = _eventProducer.Produce(@event);
 
         return Task.FromResult<IGameEventsBatch>(
             new GameEventsBatch(IncrementVersion(), appliedEvents));
@@ -56,9 +55,13 @@ public sealed class MasterGame : GameBase
 
     protected override async Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token)
     {
-        var context = await _gameContextAccessor.GetContextAsync(Id, token);
+        var context = await RestorationContextAccessor.GetContextAsync(Description, token);
+        context.ThrowIfNotApplicable(Description);
 
-        context.ThrowIfNotApplicable(this);
+        foreach (var @event in context.RestorationBatch)
+        {
+            _eventApplier.Apply(@event);
+        }
 
         return context.RestorationBatch;
     }

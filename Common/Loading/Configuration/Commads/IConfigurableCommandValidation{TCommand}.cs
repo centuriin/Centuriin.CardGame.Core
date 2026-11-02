@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 
 public interface IConfigurableCommandValidation<TCommand>
     where TCommand : ICommand

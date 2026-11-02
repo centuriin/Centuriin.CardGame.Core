@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 
 using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Events;
+using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
@@ -15,9 +15,7 @@ public abstract class GameBase : IGame
 
     private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
 
-    public GameId Id { get; }
-
-    public GameTypeId TypeId { get; }
+    public GameDescription Description { get; }
 
     public GameStatus Status { get; private set; }
 
@@ -38,17 +36,16 @@ public abstract class GameBase : IGame
         }
     }
 
-    protected IGameEventApplier EventApplier { get; }
+    protected IGameContextAccessor<IRestorationContext> RestorationContextAccessor { get; }
 
     protected GameBase(
-        GameId id,
-        GameTypeId typeId,
+        GameDescription description,
         GameStatus status,
-        IGameEventApplier eventApplier,
+        IGameContextAccessor<IRestorationContext> restorationContextAccessor,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
-        Id = id;
-        TypeId = typeId;
+        ArgumentNullException.ThrowIfNull(description);
+        Description = description;
 
         if (!Enum.IsDefined(status))
         {
@@ -59,8 +56,8 @@ public abstract class GameBase : IGame
         }
         Status = status;
 
-        ArgumentNullException.ThrowIfNull(eventApplier);
-        EventApplier = eventApplier;
+        ArgumentNullException.ThrowIfNull(restorationContextAccessor);
+        RestorationContextAccessor = restorationContextAccessor;
 
         ArgumentNullException.ThrowIfNull(dispatcher);
         _dispatcher = dispatcher;
@@ -84,7 +81,9 @@ public abstract class GameBase : IGame
 
         Version = batch.CurrentGameVersion;
 
-        await _dispatcher.PublishAsync(new GameRunningEvent(Id, batch), token);
+        await _dispatcher.PublishAsync(
+            new GameRunningEvent(Description.GameId, batch),
+            token);
     }
 
     /// <inheritdoc/>
@@ -101,11 +100,11 @@ public abstract class GameBase : IGame
                 $" but current status is {Status}.");
         }
 
-        if (command.GameId != Id)
+        if (command.GameId != Description.GameId)
         {
             throw new InvalidOperationException("" +
                 $"Event game id {command.GameId.Value}" +
-                $" is not equal to current game id {Id.Value}.");
+                $" is not equal to current game id {Description.GameId.Value}.");
         }
 
         var batch = await ExecuteCoreAsync(command, token);
@@ -113,7 +112,7 @@ public abstract class GameBase : IGame
         Version = batch.CurrentGameVersion;
 
         await _dispatcher.PublishAsync(
-            new NewGameEventsBatchCreatedEvent(Id, batch),
+            new NewGameEventsBatchCreatedEvent(Description.GameId, batch),
             token);
     }
 
@@ -133,7 +132,9 @@ public abstract class GameBase : IGame
 
         Version = batch.CurrentGameVersion;
 
-        await _dispatcher.PublishAsync(new GameAbortedEvent(Id, Version), token);
+        await _dispatcher.PublishAsync(
+            new GameAbortedEvent(Description.GameId, Version),
+            token);
     }
 
     /// <inheritdoc/>
@@ -152,14 +153,11 @@ public abstract class GameBase : IGame
 
         var batch = await RestoreCoreAsync(token);
 
-        foreach (var @event in batch)
-        {
-            EventApplier.Apply(@event);
-        }
-
         Version = batch.CurrentGameVersion;
 
-        await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
+        await _dispatcher.PublishAsync(
+            new GameRestoredEvent(Description.GameId, Version),
+            token);
     }
 
     protected abstract Task<IGameEventsBatch> StartCoreAsync(CancellationToken token);

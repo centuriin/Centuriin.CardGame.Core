@@ -1,8 +1,9 @@
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.Loading.Configuration;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 
 internal sealed class ConfigurableGamePipeline : IConfigurableGamePipeline
 {

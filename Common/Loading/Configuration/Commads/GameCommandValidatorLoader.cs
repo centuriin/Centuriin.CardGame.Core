@@ -1,16 +1,16 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 
-public sealed class GameCommandValidatorInitializer : IGameConfigurationInitializer
+public sealed class GameCommandValidatorLoader : IGameLoader
 {
     private readonly ICommandRuleFactory _factory;
     private readonly ICommandValidator _validator;
 
     private readonly ConfigurableCommandValidator _configurableValidator = new();
 
-    public GameCommandValidatorInitializer(
+    public GameCommandValidatorLoader(
         ICommandRuleFactory factory,
         ICommandValidator validator)
     {
@@ -22,7 +22,7 @@ public sealed class GameCommandValidatorInitializer : IGameConfigurationInitiali
     }
 
     /// <inheritdoc/>
-    public void Initialize(IGameProfile profile)
+    public Task LoadAsync(IGameProfile profile)
     {
         ArgumentNullException.ThrowIfNull(profile);
 

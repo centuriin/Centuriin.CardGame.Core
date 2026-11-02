@@ -1,14 +1,14 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Configuration.Commads;
-using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Loaders;
+using Centuriin.CardGame.Core.Common.Loading.Configuration;
+using Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
+using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
@@ -48,9 +48,9 @@ public static class Registrations
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services
             .AddScoped<IGameEventBus, GameEventBus>()
-            .AddScoped<IGameEventBusReader>(sp => 
+            .AddScoped<IGameEventBusReader>(sp =>
                 sp.GetRequiredService<IGameEventBus>())
-            .AddScoped<IGameEventBusWriter>(sp => 
+            .AddScoped<IGameEventBusWriter>(sp =>
                 sp.GetRequiredService<IGameEventBus>())
 
             .AddScoped<ICommandValidator, CommandValidator>()
@@ -68,9 +68,9 @@ public static class Registrations
                 sp.GetRequiredService<GameEventDispatcher>())
 
             .AddScoped(typeof(GameState))
-            .AddScoped<IGameState>(sp => 
+            .AddScoped<IGameState>(sp =>
                 sp.GetRequiredService<GameState>())
-            .AddScoped<IReadOnlyGameState>(sp => 
+            .AddScoped<IReadOnlyGameState>(sp =>
                 sp.GetRequiredService<GameState>())
 
             .AddScoped<ITurnAutomat, TurnAutomat>();
@@ -92,8 +92,8 @@ public static class Registrations
 
     private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
         services
-            .AddScoped<IGameConfigurationInitializer, GamePipelineInitializer>()
-            .AddScoped<IGameConfigurationInitializer, GameCommandValidatorInitializer>()
+            .AddScoped<IGameConfigurationLoader, GamePipelineInitializer>()
+            .AddScoped<IGameConfigurationLoader, GameCommandValidatorLoader>()
 
             .Scan(s => s
                 .FromApplicationDependencies()

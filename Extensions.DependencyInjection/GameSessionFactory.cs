@@ -1,5 +1,5 @@
-﻿using Centuriin.CardGame.Core.Common.Configuration;
-using Centuriin.CardGame.Core.Common.Loaders;
+﻿using Centuriin.CardGame.Core.Common.Loaders;
+using Centuriin.CardGame.Core.Common.Loading.Configuration;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
@@ -41,7 +41,7 @@ internal sealed class GameSessionFactory : IGameSessionFactory
         {
             var services = scope.ServiceProvider;
 
-            var configInitializers = services.GetServices<IGameConfigurationInitializer>();
+            var configInitializers = services.GetServices<IGameConfigurationLoader>();
 
             foreach (var configInitializer in configInitializers)
             {

@@ -3,5 +3,5 @@
 public interface IGameContextAccessor<TContext>
     where TContext : IGameContext
 {
-    public Task<TContext> GetContextAsync(GameId gameId, CancellationToken token);
+    public Task<TContext> GetContextAsync(GameDescription gameDescription, CancellationToken token);
 }

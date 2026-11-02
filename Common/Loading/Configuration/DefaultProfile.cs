@@ -1,10 +1,10 @@
 using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Configuration.Commads;
-using Centuriin.CardGame.Core.Common.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
+using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 
-namespace Centuriin.CardGame.Core.Common.Configuration;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration;
 
 internal sealed class DefaultProfile : IGameProfile
 {

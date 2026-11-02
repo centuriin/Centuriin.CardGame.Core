@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Events.Domain;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Pipeline;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 
 public interface IConfigurableSystem
 {

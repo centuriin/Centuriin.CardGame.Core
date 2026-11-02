@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
 
-namespace Centuriin.CardGame.Core.Common.Configuration.Commads;
+namespace Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 
 internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidator
 {

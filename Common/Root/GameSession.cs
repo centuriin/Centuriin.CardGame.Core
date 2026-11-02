@@ -5,7 +5,7 @@ using Centuriin.CardGame.Core.Common.Observability;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
-// Todo: create other DI collection for game 
+// Todo: maybe need to create other DI collection for game 
 public sealed class GameSession : IGameSession
 {
     private bool _isDisposed;
@@ -16,9 +16,7 @@ public sealed class GameSession : IGameSession
     private readonly IGame _game;
     private readonly ICommandValidator _validator;
 
-    public GameId GameId => _game.Id;
-
-    public GameTypeId GameTypeId => _game.TypeId;
+    public GameId GameId => _game.Description.GameId;
 
     public GameSession(
         IGame game,
@@ -59,10 +57,10 @@ public sealed class GameSession : IGameSession
         {
             await _game.ExecuteAsync(command, token);
 
-            return new(true, _game.Version);
+            return new(true, _game.Description.GameVersion);
         }
 
-        return new(false, _game.Version);
+        return new(false, _game.Description.GameVersion);
     }
 
     /// <inheritdoc/>

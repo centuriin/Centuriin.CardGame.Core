@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
@@ -8,17 +9,21 @@ namespace Centuriin.CardGame.Core.Common.Root;
 
 public sealed class ReplicaGame : GameBase
 {
+    private readonly IGameEventApplier _eventApplier;
     private readonly IMasterGameBridge _masterGameBridge;
 
     public ReplicaGame(
-        GameId id,
-        GameTypeId typeId,
+        GameDescription description,
         GameStatus status,
-        IGameEventApplier eventApplier,
+        IGameContextAccessor<IRestorationContext> restorationContextAccessor,
         IAsyncDispatcher<IGameApplicationEvent> dispatcher,
+        IGameEventApplier eventApplier,
         IMasterGameBridge masterGameBridge)
-        : base(id, typeId, status, eventApplier, dispatcher)
+        : base(description, status, restorationContextAccessor, dispatcher)
     {
+        ArgumentNullException.ThrowIfNull(eventApplier);
+        _eventApplier = eventApplier;
+
         ArgumentNullException.ThrowIfNull(masterGameBridge);
         _masterGameBridge = masterGameBridge;
     }
@@ -30,7 +35,7 @@ public sealed class ReplicaGame : GameBase
 
         foreach (var @event in initialBatch)
         {
-            EventApplier.Apply(@event);
+            _eventApplier.Apply(@event);
         }
 
         return initialBatch;
@@ -48,7 +53,7 @@ public sealed class ReplicaGame : GameBase
 
         foreach (var @event in batch)
         {
-            EventApplier.Apply(@event);
+            _eventApplier.Apply(@event);
         }
 
         return batch;
@@ -59,5 +64,14 @@ public sealed class ReplicaGame : GameBase
         => await _masterGameBridge.AbortAsync(token);
 
     protected override async Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token)
-        => await _masterGameBridge.RestoreAsync(token);
+    {
+        var batch = await _masterGameBridge.RestoreAsync(token);
+
+        foreach (var @event in batch)
+        {
+            _eventApplier.Apply(@event);
+        }
+
+        return batch;
+    }
 }
