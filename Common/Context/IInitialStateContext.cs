@@ -1,9 +1,6 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Entities;
+﻿namespace Centuriin.CardGame.Core.Common.Context;
 
-namespace Centuriin.CardGame.Core.Common.Context;
-
-public interface IInitialStateContext : IGameContext
+public interface IInitialStateContext : IReadOnlyInitialStateContext
 {
-    public IReadOnlyCollection<TEntity> GetEntities<TEntity>()
-        where TEntity : EntityBase;
+    public new IEntitiesCollection Entities { get; }
 }

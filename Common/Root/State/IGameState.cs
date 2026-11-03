@@ -1,17 +1,10 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Common.Root.State;
+﻿namespace Centuriin.CardGame.Core.Common.Root.State;
 
 public interface IGameState : IReadOnlyGameState
 {
     public new ITurnAutomat TurnAutomat { get; }
 
-    public void AddEntity<TEntity>(TEntity entity)
-        where TEntity : EntityBase;
+    public new IEntitiesCollection Entities { get; }
 
-    public new TEntity Get<TEntity>(EntityId id)
-        where TEntity : EntityBase;
-
-    public new IEnumerable<TEntity> Query<TEntity>()
-        where TEntity : EntityBase;
+    public IReadOnlyGameState AsReadOnly();
 }

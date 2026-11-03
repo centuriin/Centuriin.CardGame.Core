@@ -65,12 +65,12 @@ public sealed class ZonesLoaderTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([handZone1, handZone2, deckZone]);
 
-        var loader = new ZonesLoader(
+        var loader = new ZonesInitializer(
             zonesRepo.Object,
             zonesFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(
+        await loader.InitializeAsync(
             new(gameTypeId, [new PlayerId(Guid.NewGuid()), new PlayerId(Guid.NewGuid())]),
             gameStateMock.Object,
             TestContext.Current.CancellationToken);
@@ -118,12 +118,12 @@ public sealed class ZonesLoaderTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync([]);
 
-        var loader = new ZonesLoader(
+        var loader = new ZonesInitializer(
             zonesRepo.Object,
             zonesFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(
+        await loader.InitializeAsync(
             new(gameTypeId, []),
             gameStateMock.Object,
             TestContext.Current.CancellationToken);

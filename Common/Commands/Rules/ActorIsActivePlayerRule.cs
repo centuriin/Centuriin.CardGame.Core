@@ -10,7 +10,8 @@ public sealed class ActorIsActivePlayerRule : ICommandRule<ICommand>
     {
         ArgumentNullException.ThrowIfNull(gameState);
 
-        var actorEntityId = gameState.Query<Player>()
+        var actorEntityId = gameState.Entities
+            .Query<Player>()
             .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == command.Actor)
             .Select(x => x.Id)
             .Single();

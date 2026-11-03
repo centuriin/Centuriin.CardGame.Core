@@ -1,17 +1,20 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Components.Players;
+﻿using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.ECS.Components.Players;
 using Centuriin.CardGame.Core.Common.ECS.Entities;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
-using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Loaders;
+namespace Centuriin.CardGame.Core.Common.Initialization;
 
-public sealed class PlayersLoader : IGameLoader
+public sealed class PlayersInitializer : IGameEntityInitializer
 {
-    public Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
+    public Task InitializeAsync(
+        GameSetup setup,
+        IInitialStateContext initialStateContext,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
-        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
 
@@ -20,7 +23,7 @@ public sealed class PlayersLoader : IGameLoader
         {
             if (id == PlayerId.System)
             {
-                gameState.AddEntity(Player.System);
+                initialStateContext.Entities.AddEntity(Player.System);
                 continue;
             }
 
@@ -29,7 +32,7 @@ public sealed class PlayersLoader : IGameLoader
                 new PlayerRoleComponent(PlayerRole.Participant),
                 new PlayerIdentifierComponent(id));
 
-            gameState.AddEntity(player);
+            initialStateContext.Entities.AddEntity(player);
         }
 
         return Task.CompletedTask;

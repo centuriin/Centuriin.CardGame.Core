@@ -23,7 +23,7 @@ public sealed class DealerSystem :
         ArgumentNullException.ThrowIfNull(readOnlyGameState);
         ArgumentNullException.ThrowIfNull(eventBusWriter);
 
-        var playersDecks = readOnlyGameState
+        var playersDecks = readOnlyGameState.Entities
             .Query<Card>()
             .ToLookup(
                 k => k.Get<OwnerComponent>().CurrentOwnerId,
@@ -32,7 +32,9 @@ public sealed class DealerSystem :
                 k => k.Key,
                 v => new Queue<EntityId>(v.Shuffle()));
 
-        foreach (var zone in readOnlyGameState.Query<Zone>().WithComponent<HasPrimaryCards>())
+        foreach (var zone in readOnlyGameState.Entities
+            .Query<Zone>()
+            .WithComponent<HasPrimaryCards>())
         {
             var cardCount = zone.Get<HasPrimaryCards>().Count;
             var zoneOwner = zone.Get<OwnerComponent>().CurrentOwnerId;

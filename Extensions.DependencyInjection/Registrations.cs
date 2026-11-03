@@ -5,7 +5,7 @@ using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
-using Centuriin.CardGame.Core.Common.Loaders;
+using Centuriin.CardGame.Core.Common.Initialization;
 using Centuriin.CardGame.Core.Common.Loading.Configuration;
 using Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
@@ -41,9 +41,9 @@ public static class Registrations
 
     private static IServiceCollection AddBootStrappers(this IServiceCollection services) =>
         services
-            .AddScoped<IGameLoader, PlayersLoader>()
-            .AddScoped<IGameLoader, ZonesLoader>()
-            .AddScoped<IGameLoader, DecksLoader>();
+            .AddScoped<IGameEntityInitializer, PlayersInitializer>()
+            .AddScoped<IGameEntityInitializer, ZonesInitializer>()
+            .AddScoped<IGameEntityInitializer, DecksInitializer>();
 
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services

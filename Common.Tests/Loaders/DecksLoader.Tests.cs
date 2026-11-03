@@ -70,12 +70,12 @@ public sealed class DecksLoaderTests
             .Setup(x => x.CreateAsync(templateIds, TestContext.Current.CancellationToken))
             .ReturnsAsync(createdCards);
 
-        var loader = new DecksLoader(
+        var loader = new DecksInitializer(
             decksRepoMock.Object,
             cardsFactoryMock.Object);
 
         // Act
-        await loader.LoadAsync(
+        await loader.InitializeAsync(
             new(gameTypeId, []),
             gameStateMock.Object,
             TestContext.Current.CancellationToken);
@@ -105,12 +105,12 @@ public sealed class DecksLoaderTests
             .Setup(x => x.AddEntity(It.IsAny<Card>()))
             .Callback<Card>(addedCards.Add);
 
-        var loader = new DecksLoader(
+        var loader = new DecksInitializer(
             Mock.Of<IDecksRepository>(MockBehavior.Strict),
             Mock.Of<ICardFactory>(MockBehavior.Strict));
 
         // Act
-        await loader.LoadAsync(
+        await loader.InitializeAsync(
             new(gameTypeId, []),
             gameStateMock.Object,
             TestContext.Current.CancellationToken);

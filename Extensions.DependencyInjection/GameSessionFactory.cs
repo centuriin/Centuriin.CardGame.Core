@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Loaders;
+﻿using Centuriin.CardGame.Core.Common.Initialization;
 using Centuriin.CardGame.Core.Common.Loading.Configuration;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
@@ -51,9 +51,9 @@ internal sealed class GameSessionFactory : IGameSessionFactory
             // todo rework
             var state = services.GetRequiredService<IGameState>();
 
-            foreach (var loader in services.GetServices<IGameLoader>())
+            foreach (var loader in services.GetServices<IGameEntityInitializer>())
             {
-                await loader.LoadAsync(setup, state, token);
+                await loader.InitializeAsync(setup, state, token);
             }
 
             var game = services.GetRequiredService<IGameFactory>()

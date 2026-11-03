@@ -20,10 +20,10 @@ public sealed class CardMovementSystem :
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(gameState);
 
-        var zone = gameState.Get<Zone>(@event.NewZoneId);
+        var zone = gameState.Entities.Get<Zone>(@event.NewZoneId);
         var newOwnerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
-        var card = gameState.Get<Card>(@event.CardId);
+        var card = gameState.Entities.Get<Card>(@event.CardId);
         card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId);
         card.Get<ZoneComponent>().ChangeZoneId(zone.Id);
     }

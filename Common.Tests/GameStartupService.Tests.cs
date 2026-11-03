@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Loaders;
+﻿using Centuriin.CardGame.Core.Common.Initialization;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
@@ -93,9 +93,9 @@ public sealed class GameStartupServiceTests
             .ReturnsAsync(sessionMock.Object);
 
         var loaderCalls = 0;
-        var loaderMock = new Mock<IGameLoader>(MockBehavior.Strict);
+        var loaderMock = new Mock<IGameEntityInitializer>(MockBehavior.Strict);
         loaderMock
-            .Setup(x => x.LoadAsync(setup, gameState, TestContext.Current.CancellationToken))
+            .Setup(x => x.InitializeAsync(setup, gameState, TestContext.Current.CancellationToken))
             .Callback(() => loaderCalls++)
             .Returns(Task.CompletedTask);
 

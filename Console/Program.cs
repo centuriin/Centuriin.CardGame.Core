@@ -94,9 +94,18 @@ public sealed class GameTypeRepo : IGameTypeRepository
         Task.FromResult<GameTypeId>(new(1));
 }
 
-public sealed class ContextAccessor : IGameContextAccessor<IRestorationContext>
+public sealed class ContextAccessor : 
+    IGameContextAccessor<IRestorationContext>,
+    IGameContextAccessor<IInitialStateContext>
 {
-    public Task<IRestorationContext> GetContextAsync(GameId  gameId, CancellationToken token) => throw new NotImplementedException();
+    Task<IRestorationContext> IGameContextAccessor<IRestorationContext>.GetContextAsync(GameId  gameId, CancellationToken token) => throw new NotImplementedException();
+    
+    Task<IInitialStateContext> IGameContextAccessor<IInitialStateContext>.GetContextAsync(
+        GameId gameId, 
+        CancellationToken token)
+    {
+
+    }
 }
 
 public sealed class MasterGameBridge : IMasterGameBridge

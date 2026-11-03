@@ -20,7 +20,8 @@ public sealed class SetupTurnFlowSystem :
         ArgumentNullException.ThrowIfNull(readOnlyGameState);
         ArgumentNullException.ThrowIfNull(eventBusWriter);
 
-        var orderedPlayerIds = readOnlyGameState.Query<Player>()
+        var orderedPlayerIds = readOnlyGameState.Entities
+            .Query<Player>()
             .WithComponent<PlayerRoleComponent>(x => x.Role == PlayerRole.Participant)
             .Select(x => x.Id)
             .Shuffle()

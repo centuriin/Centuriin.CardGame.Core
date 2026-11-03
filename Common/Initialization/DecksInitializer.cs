@@ -1,21 +1,21 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Components;
+﻿using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.ECS.Components;
 using Centuriin.CardGame.Core.Common.ECS.Components.Players;
 using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
-using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Loaders;
+namespace Centuriin.CardGame.Core.Common.Initialization;
 
-public sealed class DecksLoader : IGameLoader
+public sealed class DecksInitializer : IGameEntityInitializer
 {
     private readonly IDecksRepository _decksRepository;
     private readonly ICardFactory _cardsFactory;
 
-    public DecksLoader(
+    public DecksInitializer(
         IDecksRepository decksRepository,
         ICardFactory cardsRepository)
     {
@@ -26,14 +26,17 @@ public sealed class DecksLoader : IGameLoader
         _cardsFactory = cardsRepository;
     }
 
-    public async Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
+    public async Task InitializeAsync(
+        GameSetup setup,
+        IInitialStateContext initialStateContext,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
-        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
 
-        var deckZones = gameState
+        var deckZones = initialStateContext.Entities
             .Query<Zone>()
             .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck);
 
@@ -43,7 +46,10 @@ public sealed class DecksLoader : IGameLoader
 
             var deckTemplateIds = await _decksRepository.GetDeckTemplateIdsAsync(
                 setup.GameTypeId,
-                gameState.Get<Player>(ownerId).Get<PlayerIdentifierComponent>().PlayerId,
+                initialStateContext.Entities
+                    .Get<Player>(ownerId)
+                    .Get<PlayerIdentifierComponent>()
+                    .PlayerId,
                 token);
 
             var cards = await _cardsFactory.CreateAsync(deckTemplateIds, token);
@@ -54,7 +60,7 @@ public sealed class DecksLoader : IGameLoader
                     new ZoneComponent(zone.Id),
                     new OwnerComponent(ownerId));
 
-                gameState.AddEntity(card);
+                initialStateContext.Entities.AddEntity(card);
             }
         }
     }

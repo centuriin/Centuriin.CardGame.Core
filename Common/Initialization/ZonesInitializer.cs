@@ -1,21 +1,21 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Components;
+﻿using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.ECS.Components;
 using Centuriin.CardGame.Core.Common.ECS.Components.Players;
 using Centuriin.CardGame.Core.Common.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
-using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
-namespace Centuriin.CardGame.Core.Common.Loaders;
+namespace Centuriin.CardGame.Core.Common.Initialization;
 
-public sealed class ZonesLoader : IGameLoader
+public sealed class ZonesInitializer : IGameEntityInitializer
 {
     private readonly IZonesRepository _zonesRepository;
     private readonly IZoneFactory _zonesFactory;
 
-    public ZonesLoader(
+    public ZonesInitializer(
         IZonesRepository zonesRepository,
         IZoneFactory zonesFactory)
     {
@@ -26,10 +26,13 @@ public sealed class ZonesLoader : IGameLoader
         _zonesFactory = zonesFactory;
     }
 
-    public async Task LoadAsync(GameSetup setup, IGameState gameState, CancellationToken token)
+    public async Task InitializeAsync(
+        GameSetup setup,
+        IInitialStateContext initialStateContext,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
-        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
 
@@ -42,31 +45,31 @@ public sealed class ZonesLoader : IGameLoader
             setup.PlayerIds.Count(x => x != PlayerId.System),
             token);
 
-        AddLinksBeetwenPlayersAndZones(
-            gameState,
+        AddLinksBetweenPlayersAndZones(
+            initialStateContext,
             zoneTemplates,
             PlayerRole.Participant,
             ZoneRole.Hand);
 
-        AddLinksBeetwenPlayersAndZones(
-            gameState,
+        AddLinksBetweenPlayersAndZones(
+            initialStateContext,
             zoneTemplates,
             PlayerRole.Bank,
             ZoneRole.Deck);
 
         foreach (var zone in zoneTemplates)
         {
-            gameState.AddEntity(zone);
+            initialStateContext.Entities.AddEntity(zone);
         }
     }
 
-    private static void AddLinksBeetwenPlayersAndZones(
-        IGameState gameState,
+    private static void AddLinksBetweenPlayersAndZones(
+        IInitialStateContext initialStateContext,
         IReadOnlyCollection<Zone> zones,
         PlayerRole playerRole,
         ZoneRole zoneRole)
     {
-        var suitablePlayers = gameState
+        var suitablePlayers = initialStateContext.Entities
             .Query<Player>()
             .WithComponent<PlayerRoleComponent>(x => x.Role.HasFlag(playerRole));
 

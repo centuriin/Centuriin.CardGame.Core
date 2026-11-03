@@ -10,6 +10,7 @@ using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Application;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.Initialization;
 using Centuriin.CardGame.Core.Common.Loaders;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root;
@@ -117,11 +118,11 @@ public sealed class GameStartupIntegrationTests
         gameFactoryMock.Setup(x => x.CreateAsync(setup, TestContext.Current.CancellationToken))
             .ReturnsAsync(sessionMock.Object);
 
-        var loaders = new List<IGameLoader>
+        var loaders = new List<IGameEntityInitializer>
         {
-            new PlayersLoader(),
-            new ZonesLoader(zonesRepoMock.Object, zonesFactoryMock.Object),
-            new DecksLoader(decksRepoMock.Object, cardsFactoryMock.Object)
+            new PlayersInitializer(),
+            new ZonesInitializer(zonesRepoMock.Object, zonesFactoryMock.Object),
+            new DecksInitializer(decksRepoMock.Object, cardsFactoryMock.Object)
         };
 
         var startupService = new GameStartupService(
