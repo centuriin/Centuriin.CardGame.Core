@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Common.Root;
 
 public interface IGameFactory
 {
-    public IGame CreateMaster(GameTypeId typeId);
+    public IGame CreateMaster(GameId gameId);
 
     public IGame CreateReplica(IGameSnapshot snapshot);
 }

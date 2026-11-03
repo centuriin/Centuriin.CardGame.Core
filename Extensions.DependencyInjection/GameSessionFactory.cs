@@ -1,7 +1,8 @@
-﻿using Centuriin.CardGame.Core.Common.Initialization;
-using Centuriin.CardGame.Core.Common.Loading.Configuration;
+﻿using Centuriin.CardGame.Core.Common;
+using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.Initialization;
+using Centuriin.CardGame.Core.Common.Loading;
 using Centuriin.CardGame.Core.Common.Root;
-using Centuriin.CardGame.Core.Common.Root.State;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.World;
 
@@ -12,17 +13,12 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 internal sealed class GameSessionFactory : IGameSessionFactory
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IGameProfilesRepository _profilesRepository;
 
     public GameSessionFactory(
-        IServiceScopeFactory serviceProvider,
-        IGameProfilesRepository profilesRepository)
+        IServiceScopeFactory serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         _serviceScopeFactory = serviceProvider;
-
-        ArgumentNullException.ThrowIfNull(profilesRepository);
-        _profilesRepository = profilesRepository;
     }
 
     public async ValueTask<IGameSession> CreateAsync(
@@ -33,31 +29,34 @@ internal sealed class GameSessionFactory : IGameSessionFactory
 
         var scope = _serviceScopeFactory.CreateScope();
 
-        var profile = await _profilesRepository.GetProfileByGameTypIdAsync(
-            setup.GameTypeId,
-            token);
-
         try
         {
             var services = scope.ServiceProvider;
 
-            var configInitializers = services.GetServices<IGameConfigurationLoader>();
+            // todo rework
 
-            foreach (var configInitializer in configInitializers)
+            var gameId = new GameId(Guid.CreateVersion7());
+
+            var initialStateContext = await services
+                .GetRequiredService<IGameContextAccessor<IInitialStateContext>>()
+                .GetContextAsync(gameId, token);
+
+            var initializers = services.GetServices<IGameEntityInitializer>();
+
+            foreach (var initializer in initializers)
             {
-                configInitializer.Initialize(profile);
+                await initializer.InitializeAsync(setup, initialStateContext, token);
             }
 
-            // todo rework
-            var state = services.GetRequiredService<IGameState>();
+            var gameLoaders = services.GetServices<IGameLoader>();
 
-            foreach (var loader in services.GetServices<IGameEntityInitializer>())
+            foreach (var loader in gameLoaders)
             {
-                await loader.InitializeAsync(setup, state, token);
+                await loader.LoadAsync(gameId, token);
             }
 
             var game = services.GetRequiredService<IGameFactory>()
-                .CreateMaster(setup.GameTypeId);
+                .CreateMaster(gameId);
 
             var session = new ScopedGameSession(
                 scope,

@@ -16,11 +16,10 @@ internal sealed class GameFactory : IGameFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IGame CreateMaster(GameTypeId typeId) =>
+    public IGame CreateMaster(GameId gameId) =>
         ActivatorUtilities.CreateInstance<MasterGame>(
             _serviceProvider,
-            new GameId(Guid.CreateVersion7()),
-            typeId,
+            gameId,
             GameStatus.Created);
 
     public IGame CreateReplica(IGameSnapshot snapshot) =>

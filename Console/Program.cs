@@ -3,11 +3,13 @@ using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Context;
 using Centuriin.CardGame.Core.Common.ECS.Templates;
 using Centuriin.CardGame.Core.Common.Events.Domain;
+using Centuriin.CardGame.Core.Common.Loading.Configuration;
 using Centuriin.CardGame.Core.Common.Observability;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Storage.Repositories;
 using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
+using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +39,16 @@ builder.Services
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
     .AddSingleton<IGameEventsRepository, GameEventRepository>()
 
-    .AddSingleton<IGameContextAccessor<IRestorationContext>, ContextAccessor>()
+    .AddSingleton(typeof(ContextAccessor))
+    .AddSingleton<IGameContextAccessor<IRestorationContext>>(sp =>
+        sp.GetRequiredService<ContextAccessor>())
+    .AddSingleton<IGameContextAccessor<IInitialStateContext>>(sp =>
+        sp.GetRequiredService<ContextAccessor>())
+    .AddSingleton<IGameContextAccessor<IReadOnlyInitialStateContext>>(sp =>
+        sp.GetRequiredService<ContextAccessor>())
+    .AddSingleton<IGameContextAccessor<IGameProfileContext>>(sp =>
+        sp.GetRequiredService<ContextAccessor>())
+
     .AddSingleton<IMasterGameBridge, MasterGameBridge>();
 
 var host = builder.Build();
@@ -94,17 +105,67 @@ public sealed class GameTypeRepo : IGameTypeRepository
         Task.FromResult<GameTypeId>(new(1));
 }
 
-public sealed class ContextAccessor : 
+public sealed class ContextAccessor :
     IGameContextAccessor<IRestorationContext>,
-    IGameContextAccessor<IInitialStateContext>
+    IGameContextAccessor<IInitialStateContext>,
+    IGameContextAccessor<IReadOnlyInitialStateContext>,
+    IGameContextAccessor<IGameProfileContext>
 {
-    Task<IRestorationContext> IGameContextAccessor<IRestorationContext>.GetContextAsync(GameId  gameId, CancellationToken token) => throw new NotImplementedException();
-    
-    Task<IInitialStateContext> IGameContextAccessor<IInitialStateContext>.GetContextAsync(
-        GameId gameId, 
+    private readonly Dictionary<GameId, Context> _contexts = new();
+
+    Task<IGameProfileContext> IGameContextAccessor<IGameProfileContext>.GetContextAsync(
+        GameId gameId,
         CancellationToken token)
     {
+        if (!_contexts.TryGetValue(gameId, out var context))
+        {
+            context = new Context() { GameId = gameId };
+            _contexts[gameId] = context;
+        }
 
+        return Task.FromResult<IGameProfileContext>(context);
+    }
+
+    Task<IRestorationContext> IGameContextAccessor<IRestorationContext>.GetContextAsync(
+        GameId gameId,
+        CancellationToken token)
+        => throw new NotImplementedException();
+
+    Task<IInitialStateContext> IGameContextAccessor<IInitialStateContext>.GetContextAsync(
+        GameId gameId,
+        CancellationToken token)
+    {
+        if (!_contexts.TryGetValue(gameId, out var context))
+        {
+            context = new Context() { GameId = gameId };
+            _contexts[gameId] = context;
+        }
+
+        return Task.FromResult<IInitialStateContext>(context);
+    }
+
+    Task<IReadOnlyInitialStateContext> IGameContextAccessor<IReadOnlyInitialStateContext>.GetContextAsync(
+        GameId gameId,
+        CancellationToken token)
+    {
+        if (!_contexts.TryGetValue(gameId, out var context))
+        {
+            context = new Context() { GameId = gameId };
+            _contexts[gameId] = context;
+        }
+
+        return Task.FromResult<IReadOnlyInitialStateContext>(context);
+    }
+
+    private sealed class Context :
+        IInitialStateContext,
+        IGameProfileContext
+    {
+        public required GameId GameId { get; init; }
+
+        public IEntitiesCollection Entities { get; } = new EntitiesCollection();
+
+        public IGameProfile Profile { get; } = new MyTestProfile();
     }
 }
 

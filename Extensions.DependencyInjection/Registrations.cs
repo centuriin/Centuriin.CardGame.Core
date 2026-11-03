@@ -1,11 +1,15 @@
 ﻿using Centuriin.CardGame.Core.Common;
 using Centuriin.CardGame.Core.Common.Commands;
 using Centuriin.CardGame.Core.Common.Commands.Rules;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Common.ECS.Entities.Factories;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Players;
+using Centuriin.CardGame.Core.Common.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Common.ECS.Systems;
 using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Initialization;
+using Centuriin.CardGame.Core.Common.Loading;
 using Centuriin.CardGame.Core.Common.Loading.Configuration;
 using Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
 using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
@@ -29,21 +33,33 @@ public static class Registrations
 
             .AddScoped<IGameStartupService, GameStartupService>()
 
-            .AddBootStrappers()
+            .AddInitialization()
+            .AddLoading()
 
             .AddGameLoop()
 
-            .AddFactories()
+            .AddFactories();
 
-            .AddGameProfiles()
-
-            .AddStorage();
-
-    private static IServiceCollection AddBootStrappers(this IServiceCollection services) =>
+    private static IServiceCollection AddInitialization(this IServiceCollection services) =>
         services
             .AddScoped<IGameEntityInitializer, PlayersInitializer>()
             .AddScoped<IGameEntityInitializer, ZonesInitializer>()
             .AddScoped<IGameEntityInitializer, DecksInitializer>();
+
+    private static IServiceCollection AddLoading(this IServiceCollection services) =>
+        services
+            .Scan(s => s
+                .FromApplicationDependencies()
+                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime())
+
+            .AddScoped<IGameLoader, GamePipelineLoader>()
+            .AddScoped<IGameLoader, GameCommandValidatorLoader>()
+            .AddScoped<IGameLoader, EntitiesLoader>()
+                .AddScoped<IEntityLoader, EntityLoader<Player>>()
+                .AddScoped<IEntityLoader, EntityLoader<Zone>>()
+                .AddScoped<IEntityLoader, EntityLoader<Card>>();
 
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services
@@ -75,10 +91,6 @@ public static class Registrations
 
             .AddScoped<ITurnAutomat, TurnAutomat>();
 
-    private static IServiceCollection AddStorage(this IServiceCollection services) =>
-        services
-            .AddSingleton<IGameProfilesRepository, GameProfilesRepository>();
-
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
             .AddScoped<IZoneFactory, ZoneFactory>()
@@ -89,15 +101,4 @@ public static class Registrations
             .AddScoped<ISystemFactory, SystemFactory>()
             .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
-
-    private static IServiceCollection AddGameProfiles(this IServiceCollection services) =>
-        services
-            .AddScoped<IGameConfigurationLoader, GamePipelineLoader>()
-            .AddScoped<IGameConfigurationLoader, GameCommandValidatorLoader>()
-
-            .Scan(s => s
-                .FromApplicationDependencies()
-                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime());
 }
