@@ -37,6 +37,9 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return ((IDictionary<EntityId, TEntity>)dict)[id];
     }
 
+    TEntity IReadOnlyEntitiesCollection.Get<TEntity>(EntityId id) =>
+        (TEntity)Get<TEntity>(id).Copy();
+
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase
     {
@@ -47,6 +50,9 @@ public sealed class EntitiesCollection : IEntitiesCollection
 
         return (IEnumerable<TEntity>)dict!.Values;
     }
+
+    IEnumerable<TEntity> IReadOnlyEntitiesCollection.Query<TEntity>() =>
+        Query<TEntity>().Select(x => (TEntity)x.Copy());
 
     public IReadOnlyEntitiesCollection AsReadOnly() => this;
 }

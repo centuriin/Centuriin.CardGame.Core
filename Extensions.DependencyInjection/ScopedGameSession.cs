@@ -24,14 +24,37 @@ internal sealed class ScopedGameSession : IGameSession
         _session = session;
     }
 
-    public Task StartAsync(CancellationToken token) => _session.StartAsync(token);
+    public async Task StartAsync(CancellationToken token)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-    public Task<CommandResult> ExecuteAsync(
+        token.ThrowIfCancellationRequested();
+
+
+        await _session.StartAsync(token);
+    }
+
+    public async Task<CommandResult> ExecuteAsync(
         ICommand command,
         CancellationToken token)
-        => _session.ExecuteAsync(command, token);
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-    public Task AbortAsync(CancellationToken token) => _session.AbortAsync(token);
+        ArgumentNullException.ThrowIfNull(command);
+
+        token.ThrowIfCancellationRequested();
+
+        return await _session.ExecuteAsync(command, token);
+    }
+
+    public async Task AbortAsync(CancellationToken token)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+        token.ThrowIfCancellationRequested();
+
+        await _session.AbortAsync(token);
+    }
 
     public void Dispose()
     {
