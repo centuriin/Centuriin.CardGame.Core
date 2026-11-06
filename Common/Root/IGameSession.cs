@@ -8,7 +8,7 @@ public interface IGameSession : IDisposable
 
     public Task StartAsync(CancellationToken token);
 
-    public Task<CommandResult> ExecuteAsync(ICommand command, CancellationToken token);
+    public Task ExecuteAsync(ICommand command, CancellationToken token);
 
-    public Task AbortAsync(CancellationToken token);
+    public Task RestoreAsync(CancellationToken token);
 }

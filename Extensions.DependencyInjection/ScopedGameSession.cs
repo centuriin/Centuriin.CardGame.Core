@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+// Todo: maybe need to create other DI collection for game 
 internal sealed class ScopedGameSession : IGameSession
 {
     private bool _isDisposed;
@@ -30,13 +31,10 @@ internal sealed class ScopedGameSession : IGameSession
 
         token.ThrowIfCancellationRequested();
 
-
         await _session.StartAsync(token);
     }
 
-    public async Task<CommandResult> ExecuteAsync(
-        ICommand command,
-        CancellationToken token)
+    public async Task ExecuteAsync(ICommand command, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
@@ -44,16 +42,16 @@ internal sealed class ScopedGameSession : IGameSession
 
         token.ThrowIfCancellationRequested();
 
-        return await _session.ExecuteAsync(command, token);
+        await _session.ExecuteAsync(command, token);
     }
 
-    public async Task AbortAsync(CancellationToken token)
+    public async Task RestoreAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         token.ThrowIfCancellationRequested();
 
-        await _session.AbortAsync(token);
+        await _session.RestoreAsync(token);
     }
 
     public void Dispose()

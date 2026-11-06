@@ -41,30 +41,16 @@ public static class Telemetry
         return activity;
     }
 
-    internal static IDisposable? StartGameActivity(IGame game, ActivityContext context)
+    internal static IDisposable? StartGameActivity(
+        GameId gameId, 
+        ActivityContext context)
     {
-        ArgumentNullException.ThrowIfNull(game);
-
         var activity = Source.StartActivity(
             "StartGame",
             ActivityKind.Internal,
             parentContext: context);
 
-        activity?.SetTag("game.id", game.Id.Value);
-
-        return activity;
-    }
-
-    internal static IDisposable? StartAbortGameActivity(IGame game, ActivityContext context)
-    {
-        ArgumentNullException.ThrowIfNull(game);
-
-        var activity = Source.StartActivity(
-            "AbortGame",
-            ActivityKind.Internal,
-            parentContext: context);
-
-        activity?.SetTag("game.id", game.Id.Value);
+        activity?.SetTag("game.id", gameId.Value);
 
         return activity;
     }

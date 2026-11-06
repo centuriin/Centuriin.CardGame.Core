@@ -16,8 +16,6 @@ using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Common.Observability.Logging;
 using Centuriin.CardGame.Core.Common.Root;
 using Centuriin.CardGame.Core.Common.Root.State;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
-using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
 using Centuriin.CardGame.Core.Common.World;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -84,7 +82,7 @@ public static class Registrations
                 sp.GetRequiredService<GameEventDispatcher>())
 
             .AddScoped(typeof(GameState))
-            .AddScoped<IGameState>(sp =>
+            .AddScoped<IGameState, GameState>(sp =>
                 sp.GetRequiredService<GameState>())
             .AddScoped<IReadOnlyGameState>(sp =>
                 sp.GetRequiredService<GameState>())

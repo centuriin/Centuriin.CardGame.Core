@@ -78,7 +78,6 @@ var g2 = await startup.StartupGameAsync(
     new GameSetup(new(1), [PlayerId.System, p3, p4]),
     CancellationToken.None);
 
-await g2.AbortAsync(CancellationToken.None);
 await sessionsRepository.RemoveByGameIdAsync(g2.GameId, CancellationToken.None);
 
 // todo

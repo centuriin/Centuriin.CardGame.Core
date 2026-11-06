@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 
 using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Context;
+using Centuriin.CardGame.Core.Common.Events.Application;
+using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Observability;
 
 namespace Centuriin.CardGame.Core.Common.Root;
 
-// Todo: maybe need to create other DI collection for game 
 public sealed class GameSession : IGameSession
 {
     private bool _isDisposed;
@@ -14,36 +16,45 @@ public sealed class GameSession : IGameSession
     private readonly ActivityContext _activityContext;
 
     private readonly IGame _game;
-    private readonly ICommandValidator _validator;
+    private readonly IGameContextAccessor<IRestorationContext> _restorationContextAccessor;
+    private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
 
     public GameId GameId => _game.Id;
 
     public GameSession(
         IGame game,
-        ICommandValidator validator)
+        IGameContextAccessor<IRestorationContext> restorationContextAccessor,
+        IAsyncDispatcher<IGameApplicationEvent> dispatcher)
     {
         ArgumentNullException.ThrowIfNull(game);
         _game = game;
 
-        ArgumentNullException.ThrowIfNull(validator);
-        _validator = validator;
+        ArgumentNullException.ThrowIfNull(restorationContextAccessor);
+        _restorationContextAccessor = restorationContextAccessor;
+
+        ArgumentNullException.ThrowIfNull(dispatcher);
+        _dispatcher = dispatcher;
 
         _sessionActivity = Telemetry.StartGameSessionActivity(this);
         _activityContext = _sessionActivity?.Context ?? default;
     }
 
-    /// <inheritdoc/>
     public async Task StartAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        using var _ = Telemetry.StartGameActivity(_game, _activityContext);
+        token.ThrowIfCancellationRequested();
 
-        await _game.StartAsync(token);
+        using var _ = Telemetry.StartGameActivity(_game.Id, _activityContext);
+
+        var applicationEvent = _game.Start();
+
+        await _dispatcher.PublishAsync(applicationEvent, token);
     }
 
+
     /// <inheritdoc/>
-    public async Task<CommandResult> ExecuteAsync(ICommand command, CancellationToken token)
+    public async Task ExecuteAsync(ICommand command, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
@@ -53,24 +64,24 @@ public sealed class GameSession : IGameSession
 
         using var _ = Telemetry.StartCommandActivity(command, _activityContext);
 
-        if (_validator.IsValid(command))
-        {
-            await _game.ExecuteAsync(command, token);
+        var applicationEvent = _game.Execute(command);
 
-            return new(true, _game.Version);
-        }
-
-        return new(false, _game.Version);
+        await _dispatcher.PublishAsync(applicationEvent, token);
     }
 
-    /// <inheritdoc/>
-    public async Task AbortAsync(CancellationToken token)
+    public async Task RestoreAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        using var _ = Telemetry.StartAbortGameActivity(_game, _activityContext);
+        token.ThrowIfCancellationRequested();
 
-        await _game.AbortAsync(token);
+        var context = await _restorationContextAccessor.GetContextAsync(_game.Id, token);
+
+        _game.Apply(context.RestorationBatch);
+
+        await _dispatcher.PublishAsync(
+            new GameRestoredEvent(_game.Id, _game.Version),
+            token);
     }
 
     public void Dispose()

@@ -1,4 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Events.Application;
+using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Root.State;
 
 namespace Centuriin.CardGame.Core.Common.Root;
@@ -7,15 +9,13 @@ public interface IGame
 {
     public GameId Id { get; }
 
-    public GameStatus Status { get; }
-
     public GameVersion Version { get; }
 
-    public Task StartAsync(CancellationToken token);
+    public IReadOnlyGameState State { get; }
 
-    public Task ExecuteAsync(ICommand command, CancellationToken token);
+    public void Apply(IGameEventsBatch batch);
 
-    public Task AbortAsync(CancellationToken token);
+    public IGameApplicationEvent Start();
 
-    public Task RestoreAsync(CancellationToken token);
+    public IGameApplicationEvent Execute(ICommand command);
 }

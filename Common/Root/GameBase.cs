@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-
-using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Context;
+﻿using Centuriin.CardGame.Core.Common.Commands;
+using Centuriin.CardGame.Core.Common.Events;
 using Centuriin.CardGame.Core.Common.Events.Application;
-using Centuriin.CardGame.Core.Common.Events.Dispatching;
 using Centuriin.CardGame.Core.Common.Events.Domain;
 using Centuriin.CardGame.Core.Common.Root.State;
 
@@ -11,157 +8,87 @@ namespace Centuriin.CardGame.Core.Common.Root;
 
 public abstract class GameBase : IGame
 {
-    private GameVersion _version = GameVersion.Default;
-
-    private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
+    private readonly IGameState _state;
+    private readonly IGameEventApplier _eventApplier;
+    private readonly ICommandValidator _commandValidator;
 
     public GameId Id { get; }
 
-    public GameStatus Status { get; private set; }
+    public GameVersion Version { get; protected set; } = GameVersion.Default;
 
-    public GameVersion Version
-    {
-        get => _version;
-
-        private set
-        {
-            if (value.Value < Version.Value)
-            {
-                throw new InvalidOperationException(
-                    $"New game version {value.Value} can't be less" +
-                    $" than current {Version.Value}.");
-            }
-
-            _version = value;
-        }
-    }
-
-    protected IGameContextAccessor<IRestorationContext> RestorationContextAccessor { get; }
+    public IReadOnlyGameState State => _state;
 
     protected GameBase(
         GameId id,
-        GameStatus status,
-        IGameContextAccessor<IRestorationContext> restorationContextAccessor,
-        IAsyncDispatcher<IGameApplicationEvent> dispatcher)
+        IGameState state,
+        IGameEventApplier eventApplier,
+        ICommandValidator commandValidator)
     {
         Id = id;
 
-        if (!Enum.IsDefined(status))
-        {
-            throw new InvalidEnumArgumentException(
-                nameof(status),
-                (int)status,
-                typeof(GameStatus));
-        }
-        Status = status;
+        ArgumentNullException.ThrowIfNull(state);
+        _state = state;
 
-        ArgumentNullException.ThrowIfNull(restorationContextAccessor);
-        RestorationContextAccessor = restorationContextAccessor;
+        ArgumentNullException.ThrowIfNull(commandValidator);
+        _commandValidator = commandValidator;
 
-        ArgumentNullException.ThrowIfNull(dispatcher);
-        _dispatcher = dispatcher;
+        ArgumentNullException.ThrowIfNull(eventApplier);
+        _eventApplier = eventApplier;
     }
 
-    /// <inheritdoc/>
-    public async Task StartAsync(CancellationToken token)
+    public IGameApplicationEvent Start()
     {
-        token.ThrowIfCancellationRequested();
-
-        if (Status is not GameStatus.Created)
+        if (State.Status is not GameStatus.Created)
         {
             throw new InvalidOperationException(
                 $"Game status should be {GameStatus.Created}," +
-                $" but current status is {Status}.");
+                $" but found {State.Status}.");
         }
 
-        Status = GameStatus.Running;
+        _state.ChangeStatus(GameStatus.Running);
 
-        var batch = await StartCoreAsync(token);
-
-        Version = batch.CurrentGameVersion;
-
-        await _dispatcher.PublishAsync(new GameRunningEvent(Id, batch), token);
+        return StartCore();
     }
 
-    /// <inheritdoc/>
-    public async Task ExecuteAsync(ICommand command, CancellationToken token)
+    public void Apply(IGameEventsBatch batch)
+    {
+        ArgumentNullException.ThrowIfNull(batch);
+
+        ThrowIfNotRunning();
+
+        foreach (var @event in batch)
+        {
+            _eventApplier.Apply(@event);
+        }
+
+        Version = batch.CurrentGameVersion;
+    }
+
+    public IGameApplicationEvent Execute(ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        token.ThrowIfCancellationRequested();
+        ThrowIfNotRunning();
 
-        if (Status is not GameStatus.Running)
+        if (!_commandValidator.IsValid(command))
+        {
+            return new GameCommandDeclinedEvent(Id, Version, command);
+        }
+
+        return ExecuteCore(command);
+    }
+
+    protected abstract IGameApplicationEvent StartCore();
+
+    protected abstract IGameApplicationEvent ExecuteCore(ICommand command);
+
+    private void ThrowIfNotRunning()
+    {
+        if (State.Status is not GameStatus.Running)
         {
             throw new InvalidOperationException(
                 $"Game status should be {GameStatus.Running}," +
-                $" but current status is {Status}.");
+                $" but found {State.Status}.");
         }
-
-        if (command.GameId != Id)
-        {
-            throw new InvalidOperationException("" +
-                $"Event game id {command.GameId.Value}" +
-                $" is not equal to current game id {Id.Value}.");
-        }
-
-        var batch = await ExecuteCoreAsync(command, token);
-
-        Version = batch.CurrentGameVersion;
-
-        await _dispatcher.PublishAsync(
-            new NewGameEventsBatchCreatedEvent(Id, batch),
-            token);
     }
-
-    /// <inheritdoc/>
-    public async Task AbortAsync(CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        if (Status is GameStatus.Aborted)
-        {
-            return;
-        }
-
-        Status = GameStatus.Aborted;
-
-        var batch = await AbortCoreAsync(token);
-
-        Version = batch.CurrentGameVersion;
-
-        await _dispatcher.PublishAsync(
-            new GameAbortedEvent(Id, Version),
-            token);
-    }
-
-    /// <inheritdoc/>
-    public async Task RestoreAsync(CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        if (Status is not GameStatus.Created)
-        {
-            throw new InvalidOperationException(
-                $"Game status should be {GameStatus.Created}," +
-                $" but current status is {Status}.");
-        }
-
-        Status = GameStatus.Running;
-
-        var batch = await RestoreCoreAsync(token);
-
-        Version = batch.CurrentGameVersion;
-
-        await _dispatcher.PublishAsync(new GameRestoredEvent(Id, Version), token);
-    }
-
-    protected abstract Task<IGameEventsBatch> StartCoreAsync(CancellationToken token);
-
-    protected abstract Task<IGameEventsBatch> ExecuteCoreAsync(
-        ICommand command,
-        CancellationToken token);
-
-    protected abstract Task<IGameEventsBatch> AbortCoreAsync(CancellationToken token);
-
-    protected abstract Task<IGameEventsBatch> RestoreCoreAsync(CancellationToken token);
 }

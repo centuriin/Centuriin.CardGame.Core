@@ -2,6 +2,8 @@
 
 public interface IReadOnlyGameState
 {
+    public GameStatus Status { get; }
+
     /// <summary>
     /// Read only turn automat.
     /// </summary>

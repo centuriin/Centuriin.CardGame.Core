@@ -6,5 +6,7 @@ public interface IGameState : IReadOnlyGameState
 
     public new IEntitiesCollection Entities { get; }
 
+    public void ChangeStatus(GameStatus newStatus);
+
     public IReadOnlyGameState AsReadOnly();
 }
