@@ -47,9 +47,7 @@ builder.Services
     .AddSingleton<IGameContextAccessor<IReadOnlyInitialStateContext>>(sp =>
         sp.GetRequiredService<ContextAccessor>())
     .AddSingleton<IGameContextAccessor<IGameProfileContext>>(sp =>
-        sp.GetRequiredService<ContextAccessor>())
-
-    .AddSingleton<IMasterGameBridge, MasterGameBridge>();
+        sp.GetRequiredService<ContextAccessor>());
 
 var host = builder.Build();
 
@@ -166,12 +164,4 @@ public sealed class ContextAccessor :
 
         public IGameProfile Profile { get; } = new MyTestProfile();
     }
-}
-
-public sealed class MasterGameBridge : IMasterGameBridge
-{
-    public Task<IGameEventsBatch> AbortAsync(CancellationToken token) => throw new NotImplementedException();
-    public Task<IGameEventsBatch> ExecuteAsync(ICommand command, CancellationToken token) => throw new NotImplementedException();
-    public Task<IGameEventsBatch> RestoreAsync(CancellationToken token) => throw new NotImplementedException();
-    public Task<IGameEventsBatch> StartAsync(CancellationToken token) => throw new NotImplementedException();
 }

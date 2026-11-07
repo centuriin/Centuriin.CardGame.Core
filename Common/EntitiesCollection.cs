@@ -8,6 +8,8 @@ public sealed class EntitiesCollection : IEntitiesCollection
 {
     private readonly Dictionary<Type, IDictionary> _entities = [];
 
+    public bool IsEmpty => _entities.Count == 0;
+
     public void AddEntity<TEntity>(TEntity entity)
         where TEntity : EntityBase
     {

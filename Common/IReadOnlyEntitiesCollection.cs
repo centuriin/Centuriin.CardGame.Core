@@ -4,6 +4,8 @@ namespace Centuriin.CardGame.Core.Common;
 
 public interface IReadOnlyEntitiesCollection
 {
+    public bool IsEmpty { get; }
+
     public TEntity Get<TEntity>(EntityId id)
         where TEntity : EntityBase;
 
