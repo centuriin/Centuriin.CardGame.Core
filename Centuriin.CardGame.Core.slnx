@@ -1,11 +1,12 @@
 <Solution>
   <Folder Name="/Infrastructure/" />
   <Folder Name="/Infrastructure/Storage/">
-    <Project Path="Abstractions/Abstractions.csproj" Id="5a5f6f1f-59e9-447d-91af-7c1aad94b129" />
+    <Project Path="Inftrastructure/Storage/Abstractions/Abstractions.csproj" />
   </Folder>
   <Folder Name="/SolutionItems/">
     <File Path=".editorconfig" />
   </Folder>
+  <Project Path="Application.Tests/Application.Tests.csproj" Id="7afa3eca-8827-41d8-8a27-9d60e03d45b9" />
   <Project Path="Application/Application.csproj" Id="ee76e935-c681-4837-b31c-b93ef8758b5c" />
   <Project Path="Console/Console.csproj" Id="9ba51233-7a5e-47aa-a29c-95353f5da550" />
   <Project Path="Drunkard/Drunkard.csproj" />

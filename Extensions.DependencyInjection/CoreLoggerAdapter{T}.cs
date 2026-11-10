@@ -15,7 +15,7 @@ internal sealed class CoreLoggerAdapter<T> : MyEngine.ICoreLogger<T>
     }
 
     /// <inheritdoc/>
-    public bool IsEnabled(MyEngine.LogLevel logLevel) => 
+    public bool IsEnabled(MyEngine.LogLevel logLevel) =>
         _logger.IsEnabled(Map(logLevel));
 
     /// <inheritdoc/>

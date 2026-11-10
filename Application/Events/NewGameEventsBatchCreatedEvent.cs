@@ -1,0 +1,24 @@
+﻿using Centuriin.CardGame.Core.Engine;
+using Centuriin.CardGame.Core.Engine.Events.Domain;
+using Centuriin.CardGame.Core.Engine.Root.State;
+
+namespace Application.Events;
+
+public sealed class NewGameEventsBatchCreatedEvent : IGameApplicationEvent
+{
+    public GameId GameId { get; }
+
+    public GameVersion GameVersion => Batch.CurrentGameVersion;
+
+    public IGameEventsBatch Batch { get; }
+
+    public NewGameEventsBatchCreatedEvent(
+        GameId gameId,
+        IGameEventsBatch batch)
+    {
+        GameId = gameId;
+
+        ArgumentNullException.ThrowIfNull(batch);
+        Batch = batch;
+    }
+}

@@ -1,7 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Engine.ECS.Components;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
-using Centuriin.CardGame.Core.Engine.Storage.Repositories;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 

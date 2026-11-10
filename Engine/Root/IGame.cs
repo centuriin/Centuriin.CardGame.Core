@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Engine.Commands;
-using Centuriin.CardGame.Core.Engine.Events.Application;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Root.State;
 

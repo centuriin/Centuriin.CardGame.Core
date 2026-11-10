@@ -1,4 +1,6 @@
-﻿using Centuriin.CardGame.Core.Console;
+﻿using Application;
+
+using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Context;
@@ -6,10 +8,9 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Observability;
-using Centuriin.CardGame.Core.Engine.Storage.Repositories;
-using Centuriin.CardGame.Core.Engine.Storage.Repositories.InMemory;
-using Centuriin.CardGame.Core.Engine.World;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
+using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
+using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,7 +37,6 @@ builder.Services
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
-    .AddSingleton<IGameEventsRepository, GameEventRepository>()
 
     .AddSingleton(typeof(ContextAccessor))
     .AddSingleton<IGameContextAccessor<IRestorationContext>>(sp =>
