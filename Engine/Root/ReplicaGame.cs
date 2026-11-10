@@ -15,9 +15,9 @@ public sealed class ReplicaGame : GameBase
     {
     }
 
-    protected override IGameApplicationEvent StartCore()
-        => new GamePreparedEvent(Id, Version);
+    protected override PreparedResult StartCore()
+        => new(Version);
 
-    protected override IGameApplicationEvent ExecuteCore(ICommand command)
-        => new GameCommandPreparedEvent(Id, Version, command);
+    protected override PreparedResult ExecuteCore(ICommand command)
+        => new(Version);
 }

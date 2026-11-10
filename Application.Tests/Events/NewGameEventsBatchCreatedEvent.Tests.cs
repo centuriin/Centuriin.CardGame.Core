@@ -1,3 +1,5 @@
+using Application.Events;
+
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Root.State;
@@ -21,7 +23,7 @@ public sealed class NewGameEventsBatchCreatedEventTests
         var version = new GameVersion(1);
 
         var batch = new Mock<IGameEventsBatch>(MockBehavior.Strict);
-        batch.Setup(x => x.CurrentGameVersion)
+        batch.Setup(x => x.GameVersion)
             .Returns(version);
 
         // Act

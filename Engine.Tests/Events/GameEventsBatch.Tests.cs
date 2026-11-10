@@ -26,7 +26,7 @@ public sealed class GameEventsBatchTests
         var batch = new GameEventsBatch(version, events);
 
         // Assert
-        batch.CurrentGameVersion.Should().Be(version);
+        batch.GameVersion.Should().Be(version);
         batch.Events.Should().Equal(events);
     }
 

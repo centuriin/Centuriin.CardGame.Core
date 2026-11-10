@@ -48,7 +48,19 @@ public sealed class GameSession : IGameSession
 
         using var _ = Telemetry.StartGameActivity(_game.Id, _activityContext);
 
-        var applicationEvent = _game.Start();
+        var engineResult = _game.Start();
+
+        IGameApplicationEvent applicationEvent = engineResult switch
+        {
+            ExecutedResult executed =>
+                new GameRunningEvent(_game.Id, executed.Batch),
+
+            PreparedResult prepared =>
+                new GamePreparedEvent(_game.Id, prepared.GameVersion),
+
+            _ => throw new InvalidOperationException(
+                $"Engine result type {engineResult.GetType().Name} can't be handled.")
+        };
 
         await _dispatcher.PublishAsync(applicationEvent, token);
     }
@@ -65,7 +77,22 @@ public sealed class GameSession : IGameSession
 
         using var _ = Telemetry.StartCommandActivity(command, _activityContext);
 
-        var applicationEvent = _game.Execute(command);
+        var engineResult = _game.Execute(command);
+
+        IGameApplicationEvent applicationEvent = engineResult switch
+        {
+            RejectedResult rejected =>
+                new GameCommandDeclinedEvent(_game.Id, rejected.GameVersion, command),
+
+            ExecutedResult executed =>
+                new NewGameEventsBatchCreatedEvent(_game.Id, executed.Batch),
+
+            PreparedResult prepared =>
+                new GameCommandPreparedEvent(_game.Id, prepared.GameVersion, command),
+
+            _ => throw new InvalidOperationException(
+                $"Engine result type {engineResult.GetType().Name} can't be handled.")
+        };
 
         await _dispatcher.PublishAsync(applicationEvent, token);
     }

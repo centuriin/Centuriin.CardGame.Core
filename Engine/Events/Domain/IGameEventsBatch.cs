@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Engine.Events.Domain;
 
 public interface IGameEventsBatch : IEnumerable<IGameEvent>
 {
-    public GameVersion CurrentGameVersion { get; }
+    public GameVersion GameVersion { get; }
 
     public IReadOnlyList<IGameEvent> Events { get; }
 }

@@ -7,13 +7,13 @@ namespace Centuriin.CardGame.Core.Engine.Events;
 
 internal sealed class GameEventsBatch : IGameEventsBatch
 {
-    public GameVersion CurrentGameVersion { get; }
+    public GameVersion GameVersion { get; }
 
     public IReadOnlyList<IGameEvent> Events { get; }
 
     public GameEventsBatch(GameVersion currentGameVersion, IReadOnlyList<IGameEvent> events)
     {
-        CurrentGameVersion = currentGameVersion;
+        GameVersion = currentGameVersion;
 
         ArgumentNullException.ThrowIfNull(events);
         Events = events;

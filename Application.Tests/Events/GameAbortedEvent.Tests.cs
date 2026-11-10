@@ -1,3 +1,5 @@
+using Application.Events;
+
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Root.State;
 

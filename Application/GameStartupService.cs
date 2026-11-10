@@ -1,20 +1,17 @@
-﻿namespace Centuriin.CardGame.Core.Engine;
+﻿using Application;
+
+namespace Centuriin.CardGame.Core.Engine;
 
 public sealed class GameStartupService : IGameStartupService
 {
     private readonly IGameSessionFactory _sessionFactory;
-    private readonly IGameSessionsRepository _sessionsRepository;
 
 
     public GameStartupService(
-        IGameSessionFactory sessionFactory,
-        IGameSessionsRepository sessionsRepository)
+        IGameSessionFactory sessionFactory)
     {
         ArgumentNullException.ThrowIfNull(sessionFactory);
         _sessionFactory = sessionFactory;
-
-        ArgumentNullException.ThrowIfNull(sessionsRepository);
-        _sessionsRepository = sessionsRepository;
     }
 
     public async Task<IGameSession> StartupGameAsync(GameSetup setup, CancellationToken token)
@@ -27,8 +24,6 @@ public sealed class GameStartupService : IGameStartupService
 
         try
         {
-            await _sessionsRepository.AddAsync(session, token);
-
             await session.StartAsync(token);
 
             return session;

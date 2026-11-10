@@ -14,7 +14,7 @@ public interface IGame
 
     public void Apply(IGameEventsBatch batch);
 
-    public IGameApplicationEvent Start();
+    public IEngineResult Start();
 
-    public IGameApplicationEvent Execute(ICommand command);
+    public IEngineResult Execute(ICommand command);
 }

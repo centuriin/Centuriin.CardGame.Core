@@ -35,7 +35,7 @@ public abstract class GameBase : IGame
         _eventApplier = eventApplier;
     }
 
-    public IGameApplicationEvent Start()
+    public IEngineResult Start()
     {
         if (State.Status is not GameStatus.Created)
         {
@@ -60,10 +60,10 @@ public abstract class GameBase : IGame
             _eventApplier.Apply(@event);
         }
 
-        Version = batch.CurrentGameVersion;
+        Version = batch.GameVersion;
     }
 
-    public IGameApplicationEvent Execute(ICommand command)
+    public IEngineResult Execute(ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -71,15 +71,15 @@ public abstract class GameBase : IGame
 
         if (!_commandValidator.IsValid(command))
         {
-            return new GameCommandDeclinedEvent(Id, Version, command);
+            return new RejectedResult(Version);
         }
 
         return ExecuteCore(command);
     }
 
-    protected abstract IGameApplicationEvent StartCore();
+    protected abstract IEngineResult StartCore();
 
-    protected abstract IGameApplicationEvent ExecuteCore(ICommand command);
+    protected abstract IEngineResult ExecuteCore(ICommand command);
 
     private void ThrowIfNotRunning()
     {

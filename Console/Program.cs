@@ -32,7 +32,6 @@ builder.Services
 
     .AddCardGameCore()
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
-    .AddSingleton<IGameSessionsRepository, GameSessionsRepository>()
     .AddSingleton<IZonesRepository, ZoneDefinitionRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
@@ -53,7 +52,6 @@ var host = builder.Build();
 await host.StartAsync();
 
 var startup = host.Services.GetRequiredService<IGameStartupService>();
-var sessionsRepository = host.Services.GetRequiredService<IGameSessionsRepository>();
 
 var p1 = new PlayerId(Guid.NewGuid());
 var p2 = new PlayerId(Guid.NewGuid());
@@ -69,13 +67,11 @@ await g1.ExecuteAsync(
     new FakeCommand(g1.GameId, p1),
     CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g1.GameId, CancellationToken.None);
-
 var g2 = await startup.StartupGameAsync(
     new GameSetup(new(1), [PlayerId.System, p3, p4]),
     CancellationToken.None);
 
-await sessionsRepository.RemoveByGameIdAsync(g2.GameId, CancellationToken.None);
+g2.Dispose();
 
 // todo
 public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand

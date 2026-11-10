@@ -21,16 +21,16 @@ public sealed class MasterGame : GameBase
         _eventProducer = eventProducer;
     }
 
-    protected override IGameApplicationEvent StartCore()
+    protected override ExecutedResult StartCore()
     {
         var batch = new GameEventsBatch(
             ++Version,
             _eventProducer.Produce(new GameStartedEvent(Id)));
 
-        return new GameRunningEvent(Id, batch);
+        return new(batch);
     }
 
-    protected override IGameApplicationEvent ExecuteCore(ICommand command)
+    protected override ExecutedResult ExecuteCore(ICommand command)
     {
         var @event = command.YieldGameEvent();
 
@@ -38,6 +38,6 @@ public sealed class MasterGame : GameBase
             ++Version,
             _eventProducer.Produce(@event));
 
-        return new NewGameEventsBatchCreatedEvent(Id, batch);
+        return new(batch);
     }
 }

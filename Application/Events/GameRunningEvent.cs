@@ -10,7 +10,7 @@ public sealed class GameRunningEvent : IGameApplicationEvent
 
     public IGameEventsBatch InitialEventsBatch { get; }
 
-    public GameVersion GameVersion => InitialEventsBatch.CurrentGameVersion;
+    public GameVersion GameVersion => InitialEventsBatch.GameVersion;
 
     public GameRunningEvent(
         GameId gameId,
