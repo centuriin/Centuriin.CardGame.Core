@@ -1,5 +1,0 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Common.Events.Domain;
-
-public sealed record class TurnEndedEvent(GameId GameId, EntityId PlayerId) : IGameEvent;

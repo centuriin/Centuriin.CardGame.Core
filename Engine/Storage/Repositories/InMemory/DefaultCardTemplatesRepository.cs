@@ -1,0 +1,32 @@
+﻿using System.Collections.Frozen;
+
+using Centuriin.CardGame.Core.Engine.ECS.Components.Cards;
+using Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
+
+namespace Centuriin.CardGame.Core.Engine.Storage.Repositories.InMemory;
+
+public sealed class DefaultCardTemplatesRepository : ITemplatesRepository<CardTemplate>
+{
+    public static FrozenDictionary<TemplateId, CardTemplate> Templates36 { get; } =
+        Enumerable.Range(1, 4)
+            .Select(suit =>
+                Enumerable.Range(6, 9)
+                    .Select(rank =>
+                        new CardTemplate(
+                            new TemplateId(14 * suit + rank),
+                            [
+                                new SuitComponent((CardSuit)suit),
+                                new RankComponent((CardRank)rank),
+                            ])))
+            .SelectMany(x => x)
+            .ToFrozenDictionary(k => k.Id);
+
+    public Task<CardTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) =>
+        Task.FromResult(Templates36[templateId]);
+
+    public Task<IReadOnlyCollection<CardTemplate>> GetTemplatesByIdsAsync(
+        IReadOnlyCollection<TemplateId> templateIds,
+        CancellationToken token) =>
+        Task.FromResult<IReadOnlyCollection<CardTemplate>>(Templates36.Values);
+}

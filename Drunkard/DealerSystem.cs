@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.ECS.Systems;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Systems;
 
 namespace Centuriin.CardGame.Core.Drunkard;
 

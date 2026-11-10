@@ -1,10 +1,15 @@
 <Solution>
+  <Folder Name="/Infrastructure/" />
+  <Folder Name="/Infrastructure/Storage/">
+    <Project Path="Abstractions/Abstractions.csproj" Id="5a5f6f1f-59e9-447d-91af-7c1aad94b129" />
+  </Folder>
   <Folder Name="/SolutionItems/">
     <File Path=".editorconfig" />
   </Folder>
-  <Project Path="Common.Tests/Common.Tests.csproj" />
-  <Project Path="Common/Common.csproj" />
+  <Project Path="Application/Application.csproj" Id="ee76e935-c681-4837-b31c-b93ef8758b5c" />
   <Project Path="Console/Console.csproj" Id="9ba51233-7a5e-47aa-a29c-95353f5da550" />
   <Project Path="Drunkard/Drunkard.csproj" />
+  <Project Path="Engine.Tests/Engine.Tests.csproj" />
+  <Project Path="Engine/Engine.csproj" />
   <Project Path="Extensions.DependencyInjection/Extensions.DependencyInjection.csproj" Id="956764d1-a2c5-439e-aafd-9122725df3b2" />
 </Solution>

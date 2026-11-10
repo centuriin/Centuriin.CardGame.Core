@@ -1,10 +1,9 @@
-﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Context;
-using Centuriin.CardGame.Core.Common.Initialization;
-using Centuriin.CardGame.Core.Common.Loading;
-using Centuriin.CardGame.Core.Common.Root;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
-using Centuriin.CardGame.Core.Common.World;
+﻿using Centuriin.CardGame.Core.Engine;
+using Centuriin.CardGame.Core.Engine.Context;
+using Centuriin.CardGame.Core.Engine.Initialization;
+using Centuriin.CardGame.Core.Engine.Loading;
+using Centuriin.CardGame.Core.Engine.Root;
+using Centuriin.CardGame.Core.Engine.World;
 
 using Microsoft.Extensions.DependencyInjection;
 

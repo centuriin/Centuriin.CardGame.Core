@@ -1,15 +1,14 @@
-﻿using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Context;
-using Centuriin.CardGame.Core.Common.ECS.Templates;
-using Centuriin.CardGame.Core.Common.Events.Domain;
-using Centuriin.CardGame.Core.Common.Loading.Configuration;
-using Centuriin.CardGame.Core.Common.Observability;
-using Centuriin.CardGame.Core.Common.Root;
-using Centuriin.CardGame.Core.Common.Storage.Repositories;
-using Centuriin.CardGame.Core.Common.Storage.Repositories.InMemory;
-using Centuriin.CardGame.Core.Common.World;
-using Centuriin.CardGame.Core.Console;
+﻿using Centuriin.CardGame.Core.Console;
+using Centuriin.CardGame.Core.Engine;
+using Centuriin.CardGame.Core.Engine.Commands;
+using Centuriin.CardGame.Core.Engine.Context;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
+using Centuriin.CardGame.Core.Engine.Events.Domain;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration;
+using Centuriin.CardGame.Core.Engine.Observability;
+using Centuriin.CardGame.Core.Engine.Storage.Repositories;
+using Centuriin.CardGame.Core.Engine.Storage.Repositories.InMemory;
+using Centuriin.CardGame.Core.Engine.World;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;

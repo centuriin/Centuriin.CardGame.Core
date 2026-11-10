@@ -1,4 +1,4 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
+﻿using Centuriin.CardGame.Core.Engine.Commands.Rules;
 
 using Microsoft.Extensions.DependencyInjection;
 

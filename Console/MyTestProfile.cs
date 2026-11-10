@@ -1,7 +1,7 @@
-﻿using Centuriin.CardGame.Core.Common.Commands.Rules;
-using Centuriin.CardGame.Core.Common.Loading.Configuration;
-using Centuriin.CardGame.Core.Common.Loading.Configuration.Commads;
-using Centuriin.CardGame.Core.Common.Loading.Configuration.Pipeline;
+﻿using Centuriin.CardGame.Core.Engine.Commands.Rules;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 
 namespace Centuriin.CardGame.Core.Console;
 

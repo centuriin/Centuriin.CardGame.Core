@@ -1,6 +1,6 @@
-using Centuriin.CardGame.Core.Common;
-using Centuriin.CardGame.Core.Common.Commands;
-using Centuriin.CardGame.Core.Common.Root;
+using Centuriin.CardGame.Core.Engine;
+using Centuriin.CardGame.Core.Engine.Commands;
+using Centuriin.CardGame.Core.Engine.Root;
 
 using Microsoft.Extensions.DependencyInjection;
 
