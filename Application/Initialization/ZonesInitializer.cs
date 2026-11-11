@@ -27,7 +27,7 @@ public sealed class ZonesInitializer : IGameEntityInitializer
     }
 
     public async Task InitializeAsync(
-        GameSetup setup,
+        GameDescription setup,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {

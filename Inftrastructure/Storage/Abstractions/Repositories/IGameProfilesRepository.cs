@@ -5,7 +5,7 @@ namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositori
 
 public interface IGameProfilesRepository
 {
-    public ValueTask<IGameProfile> GetProfileByGameTypIdAsync(
-        GameTypeId typeId,
+    public ValueTask<IGameProfile> GetProfileAsync(
+        GameId gameId,
         CancellationToken token);
 }

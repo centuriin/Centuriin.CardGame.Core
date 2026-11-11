@@ -11,4 +11,6 @@ public interface IReadOnlyEntitiesCollection
 
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
+
+    public IEntitiesCollection ToCollection();
 }

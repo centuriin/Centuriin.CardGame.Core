@@ -9,4 +9,6 @@ public interface IGameSnapshot
     public GameStatus GameStatus { get; }
 
     public GameVersion Version { get; }
+
+    public IReadOnlyEntitiesCollection Entities { get; }
 }

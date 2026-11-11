@@ -14,7 +14,7 @@ public sealed class GameStartupService : IGameStartupService
         _sessionFactory = sessionFactory;
     }
 
-    public async Task<IGameSession> StartupGameAsync(GameSetup setup, CancellationToken token)
+    public async Task<IGameSession> StartupGameAsync(GameDescription setup, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
 

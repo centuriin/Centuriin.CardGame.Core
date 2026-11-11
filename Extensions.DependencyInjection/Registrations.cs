@@ -1,9 +1,11 @@
 ﻿using Application;
+using Application.Context;
 using Application.Initialization;
 
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
+using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
@@ -32,12 +34,31 @@ public static class Registrations
 
             .AddScoped<IGameStartupService, GameStartupService>()
 
+            .AddContexts()
             .AddInitialization()
             .AddLoading()
 
             .AddGameLoop()
 
             .AddFactories();
+
+    private static IServiceCollection AddContexts(this IServiceCollection services) =>
+        services
+            .AddSingleton(
+                typeof(IGameContextAccessor<>),
+                typeof(ScopedGameContextAccessor<>))
+
+            .AddScoped<InitialStateContextAccessor>()
+            .AddKeyedScoped<IGameContextAccessor<IInitialStateContext>>(
+                "scoped",
+                (sp, _) => sp.GetRequiredService<InitialStateContextAccessor>())
+            .AddKeyedScoped<IGameContextAccessor<IReadOnlyInitialStateContext>>(
+                "scoped",
+                (sp, _) => sp.GetRequiredService<InitialStateContextAccessor>())
+        
+            .AddKeyedScoped<
+                IGameContextAccessor<IGameProfileContext>,
+                GameProfileContextAccessor>("scoped");
 
     private static IServiceCollection AddInitialization(this IServiceCollection services) =>
         services

@@ -8,6 +8,13 @@ public sealed class EntitiesCollection : IEntitiesCollection
 {
     private readonly Dictionary<Type, IDictionary> _entities = [];
 
+    private EntitiesCollection(Dictionary<Type, IDictionary> entities)
+    {
+        _entities = entities.ToDictionary();
+    }
+
+    public EntitiesCollection() { }
+
     public bool IsEmpty => _entities.Count == 0;
 
     public void AddEntity<TEntity>(TEntity entity)
@@ -57,4 +64,6 @@ public sealed class EntitiesCollection : IEntitiesCollection
         Query<TEntity>().Select(x => (TEntity)x.Copy());
 
     public IReadOnlyEntitiesCollection AsReadOnly() => this;
+
+    public IEntitiesCollection ToCollection() => new EntitiesCollection(_entities);
 }

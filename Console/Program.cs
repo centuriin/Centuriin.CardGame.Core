@@ -1,6 +1,4 @@
-﻿using Application;
-
-using Centuriin.CardGame.Core.Console;
+﻿using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Context;
@@ -8,6 +6,8 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Observability;
+using Centuriin.CardGame.Core.Engine.Root;
+using Centuriin.CardGame.Core.Engine.Root.State;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
@@ -36,39 +36,32 @@ builder.Services
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
-
-    .AddSingleton(typeof(ContextAccessor))
-    .AddSingleton<IGameContextAccessor<IRestorationContext>>(sp =>
-        sp.GetRequiredService<ContextAccessor>())
-    .AddSingleton<IGameContextAccessor<IInitialStateContext>>(sp =>
-        sp.GetRequiredService<ContextAccessor>())
-    .AddSingleton<IGameContextAccessor<IReadOnlyInitialStateContext>>(sp =>
-        sp.GetRequiredService<ContextAccessor>())
-    .AddSingleton<IGameContextAccessor<IGameProfileContext>>(sp =>
-        sp.GetRequiredService<ContextAccessor>());
+    .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
+    .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
+    .AddSingleton<IGameProfilesRepository, GameProfileRepo>()
+    
+    ;
 
 var host = builder.Build();
 
 await host.StartAsync();
 
+var descriptionRepo = (GameDescriptionRepo)host.Services.GetRequiredService<IGameDescriptionRepository>();
+
 var startup = host.Services.GetRequiredService<IGameStartupService>();
 
-var p1 = new PlayerId(Guid.NewGuid());
-var p2 = new PlayerId(Guid.NewGuid());
-
-var p3 = new PlayerId(Guid.NewGuid());
-var p4 = new PlayerId(Guid.NewGuid());
-
 var g1 = await startup.StartupGameAsync(
-    new GameSetup(new(1), [PlayerId.System, p1, p2]),
+    descriptionRepo.FirstGame,
     CancellationToken.None);
 
 await g1.ExecuteAsync(
-    new FakeCommand(g1.GameId, p1),
+    new FakeCommand(g1.GameId, descriptionRepo.FirstGame.PlayerIds[1]),
     CancellationToken.None);
 
+g1.Dispose();
+
 var g2 = await startup.StartupGameAsync(
-    new GameSetup(new(1), [PlayerId.System, p3, p4]),
+    descriptionRepo.SecondGame,
     CancellationToken.None);
 
 g2.Dispose();
@@ -97,66 +90,80 @@ public sealed class GameTypeRepo : IGameTypeRepository
         Task.FromResult<GameTypeId>(new(1));
 }
 
-public sealed class ContextAccessor :
-    IGameContextAccessor<IRestorationContext>,
-    IGameContextAccessor<IInitialStateContext>,
-    IGameContextAccessor<IReadOnlyInitialStateContext>,
-    IGameContextAccessor<IGameProfileContext>
+public sealed class GameDescriptionRepo : IGameDescriptionRepository
 {
-    private readonly Dictionary<GameId, Context> _contexts = new();
+    public GameDescription FirstGame { get; } =
+        new(
+            new(Guid.CreateVersion7()),
+            new(1),
+            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
-    Task<IGameProfileContext> IGameContextAccessor<IGameProfileContext>.GetContextAsync(
-        GameId gameId,
-        CancellationToken token)
+    public GameDescription SecondGame { get; } =
+        new(
+            new(Guid.CreateVersion7()),
+            new(1),
+            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
+
+    public Task AddAsync(GameDescription gameDescription, CancellationToken token) => throw new NotImplementedException();
+    
+    public async Task<GameDescription?> FindAsync(GameId gameId, CancellationToken token)
     {
-        if (!_contexts.TryGetValue(gameId, out var context))
+        if (gameId == FirstGame.GameId)
         {
-            context = new Context() { GameId = gameId };
-            _contexts[gameId] = context;
+            return FirstGame;
+        }
+        else if (gameId == SecondGame.GameId)
+        {
+            return SecondGame;
         }
 
-        return Task.FromResult<IGameProfileContext>(context);
+        throw new InvalidOperationException();
     }
+}
 
-    Task<IRestorationContext> IGameContextAccessor<IRestorationContext>.GetContextAsync(
-        GameId gameId,
-        CancellationToken token)
-        => throw new NotImplementedException();
+public sealed class GameSnapshotRepo : IGameSnapshotsRepository
+{
+    private Snapshot? _snapshot = null;
 
-    Task<IInitialStateContext> IGameContextAccessor<IInitialStateContext>.GetContextAsync(
+    public Task AddAsync(
         GameId gameId,
+        GameTypeId gameTypeId,
+        IReadOnlyInitialStateContext stateContext,
         CancellationToken token)
     {
-        if (!_contexts.TryGetValue(gameId, out var context))
+        _snapshot = new Snapshot()
         {
-            context = new Context() { GameId = gameId };
-            _contexts[gameId] = context;
-        }
+            GameId = gameId,
+            TypeId = gameTypeId,
+            Entities = stateContext.Entities,
+        };
 
-        return Task.FromResult<IInitialStateContext>(context);
+        return Task.CompletedTask;
     }
 
-    Task<IReadOnlyInitialStateContext> IGameContextAccessor<IReadOnlyInitialStateContext>.GetContextAsync(
+    public Task AddOrUpdateSnapshotAsync(IGame game, CancellationToken token) => throw new NotImplementedException();
+
+    public Task<IGameSnapshot?> FindAsync(
         GameId gameId,
-        CancellationToken token)
+        CancellationToken token) => Task.FromResult<IGameSnapshot?>(_snapshot);
+
+    private sealed class Snapshot : IGameSnapshot
     {
-        if (!_contexts.TryGetValue(gameId, out var context))
-        {
-            context = new Context() { GameId = gameId };
-            _contexts[gameId] = context;
-        }
+        public GameId GameId { get; set; }
 
-        return Task.FromResult<IReadOnlyInitialStateContext>(context);
+        public GameTypeId TypeId { get; set; }
+
+        public GameStatus GameStatus => GameStatus.Created;
+
+        public GameVersion Version => GameVersion.Default;
+
+        public required IReadOnlyEntitiesCollection Entities { get; init; }
     }
+}
 
-    private sealed class Context :
-        IInitialStateContext,
-        IGameProfileContext
-    {
-        public required GameId GameId { get; init; }
-
-        public IEntitiesCollection Entities { get; } = new EntitiesCollection();
-
-        public IGameProfile Profile { get; } = new MyTestProfile();
-    }
+public sealed class GameProfileRepo : IGameProfilesRepository
+{
+    public async ValueTask<IGameProfile> GetProfileAsync(
+        GameId gameId,
+        CancellationToken token) => new MyTestProfile();
 }

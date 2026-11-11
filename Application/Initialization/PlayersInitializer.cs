@@ -9,7 +9,7 @@ namespace Application.Initialization;
 public sealed class PlayersInitializer : IGameEntityInitializer
 {
     public Task InitializeAsync(
-        GameSetup setup,
+        GameDescription setup,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {

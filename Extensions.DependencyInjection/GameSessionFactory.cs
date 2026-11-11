@@ -1,8 +1,6 @@
 ﻿using Application;
-using Application.Initialization;
 
 using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.Loading;
 using Centuriin.CardGame.Core.Engine.Root;
 
@@ -22,7 +20,7 @@ internal sealed class GameSessionFactory : IGameSessionFactory
     }
 
     public async ValueTask<IGameSession> CreateAsync(
-        GameSetup setup,
+        GameDescription setup,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(setup);
@@ -35,18 +33,7 @@ internal sealed class GameSessionFactory : IGameSessionFactory
 
             // todo rework
 
-            var gameId = new GameId(Guid.CreateVersion7());
-
-            var initialStateContext = await services
-                .GetRequiredService<IGameContextAccessor<IInitialStateContext>>()
-                .GetContextAsync(gameId, token);
-
-            var initializers = services.GetServices<IGameEntityInitializer>();
-
-            foreach (var initializer in initializers)
-            {
-                await initializer.InitializeAsync(setup, initialStateContext, token);
-            }
+            var gameId = setup.GameId;
 
             var gameLoaders = services.GetServices<IGameLoader>();
 

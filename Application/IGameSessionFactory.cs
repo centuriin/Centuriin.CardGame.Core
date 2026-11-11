@@ -5,6 +5,6 @@ namespace Application;
 public interface IGameSessionFactory
 {
     public ValueTask<IGameSession> CreateAsync(
-        GameSetup setup,
+        GameDescription setup,
         CancellationToken token);
 }

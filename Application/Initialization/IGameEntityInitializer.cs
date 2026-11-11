@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Engine.Context;
+﻿using Centuriin.CardGame.Core.Engine;
+using Centuriin.CardGame.Core.Engine.Context;
 
 namespace Application.Initialization;
 
@@ -8,7 +9,7 @@ namespace Application.Initialization;
 public interface IGameEntityInitializer
 {
     public Task InitializeAsync(
-        GameSetup setup,
+        GameDescription setup,
         IInitialStateContext initialStateContext,
         CancellationToken token);
 }

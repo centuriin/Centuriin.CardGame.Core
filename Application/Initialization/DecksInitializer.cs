@@ -27,7 +27,7 @@ public sealed class DecksInitializer : IGameEntityInitializer
     }
 
     public async Task InitializeAsync(
-        GameSetup setup,
+        GameDescription setup,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {
