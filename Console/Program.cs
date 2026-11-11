@@ -1,11 +1,11 @@
-﻿using Centuriin.CardGame.Core.Console;
+﻿using Centuriin.CardGame.Core.Application;
+using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Engine.Observability;
 using Centuriin.CardGame.Core.Engine.Root;
 using Centuriin.CardGame.Core.Engine.Root.State;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
@@ -37,7 +37,7 @@ builder.Services
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
     .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
     .AddSingleton<IGameProfilesRepository, GameProfileRepo>()
-    
+
     ;
 
 var host = builder.Build();
@@ -73,9 +73,9 @@ public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
 public sealed class DecksRepo : IDecksRepository
 {
     public async Task<IReadOnlyCollection<CardTemplate>> GetDeckTemplatesAsync(
-        GameTypeId gameTypeId, 
-        PlayerId playerId, 
-        CancellationToken token) 
+        GameTypeId gameTypeId,
+        PlayerId playerId,
+        CancellationToken token)
         => [.. DefaultCardTemplatesRepository.Templates36.Values];
 }
 
@@ -100,7 +100,7 @@ public sealed class GameDescriptionRepo : IGameDescriptionRepository
             [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
     public Task AddAsync(GameDescription gameDescription, CancellationToken token) => throw new NotImplementedException();
-    
+
     public async Task<GameDescription?> FindAsync(GameId gameId, CancellationToken token)
     {
         if (gameId == FirstGame.GameId)

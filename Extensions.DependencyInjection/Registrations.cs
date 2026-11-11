@@ -1,7 +1,6 @@
-﻿using Application;
-using Application.Context;
-using Application.Initialization;
-
+﻿using Centuriin.CardGame.Core.Application;
+using Centuriin.CardGame.Core.Application.Context;
+using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
@@ -55,7 +54,7 @@ public static class Registrations
             .AddKeyedScoped<IGameContextAccessor<IReadOnlyInitialStateContext>>(
                 "scoped",
                 (sp, _) => sp.GetRequiredService<InitialStateContextAccessor>())
-        
+
             .AddKeyedScoped<
                 IGameContextAccessor<IGameProfileContext>,
                 GameProfileContextAccessor>("scoped");

@@ -15,12 +15,12 @@
 	<PropertyGroup>
 		<Authors>arabanas</Authors>
 		<Company>Centuriin</Company>
-		<PackageId>Centuriin.CardGame.Core.Engine</PackageId>
+		<PackageId>Centuriin.CardGame.Core.Application</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Inftrastructure\Storage\Abstractions\Abstractions.csproj" />
+	  <ProjectReference Include="..\Inftrastructure\Storage\Abstractions\Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

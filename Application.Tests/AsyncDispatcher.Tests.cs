@@ -1,4 +1,4 @@
-using Centuriin.CardGame.Core.Engine.Events.Dispatching;
+using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 
 using FluentAssertions;
