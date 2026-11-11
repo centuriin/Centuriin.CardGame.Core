@@ -21,7 +21,7 @@ public sealed class ZoneFactory : IZoneFactory
             }
             else if (template.Scope is ZoneScope.PerPlayer)
             {
-                for (var i = 1; i < activePlayersCount; i++)
+                for (var i = 0; i < activePlayersCount; i++)
                 {
                     zones.Add(CreateZone(template, ++entityId));
                 }

@@ -43,7 +43,7 @@ public sealed class ZonesInitializer : IGameEntityInitializer
 
         var zoneTemplates = _zonesFactory.Create(
             zoneTemplateIds,
-            gameDescription.PlayerIds.Count);
+            gameDescription.PlayerIds.Where(x => x != PlayerId.System).Count());
 
         AddLinksBetweenPlayersAndZones(
             initialStateContext,
