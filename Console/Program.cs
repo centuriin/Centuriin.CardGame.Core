@@ -32,10 +32,8 @@ builder.Services
 
     .AddCardGameCore()
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
-    .AddSingleton<IZonesRepository, ZoneDefinitionRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
-    .AddSingleton<ITemplatesRepository<CardTemplate>, DefaultCardTemplatesRepository>()
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
     .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
     .AddSingleton<IGameProfilesRepository, GameProfileRepo>()
@@ -72,16 +70,13 @@ public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
     public IGameEvent YieldGameEvent() => new GameStartedEvent(GameId);
 }
 
-public sealed class ZoneDefinitionRepo : IZonesRepository
-{
-    public Task<IReadOnlyCollection<TemplateId>> GetZoneTemplateIdsAsync(GameTypeId gameTypeId, CancellationToken token) =>
-        Task.FromResult<IReadOnlyCollection<TemplateId>>([new(1), new(2)]);
-}
-
 public sealed class DecksRepo : IDecksRepository
 {
-    public async Task<IReadOnlyCollection<TemplateId>> GetDeckTemplateIdsAsync(GameTypeId gameTypeId, PlayerId playerId, CancellationToken token) =>
-        [.. DefaultCardTemplatesRepository.Templates36.Keys];
+    public async Task<IReadOnlyCollection<CardTemplate>> GetDeckTemplatesAsync(
+        GameTypeId gameTypeId, 
+        PlayerId playerId, 
+        CancellationToken token) 
+        => [.. DefaultCardTemplatesRepository.Templates36.Values];
 }
 
 public sealed class GameTypeRepo : IGameTypeRepository

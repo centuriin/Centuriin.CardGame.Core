@@ -9,17 +9,17 @@ namespace Application.Initialization;
 public sealed class PlayersInitializer : IGameEntityInitializer
 {
     public Task InitializeAsync(
-        GameDescription setup,
+        GameDescription gameDescription,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(gameDescription);
         ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
 
         var entityId = new EntityId(1);
-        foreach (var id in setup.PlayerIds)
+        foreach (var id in gameDescription.PlayerIds)
         {
             if (id == PlayerId.System)
             {

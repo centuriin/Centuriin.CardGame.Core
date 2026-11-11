@@ -6,30 +6,14 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public sealed class CardFactory : ICardFactory
 {
-    private readonly ITemplatesRepository<CardTemplate> _templatesRepository;
-
-    public CardFactory(ITemplatesRepository<CardTemplate> templatesRepository)
+    public IReadOnlyCollection<Card> Create(
+        IReadOnlyCollection<CardTemplate> templates)
     {
-        ArgumentNullException.ThrowIfNull(templatesRepository);
-        _templatesRepository = templatesRepository;
-    }
-
-    public async Task<IReadOnlyCollection<Card>> CreateAsync(
-        IReadOnlyCollection<TemplateId> templateIds,
-        CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        var templates = (await _templatesRepository.GetTemplatesByIdsAsync(templateIds, token))
-            .ToDictionary(k => k.Id);
-
-        var cards = new List<Card>(templateIds.Count);
+        var cards = new List<Card>(templates.Count);
 
         var entityId = EntityId.Default;
-        foreach (var templateId in templateIds)
+        foreach (var template in templates)
         {
-            var template = templates[templateId];
-
             cards.Add(CreateCard(template, ++entityId));
         }
 

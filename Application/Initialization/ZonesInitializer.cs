@@ -6,44 +6,44 @@ using Centuriin.CardGame.Core.Engine.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Application.Initialization;
 
 public sealed class ZonesInitializer : IGameEntityInitializer
 {
-    private readonly IZonesRepository _zonesRepository;
+    private readonly ITemplatesRepository<ZoneTemplate> _zoneTemplatesRepository;
     private readonly IZoneFactory _zonesFactory;
 
     public ZonesInitializer(
-        IZonesRepository zonesRepository,
+        ITemplatesRepository<ZoneTemplate> zoneTemplatesRepository,
         IZoneFactory zonesFactory)
     {
-        ArgumentNullException.ThrowIfNull(zonesRepository);
-        _zonesRepository = zonesRepository;
+        ArgumentNullException.ThrowIfNull(zoneTemplatesRepository);
+        _zoneTemplatesRepository = zoneTemplatesRepository;
 
         ArgumentNullException.ThrowIfNull(zonesFactory);
         _zonesFactory = zonesFactory;
     }
 
     public async Task InitializeAsync(
-        GameDescription setup,
+        GameDescription gameDescription,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(gameDescription);
         ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
 
-        var zoneTemplateIds = await _zonesRepository.GetZoneTemplateIdsAsync(
-            setup.GameTypeId,
+        var zoneTemplateIds = await _zoneTemplatesRepository.GetTemplatesAsync(
+            gameDescription.GameTypeId,
             token);
 
-        var zoneTemplates = await _zonesFactory.CreateAsync(
+        var zoneTemplates = _zonesFactory.Create(
             zoneTemplateIds,
-            setup.PlayerIds.Count(x => x != PlayerId.System),
-            token);
+            gameDescription.PlayerIds.Count);
 
         AddLinksBetweenPlayersAndZones(
             initialStateContext,

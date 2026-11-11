@@ -5,8 +5,7 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public interface IZoneFactory
 {
-    public Task<IReadOnlyCollection<Zone>> CreateAsync(
-        IReadOnlyCollection<TemplateId> templateIds,
-        int activePlayersCount,
-        CancellationToken token);
+    public IReadOnlyCollection<Zone> Create(
+        IReadOnlyCollection<ZoneTemplate> templates,
+        int activePlayersCount);
 }

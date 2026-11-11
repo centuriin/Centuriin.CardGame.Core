@@ -27,11 +27,11 @@ public sealed class DecksInitializer : IGameEntityInitializer
     }
 
     public async Task InitializeAsync(
-        GameDescription setup,
+        GameDescription gameDescription,
         IInitialStateContext initialStateContext,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(gameDescription);
         ArgumentNullException.ThrowIfNull(initialStateContext);
 
         token.ThrowIfCancellationRequested();
@@ -44,15 +44,15 @@ public sealed class DecksInitializer : IGameEntityInitializer
         {
             var ownerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
-            var deckTemplateIds = await _decksRepository.GetDeckTemplateIdsAsync(
-                setup.GameTypeId,
+            var deckTemplates = await _decksRepository.GetDeckTemplatesAsync(
+                gameDescription.GameTypeId,
                 initialStateContext.Entities
                     .Get<Player>(ownerId)
                     .Get<PlayerIdentifierComponent>()
                     .PlayerId,
                 token);
 
-            var cards = await _cardsFactory.CreateAsync(deckTemplateIds, token);
+            var cards = _cardsFactory.Create(deckTemplates);
 
             foreach (var card in cards)
             {

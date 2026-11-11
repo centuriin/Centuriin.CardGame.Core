@@ -6,38 +6,22 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public sealed class ZoneFactory : IZoneFactory
 {
-    private readonly ITemplatesRepository<ZoneTemplate> _templatesRepository;
-
-    public ZoneFactory(ITemplatesRepository<ZoneTemplate> templatesRepository)
+    public IReadOnlyCollection<Zone> Create(
+        IReadOnlyCollection<ZoneTemplate> templates,
+        int activePlayersCount)
     {
-        ArgumentNullException.ThrowIfNull(templatesRepository);
-        _templatesRepository = templatesRepository;
-    }
-
-    public async Task<IReadOnlyCollection<Zone>> CreateAsync(
-        IReadOnlyCollection<TemplateId> templateIds,
-        int activePlayersCount,
-        CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        var templates = (await _templatesRepository.GetTemplatesByIdsAsync(templateIds, token))
-            .ToDictionary(k => k.Id);
-
-        var zones = new List<Zone>(templateIds.Count);
+        var zones = new List<Zone>(templates.Count);
 
         var entityId = EntityId.Default;
-        foreach (var templateId in templateIds)
+        foreach (var template in templates)
         {
-            var template = templates[templateId];
-
             if (template.Scope is ZoneScope.Singleton)
             {
                 zones.Add(CreateZone(template, ++entityId));
             }
             else if (template.Scope is ZoneScope.PerPlayer)
             {
-                for (var i = 0; i < activePlayersCount; i++)
+                for (var i = 1; i < activePlayersCount; i++)
                 {
                     zones.Add(CreateZone(template, ++entityId));
                 }
@@ -47,14 +31,16 @@ public sealed class ZoneFactory : IZoneFactory
         return zones;
     }
 
-    private static Zone CreateZone(ZoneTemplate template, EntityId zoneId)
+    private static Zone CreateZone(
+        ZoneTemplate template,
+        EntityId zoneId)
     {
         var zone = new Zone(zoneId);
 
         zone.Add(
             [..
                 template.Components.Select(x => x.Copy()),
-                new TemplateComponent(template.Id)
+                new TemplateComponent(template.Id),
             ]);
 
         return zone;

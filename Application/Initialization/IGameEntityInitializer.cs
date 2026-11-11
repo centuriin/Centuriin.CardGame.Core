@@ -9,7 +9,7 @@ namespace Application.Initialization;
 public interface IGameEntityInitializer
 {
     public Task InitializeAsync(
-        GameDescription setup,
+        GameDescription gameDescription,
         IInitialStateContext initialStateContext,
         CancellationToken token);
 }

@@ -5,7 +5,6 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public interface ICardFactory
 {
-    public Task<IReadOnlyCollection<Card>> CreateAsync(
-        IReadOnlyCollection<TemplateId> templateIds,
-        CancellationToken token);
+    public IReadOnlyCollection<Card> Create(
+        IReadOnlyCollection<CardTemplate> templates);
 }

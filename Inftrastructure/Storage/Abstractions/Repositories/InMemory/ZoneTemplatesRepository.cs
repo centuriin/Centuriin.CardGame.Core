@@ -44,11 +44,7 @@ public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
         }
         .ToFrozenDictionary();
 
-    public Task<ZoneTemplate> GetByIdAsync(TemplateId templateId, CancellationToken token) =>
-        Task.FromResult(DrunkardZones[templateId]);
-
-    public Task<IReadOnlyCollection<ZoneTemplate>> GetTemplatesByIdsAsync(
-        IReadOnlyCollection<TemplateId> templateIds,
-        CancellationToken token)
-        => Task.FromResult<IReadOnlyCollection<ZoneTemplate>>(DrunkardZones.Values);
+    public async Task<IReadOnlyCollection<ZoneTemplate>> GetTemplatesAsync(
+        GameTypeId gameTypeId,
+        CancellationToken token) => DrunkardZones.Values;
 }
