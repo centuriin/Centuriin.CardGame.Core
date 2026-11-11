@@ -9,7 +9,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
-namespace Application.Initialization;
+namespace Centuriin.CardGame.Core.Application.Initialization;
 
 public sealed class ZonesInitializer : IGameEntityInitializer
 {

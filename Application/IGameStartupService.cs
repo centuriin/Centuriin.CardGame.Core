@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Engine;
+﻿using Centuriin.CardGame.Core.Engine;
+
+namespace Centuriin.CardGame.Core.Application;
 
 public interface IGameStartupService
 {

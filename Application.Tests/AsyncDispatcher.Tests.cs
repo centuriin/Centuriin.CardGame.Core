@@ -7,7 +7,7 @@ using Moq;
 
 using Xunit;
 
-namespace Centuriin.CardGame.Core.Engine.Tests.Events.Dispatching;
+namespace Centuriin.CardGame.Core.Application.Tests;
 
 public sealed class AsyncDispatcherTests
 {

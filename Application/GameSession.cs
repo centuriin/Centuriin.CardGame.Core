@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 
-using Application.Events;
-
+using Centuriin.CardGame.Core.Application.Events;
+using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Context;
-using Centuriin.CardGame.Core.Engine.Events.Dispatching;
-using Centuriin.CardGame.Core.Engine.Observability;
+using Centuriin.CardGame.Core.Engine.Root;
 
-namespace Centuriin.CardGame.Core.Engine.Root;
+namespace Centuriin.CardGame.Core.Application;
 
 public sealed class GameSession : IGameSession
 {

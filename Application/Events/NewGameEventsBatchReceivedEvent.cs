@@ -2,7 +2,7 @@
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Root.State;
 
-namespace Application.Events;
+namespace Centuriin.CardGame.Core.Application.Events;
 
 public sealed class NewGameEventsBatchReceivedEvent : IGameApplicationEvent
 {

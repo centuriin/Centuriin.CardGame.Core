@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 
+using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 
-namespace Centuriin.CardGame.Core.Engine.Observability;
+namespace Centuriin.CardGame.Core.Application;
 
 public static class Telemetry
 {

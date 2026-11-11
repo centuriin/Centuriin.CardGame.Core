@@ -1,6 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 
-namespace Application;
+namespace Centuriin.CardGame.Core.Application;
 
 public interface IGameSessionFactory
 {

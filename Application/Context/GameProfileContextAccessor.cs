@@ -3,7 +3,7 @@ using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
-namespace Application.Context;
+namespace Centuriin.CardGame.Core.Application.Context;
 
 public sealed class GameProfileContextAccessor :
     IGameContextAccessor<IGameProfileContext>

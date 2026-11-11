@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 
-namespace Application.Initialization;
+namespace Centuriin.CardGame.Core.Application.Initialization;
 
 public sealed class GameDefinition
 {

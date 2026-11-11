@@ -1,4 +1,4 @@
-﻿namespace Centuriin.CardGame.Core.Engine.Events.Dispatching;
+﻿namespace Centuriin.CardGame.Core.Application;
 
 public sealed class AsyncDispatcher<TEvent> : IAsyncDispatcher<TEvent>, IAsyncDisposable
 {

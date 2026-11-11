@@ -4,7 +4,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Components.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 
-namespace Application.Initialization;
+namespace Centuriin.CardGame.Core.Application.Initialization;
 
 public sealed class PlayersInitializer : IGameEntityInitializer
 {

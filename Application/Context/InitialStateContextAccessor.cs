@@ -1,11 +1,10 @@
-﻿using Application.Initialization;
-
+﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
-namespace Application.Context;
+namespace Centuriin.CardGame.Core.Application.Context;
 
 public sealed class InitialStateContextAccessor :
     IGameContextAccessor<IInitialStateContext>,

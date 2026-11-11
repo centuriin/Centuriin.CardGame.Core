@@ -1,6 +1,6 @@
-﻿using Application;
+﻿using Centuriin.CardGame.Core.Engine;
 
-namespace Centuriin.CardGame.Core.Engine;
+namespace Centuriin.CardGame.Core.Application;
 
 public sealed class GameStartupService : IGameStartupService
 {

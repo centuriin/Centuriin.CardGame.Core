@@ -1,7 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 
-namespace Application.Initialization;
+namespace Centuriin.CardGame.Core.Application.Initialization;
 
 /// <summary>
 /// Describes game loader for game initialization before starting.
