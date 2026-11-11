@@ -2,6 +2,7 @@
   <Folder Name="/Infrastructure/" />
   <Folder Name="/Infrastructure/Storage/">
     <Project Path="Inftrastructure/Storage/Abstractions/Abstractions.csproj" />
+    <Project Path="InMemory/InMemory.csproj" Id="05b1d33b-19d5-4e8e-834b-b41b33a90cd8" />
   </Folder>
   <Folder Name="/SolutionItems/">
     <File Path=".editorconfig" />

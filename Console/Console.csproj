@@ -34,7 +34,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Extensions.DependencyInjection\Extensions.DependencyInjection.csproj" />
+	  <ProjectReference Include="..\Application\Application.csproj" />
+	  <ProjectReference Include="..\InMemory\InMemory.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@ using Centuriin.CardGame.Core.Engine.Root.State;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
+using Centuriin.CardGame.Core.Infrastructure.Storage.InMemory;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,9 +32,10 @@ builder.Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
 
     .AddCardGameCore()
+    .UseInMemoryStorage()
+
     .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
-    .AddSingleton<ITemplatesRepository<ZoneTemplate>, ZoneTemplatesRepository>()
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
     .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
     .AddSingleton<IGameProfilesRepository, GameProfileRepo>()

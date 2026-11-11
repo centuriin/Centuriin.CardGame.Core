@@ -7,7 +7,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
 
-public sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
+internal sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
 {
     // For drunkard
     private static FrozenDictionary<TemplateId, ZoneTemplate> DrunkardZones { get; } =

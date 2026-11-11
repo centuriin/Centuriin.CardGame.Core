@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyName>Centuriin.CardGame.Core.Infrastructure.Storage.InMemory</AssemblyName>
+		<RootNamespace>Centuriin.CardGame.Core.Infrastructure.Storage.InMemory</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>arabanas</Authors>
+		<Company>Centuriin</Company>
+		<PackageId>Centuriin.CardGame.Core.Infrastructure.Storage.InMemory</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Extensions.DependencyInjection\Extensions.DependencyInjection.csproj" />
+	  <ProjectReference Include="..\Inftrastructure\Storage\Abstractions\Abstractions.csproj" />
+	</ItemGroup>
+</Project>
