@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Components;
+
+namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 
 /// <summary>
 /// Card entity.
@@ -15,6 +17,11 @@ public sealed class Card : EntityBase, IEquatable<Card>
     {
     }
 
+    public Card(EntityId id, IEnumerable<ComponentBase> components)
+        : base(id, components)
+    {
+    }
+
     /// <inheritdoc/>
     public bool Equals(Card? other) =>
         other is not null
@@ -25,13 +32,4 @@ public sealed class Card : EntityBase, IEquatable<Card>
 
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
-
-    /// <inheritdoc/>
-    public override Card Copy()
-    {
-        var copy = new Card(Id);
-        copy.Add(Components.Values.Select(x => x.Copy()));
-
-        return copy;
-    }
 }

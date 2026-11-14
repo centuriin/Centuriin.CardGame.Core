@@ -1,6 +1,4 @@
-﻿using Centuriin.CardGame.Core.Engine.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Engine;
+﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
 public interface IEntitiesCollection : IReadOnlyEntitiesCollection
 {
@@ -12,6 +10,4 @@ public interface IEntitiesCollection : IReadOnlyEntitiesCollection
 
     public new IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
-
-    public IReadOnlyEntitiesCollection AsReadOnly();
 }

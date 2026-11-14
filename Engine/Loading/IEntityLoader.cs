@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Engine.Root.State;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Entities;
+using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Engine.Loading;
 

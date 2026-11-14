@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 
+using Centuriin.CardGame.Core.Engine.ECS.Entities;
+
 namespace Centuriin.CardGame.Core.Engine.Root.State;
 
 public sealed class GameState : IGameState

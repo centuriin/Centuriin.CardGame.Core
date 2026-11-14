@@ -14,22 +14,12 @@ public sealed class CardFactory : ICardFactory
         var entityId = EntityId.Default;
         foreach (var template in templates)
         {
-            cards.Add(CreateCard(template, ++entityId));
+            cards.Add(
+                new Card(
+                    ++entityId,
+                    [.. template.Components, new TemplateComponent(template.Id)]));
         }
 
         return cards;
-    }
-
-    private static Card CreateCard(CardTemplate template, EntityId cardId)
-    {
-        var card = new Card(cardId);
-
-        card.Add(
-            [..
-                template.Components.Select(x => x.Copy()),
-                new TemplateComponent(template.Id)
-            ]);
-
-        return card;
     }
 }

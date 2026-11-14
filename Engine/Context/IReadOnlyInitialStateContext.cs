@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Engine.Context;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Entities;
+
+namespace Centuriin.CardGame.Core.Engine.Context;
 
 public interface IReadOnlyInitialStateContext : IGameContext
 {

@@ -3,6 +3,7 @@ using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Context;
+using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events.Domain;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;

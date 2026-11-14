@@ -24,4 +24,24 @@ public static class EntityQueryExtensions
 
         return entities.Where(x => x.Has<TComponent>() && predicate(x.Get<TComponent>()));
     }
+
+    public static IEnumerable<IReadOnlyEntity> WithComponent<TComponent>(
+        this IEnumerable<IReadOnlyEntity> entities)
+        where TComponent : ComponentBase
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        return entities.Where(x => x.Has<TComponent>());
+    }
+
+    public static IEnumerable<IReadOnlyEntity> WithComponent<TComponent>(
+        this IEnumerable<IReadOnlyEntity> entities,
+        Func<TComponent, bool> predicate)
+        where TComponent : ComponentBase
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        return entities.Where(x => x.Has<TComponent>() && predicate(x.Get<TComponent>()));
+    }
 }

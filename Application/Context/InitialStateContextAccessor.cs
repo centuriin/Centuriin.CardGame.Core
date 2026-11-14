@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
+using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 

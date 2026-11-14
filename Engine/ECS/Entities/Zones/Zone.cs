@@ -1,10 +1,15 @@
-﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Components;
+
+namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 
 public sealed class Zone : EntityBase, IEquatable<Zone>
 {
-    public bool IsEmpty => Components.Any();
-
     public Zone(EntityId id) : base(id)
+    {
+    }
+
+    public Zone(EntityId id, IEnumerable<ComponentBase> components)
+        : base(id, components)
     {
     }
 
@@ -18,12 +23,4 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
 
     /// <inheritdoc/>
     public override int GetHashCode() => Id.GetHashCode();
-
-    public override Zone Copy()
-    {
-        var copy = new Zone(Id);
-        copy.Add(Components.Values.Select(x => x.Copy()));
-
-        return copy;
-    }
 }

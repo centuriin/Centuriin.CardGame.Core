@@ -34,15 +34,7 @@ public sealed class ZoneFactory : IZoneFactory
     private static Zone CreateZone(
         ZoneTemplate template,
         EntityId zoneId)
-    {
-        var zone = new Zone(zoneId);
-
-        zone.Add(
-            [..
-                template.Components.Select(x => x.Copy()),
-                new TemplateComponent(template.Id),
-            ]);
-
-        return zone;
-    }
+        => new(
+            zoneId,
+            [.. template.Components, new TemplateComponent(template.Id)]);
 }

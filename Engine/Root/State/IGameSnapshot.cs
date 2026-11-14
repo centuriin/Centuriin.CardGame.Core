@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Engine.Root.State;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Entities;
+
+namespace Centuriin.CardGame.Core.Engine.Root.State;
 
 public interface IGameSnapshot
 {

@@ -1,15 +1,13 @@
-﻿using Centuriin.CardGame.Core.Engine.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Engine;
+﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
 public interface IReadOnlyEntitiesCollection
 {
     public bool IsEmpty { get; }
 
-    public TEntity Get<TEntity>(EntityId id)
+    public IReadOnlyEntity Get<TEntity>(EntityId id)
         where TEntity : EntityBase;
 
-    public IEnumerable<TEntity> Query<TEntity>()
+    public IEnumerable<IReadOnlyEntity> Query<TEntity>()
         where TEntity : EntityBase;
 
     public IEntitiesCollection ToCollection();

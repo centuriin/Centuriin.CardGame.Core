@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 
-using Centuriin.CardGame.Core.Engine.ECS.Entities;
-
-namespace Centuriin.CardGame.Core.Engine;
+namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
 public sealed class EntitiesCollection : IEntitiesCollection
 {
@@ -46,8 +44,8 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return ((IDictionary<EntityId, TEntity>)dict)[id];
     }
 
-    TEntity IReadOnlyEntitiesCollection.Get<TEntity>(EntityId id) =>
-        (TEntity)Get<TEntity>(id).Copy();
+    IReadOnlyEntity IReadOnlyEntitiesCollection.Get<TEntity>(EntityId id) => 
+        Get<TEntity>(id);
 
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase
@@ -60,10 +58,8 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return (IEnumerable<TEntity>)dict!.Values;
     }
 
-    IEnumerable<TEntity> IReadOnlyEntitiesCollection.Query<TEntity>() =>
-        Query<TEntity>().Select(x => (TEntity)x.Copy());
-
-    public IReadOnlyEntitiesCollection AsReadOnly() => this;
+    IEnumerable<IReadOnlyEntity> IReadOnlyEntitiesCollection.Query<TEntity>() =>
+        Query<TEntity>();
 
     public IEntitiesCollection ToCollection() => new EntitiesCollection(_entities);
 }

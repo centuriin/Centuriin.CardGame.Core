@@ -1,90 +1,66 @@
-﻿using Centuriin.CardGame.Core.Engine.ECS.Components;
+﻿using System.Collections;
+
+using Centuriin.CardGame.Core.Engine.ECS.Components;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
 /// <summary>
 /// Base class for entity.
 /// </summary>
-public abstract class EntityBase
+public abstract class EntityBase : 
+    IComponentsCollection,
+    IReadOnlyEntity
 {
+    private readonly ComponentsCollection _components = [];
+
     /// <summary>
     /// Instance id.
     /// </summary>
     public EntityId Id { get; }
 
-    protected Dictionary<Type, ComponentBase> Components { get; init; } = [];
+    /// <inheritdoc/>
+    public bool IsEmpty { get; }
 
     protected EntityBase(EntityId id)
     {
         Id = id;
     }
 
-    /// <summary>
-    /// Adds component.
-    /// </summary>
-    /// <param name="components">
-    /// Component.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    /// When <paramref name="components"/> is <see langword="null"/>.
-    /// </exception>
+    protected EntityBase(
+        EntityId id, 
+        IEnumerable<ComponentBase> components)
+        : this(id)
+    {
+        ArgumentNullException.ThrowIfNull(components);
+        _components = new ComponentsCollection(components);
+    }
+
+    /// <inheritdoc/>
     public void Add(params IEnumerable<ComponentBase> components)
     {
         ArgumentNullException.ThrowIfNull(components);
-
-        foreach (var component in components)
-        {
-            Components[component.GetType()] = component;
-        }
+        _components.Add(components);
     }
 
-    /// <summary>
-    /// Gets component by type.
-    /// </summary>
-    /// <typeparam name="T">
-    /// Concrete component type.
-    /// </typeparam>
-    /// <returns>
-    /// Component of <typeparamref name="T"/>.
-    /// </returns>
-    /// <exception cref="InvalidOperationException">
-    /// When component not found.
-    /// </exception>
-    public T Get<T>()
-        where T : ComponentBase
+    /// <inheritdoc/>
+    public void Replace<T>(T replacement) where T : ComponentBase
     {
-        if (!Components.TryGetValue(typeof(T), out var component))
-            throw new InvalidOperationException($"Component {typeof(T).Name} not found.");
-
-        return (T)component;
+        ArgumentNullException.ThrowIfNull(replacement);
+        _components.Replace(replacement);
     }
 
-    /// <summary>
-    /// Checks component contains.
-    /// </summary>
-    /// <typeparam name="T">
-    /// Concrete type of component.
-    /// </typeparam>
-    /// <returns>
-    /// <see langword="true"/> if exists, otherwise - <see langword="false"/>.
-    /// </returns>
-    public bool Has<T>()
-        where T : ComponentBase => Components.ContainsKey(typeof(T));
+    /// <inheritdoc/>
+    public void Remove<T>() where T : ComponentBase => _components.Remove<T>();
 
-    /// <summary>
-    /// Removes component by type.
-    /// </summary>
-    /// <typeparam name="T">
-    /// Concrete type.
-    /// </typeparam>
-    public void Remove<T>()
-        where T : ComponentBase => Components.Remove(typeof(T));
+    /// <inheritdoc/>
+    public T Get<T>() where T : ComponentBase => _components.Get<T>();
 
-    /// <summary>
-    /// Returns its copy.
-    /// </summary>
-    /// <returns>
-    /// Copy.
-    /// </returns>
-    public abstract EntityBase Copy();
+    /// <inheritdoc/>
+    public bool Has<T>() where T : ComponentBase => _components.Has<T>();
+
+    /// <inheritdoc/>
+    public IEnumerator<ComponentBase> GetEnumerator() => _components.GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
