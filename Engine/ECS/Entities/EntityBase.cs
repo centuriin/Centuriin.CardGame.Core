@@ -1,18 +1,12 @@
-﻿using System.Collections;
-
-using Centuriin.CardGame.Core.Engine.ECS.Components;
+﻿using Centuriin.CardGame.Core.Engine.ECS.Components;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
 /// <summary>
 /// Base class for entity.
 /// </summary>
-public abstract class EntityBase : 
-    IComponentsCollection,
-    IReadOnlyEntity
+public abstract class EntityBase
 {
-    private readonly ComponentsCollection _components = [];
-
     /// <summary>
     /// Instance id.
     /// </summary>
@@ -21,46 +15,40 @@ public abstract class EntityBase :
     /// <inheritdoc/>
     public bool IsEmpty { get; }
 
+    protected ComponentsCollection Components { get; } = [];
+
     protected EntityBase(EntityId id)
     {
         Id = id;
     }
 
     protected EntityBase(
-        EntityId id, 
+        EntityId id,
         IEnumerable<ComponentBase> components)
         : this(id)
     {
         ArgumentNullException.ThrowIfNull(components);
-        _components = new ComponentsCollection(components);
+        Components = new ComponentsCollection(components);
     }
 
-    /// <inheritdoc/>
-    public void Add(params IEnumerable<ComponentBase> components)
+    protected EntityBase(
+        EntityId id,
+        ComponentsCollection components)
+        : this(id)
     {
-        ArgumentNullException.ThrowIfNull(components);
-        _components.Add(components);
+        Components = components;
     }
 
-    /// <inheritdoc/>
-    public void Replace<T>(T replacement) where T : ComponentBase
-    {
-        ArgumentNullException.ThrowIfNull(replacement);
-        _components.Replace(replacement);
-    }
+    public abstract EntityBase Add(params IEnumerable<ComponentBase> components);
+
+    public abstract EntityBase Replace<T>(T replacement) where T : ComponentBase;
 
     /// <inheritdoc/>
-    public void Remove<T>() where T : ComponentBase => _components.Remove<T>();
+    public abstract EntityBase Remove<T>() where T : ComponentBase;
 
     /// <inheritdoc/>
-    public T Get<T>() where T : ComponentBase => _components.Get<T>();
+    public T Get<T>() where T : ComponentBase => Components.Get<T>();
 
     /// <inheritdoc/>
-    public bool Has<T>() where T : ComponentBase => _components.Has<T>();
-
-    /// <inheritdoc/>
-    public IEnumerator<ComponentBase> GetEnumerator() => _components.GetEnumerator();
-
-    /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public bool Has<T>() where T : ComponentBase => Components.Has<T>();
 }

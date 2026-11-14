@@ -14,6 +14,34 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
     }
 
     /// <inheritdoc/>
+    public override Zone Add(params IEnumerable<ComponentBase> components)
+    {
+        ArgumentNullException.ThrowIfNull(components);
+
+        var changedCollection = Components.Add(components);
+
+        return new(Id, changedCollection);
+    }
+
+    /// <inheritdoc/>
+    public override Zone Replace<T>(T replacement)
+    {
+        ArgumentNullException.ThrowIfNull(replacement);
+
+        var changedCollection = Components.Replace(replacement);
+
+        return new(Id, changedCollection);
+    }
+
+    /// <inheritdoc/>
+    public override Zone Remove<T>()
+    {
+        var changedCollection = Components.Remove<T>();
+
+        return new(Id, changedCollection);
+    }
+
+    /// <inheritdoc/>
     public bool Equals(Zone? other) =>
         other is not null
         && Id == other.Id;

@@ -5,7 +5,7 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 
 public sealed class Player : EntityBase, IEquatable<Player>
 {
-    public static Player System =>
+    public static Player System { get; } =
         new(
             EntityId.Default,
             [
@@ -13,13 +13,41 @@ public sealed class Player : EntityBase, IEquatable<Player>
                 PlayerIdentifierComponent.System,
             ]);
 
-    public Player(EntityId id) : base(id)
-    {
-    }
+    public Player(EntityId id)
+        : base(id) { }
 
     public Player(EntityId id, IEnumerable<ComponentBase> components)
-        : base(id, components)
+        : base(id, components) { }
+
+    private Player(EntityId id, ComponentsCollection components)
+        : base(id, components) { }
+
+    /// <inheritdoc/>
+    public override Player Add(params IEnumerable<ComponentBase> components)
     {
+        ArgumentNullException.ThrowIfNull(components);
+
+        var changedCollection = Components.Add(components);
+
+        return new(Id, changedCollection);
+    }
+
+    /// <inheritdoc/>
+    public override Player Replace<T>(T replacement)
+    {
+        ArgumentNullException.ThrowIfNull(replacement);
+
+        var changedCollection = Components.Replace(replacement);
+
+        return new(Id, changedCollection);
+    }
+
+    /// <inheritdoc/>
+    public override Player Remove<T>()
+    {
+        var changedCollection = Components.Remove<T>();
+
+        return new(Id, changedCollection);
     }
 
     /// <inheritdoc/>
