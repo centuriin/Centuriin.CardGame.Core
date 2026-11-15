@@ -1,14 +1,12 @@
 ﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
-public interface IReadOnlyEntitiesCollection
+public interface IReadOnlyEntitiesCollection : IEnumerable<EntityBase>
 {
     public bool IsEmpty { get; }
 
-    public IReadOnlyEntity Get<TEntity>(EntityId id)
+    public TEntity Get<TEntity>(EntityId id)
         where TEntity : EntityBase;
 
-    public IEnumerable<IReadOnlyEntity> Query<TEntity>()
+    public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
-
-    public IEntitiesCollection ToCollection();
 }

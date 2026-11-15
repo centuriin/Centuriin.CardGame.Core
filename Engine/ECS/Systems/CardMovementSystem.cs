@@ -24,7 +24,10 @@ public sealed class CardMovementSystem :
         var newOwnerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
         var card = gameState.Entities.Get<Card>(@event.CardId);
-        card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId);
-        card.Get<ZoneComponent>().ChangeZoneId(zone.Id);
+        card.Replace(
+            card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId),
+            card.Get<ZoneComponent>().ChangeZoneId(zone.Id));
+
+        gameState.Entities.Replace(card);
     }
 }

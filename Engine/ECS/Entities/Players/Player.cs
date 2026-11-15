@@ -33,11 +33,11 @@ public sealed class Player : EntityBase, IEquatable<Player>
     }
 
     /// <inheritdoc/>
-    public override Player Replace<T>(T replacement)
+    public override Player Replace(params IEnumerable<ComponentBase> components)
     {
-        ArgumentNullException.ThrowIfNull(replacement);
+        ArgumentNullException.ThrowIfNull(components);
 
-        var changedCollection = Components.Replace(replacement);
+        var changedCollection = Components.Replace(components);
 
         return new(Id, changedCollection);
     }

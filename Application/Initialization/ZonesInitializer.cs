@@ -41,29 +41,29 @@ public sealed class ZonesInitializer : IGameEntityInitializer
             gameDescription.GameTypeId,
             token);
 
-        var zoneTemplates = _zonesFactory.Create(
+        var zones = _zonesFactory.Create(
             zoneTemplateIds,
             gameDescription.PlayerIds.Where(x => x != PlayerId.System).Count());
 
-        AddLinksBetweenPlayersAndZones(
+        var changedZones = AddLinksBetweenPlayersAndZones(
             initialStateContext,
-            zoneTemplates,
+            zones,
             PlayerRole.Participant,
             ZoneRole.Hand);
 
-        AddLinksBetweenPlayersAndZones(
+        var changedZone2 = AddLinksBetweenPlayersAndZones(
             initialStateContext,
-            zoneTemplates,
+            zones,
             PlayerRole.Bank,
             ZoneRole.Deck);
 
-        foreach (var zone in zoneTemplates)
+        foreach (var zone in changedZones.Concat(changedZone2))
         {
-            initialStateContext.Entities.AddEntity(zone);
+            initialStateContext.Entities.Add(zone);
         }
     }
 
-    private static void AddLinksBetweenPlayersAndZones(
+    private static IEnumerable<Zone> AddLinksBetweenPlayersAndZones(
         IInitialStateContext initialStateContext,
         IReadOnlyCollection<Zone> zones,
         PlayerRole playerRole,
@@ -80,7 +80,7 @@ public sealed class ZonesInitializer : IGameEntityInitializer
         {
             var ownerId = ((Player)player).Id;
 
-            zone.Add(new OwnerComponent(ownerId));
+            yield return ((Zone)zone).Add(new OwnerComponent(ownerId));
         }
     }
 }

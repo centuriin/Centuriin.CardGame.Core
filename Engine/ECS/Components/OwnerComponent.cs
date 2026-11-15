@@ -23,5 +23,6 @@ public sealed record class OwnerComponent : ComponentBase
     /// <param name="newOwnerId">
     /// New owner identifier.
     /// </param>
-    public void ChangeOwnerId(EntityId newOwnerId) => CurrentOwnerId = newOwnerId;
+    public OwnerComponent ChangeOwnerId(EntityId newOwnerId) =>
+        this with { CurrentOwnerId = newOwnerId };
 }

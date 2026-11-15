@@ -15,7 +15,7 @@ public sealed class EntityLoader<TEntity> : IEntityLoader
 
         foreach (var entity in entitiesCollection.Query<TEntity>())
         {
-            gameState.Entities.AddEntity((TEntity)entity);
+            gameState.Entities.Add(entity);
         }
     }
 }

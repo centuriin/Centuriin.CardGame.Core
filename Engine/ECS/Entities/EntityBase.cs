@@ -39,9 +39,11 @@ public abstract class EntityBase
         Components = components;
     }
 
+    /// <inheritdoc/>
     public abstract EntityBase Add(params IEnumerable<ComponentBase> components);
 
-    public abstract EntityBase Replace<T>(T replacement) where T : ComponentBase;
+    /// <inheritdoc/>
+    public abstract EntityBase Replace(params IEnumerable<ComponentBase> components);
 
     /// <inheritdoc/>
     public abstract EntityBase Remove<T>() where T : ComponentBase;

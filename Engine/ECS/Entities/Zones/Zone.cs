@@ -24,11 +24,11 @@ public sealed class Zone : EntityBase, IEquatable<Zone>
     }
 
     /// <inheritdoc/>
-    public override Zone Replace<T>(T replacement)
+    public override Zone Replace(params IEnumerable<ComponentBase> components)
     {
-        ArgumentNullException.ThrowIfNull(replacement);
+        ArgumentNullException.ThrowIfNull(components);
 
-        var changedCollection = Components.Replace(replacement);
+        var changedCollection = Components.Replace(components);
 
         return new(Id, changedCollection);
     }

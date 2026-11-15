@@ -34,6 +34,4 @@ public sealed class GameState : IGameState
 
         Status = newStatus;
     }
-
-    public IReadOnlyGameState AsReadOnly() => this;
 }

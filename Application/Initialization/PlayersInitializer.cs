@@ -23,16 +23,18 @@ public sealed class PlayersInitializer : IGameEntityInitializer
         {
             if (id == PlayerId.System)
             {
-                initialStateContext.Entities.AddEntity(Player.System);
+                initialStateContext.Entities.Add(Player.System);
                 continue;
             }
 
-            var player = new Player(entityId++);
-            player.Add(
-                new PlayerRoleComponent(PlayerRole.Participant),
-                new PlayerIdentifierComponent(id));
+            var player = new Player(
+                entityId++, 
+                [
+                    new PlayerRoleComponent(PlayerRole.Participant),
+                    new PlayerIdentifierComponent(id)
+                ]);
 
-            initialStateContext.Entities.AddEntity(player);
+            initialStateContext.Entities.Add(player);
         }
 
         return Task.CompletedTask;

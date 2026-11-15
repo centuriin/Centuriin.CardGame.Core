@@ -56,11 +56,10 @@ public sealed class DecksInitializer : IGameEntityInitializer
 
             foreach (var card in cards)
             {
-                card.Add(
-                    new ZoneComponent(zone.Id),
-                    new OwnerComponent(ownerId));
-
-                initialStateContext.Entities.AddEntity(card);
+                initialStateContext.Entities.Add(
+                    card.Add(
+                        new ZoneComponent(zone.Id),
+                        new OwnerComponent(ownerId)));
             }
         }
     }

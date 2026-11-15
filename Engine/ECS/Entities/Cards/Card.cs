@@ -39,11 +39,11 @@ public sealed class Card : EntityBase, IEquatable<Card>
     }
 
     /// <inheritdoc/>
-    public override Card Replace<T>(T replacement)
+    public override Card Replace(params IEnumerable<ComponentBase> components)
     {
-        ArgumentNullException.ThrowIfNull(replacement);
+        ArgumentNullException.ThrowIfNull(components);
 
-        var changedCollection = Components.Replace(replacement);
+        var changedCollection = Components.Replace(components);
 
         return new(Id, changedCollection);
     }

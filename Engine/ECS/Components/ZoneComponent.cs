@@ -29,5 +29,6 @@ public sealed record class ZoneComponent : ComponentBase
     /// <param name="newSpaceId">
     /// New space id.
     /// </param>
-    public void ChangeZoneId(EntityId newSpaceId) => CurrentZoneId = newSpaceId;
+    public ZoneComponent ChangeZoneId(EntityId newSpaceId) => 
+        this with { CurrentZoneId = newSpaceId };
 }

@@ -58,17 +58,26 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     /// <param name="replacement">
     /// Replaceable component.
     /// </param>
-    public ComponentsCollection Replace<T>(T replacement) where T : ComponentBase
+    public ComponentsCollection Replace(params IEnumerable<ComponentBase> replacements)
     {
-        ArgumentNullException.ThrowIfNull(replacement);
+        ArgumentNullException.ThrowIfNull(replacements);
 
-        var componentType = typeof(T);
+        IEnumerable<KeyValuePair<Type, ComponentBase>> newItems = [];
 
-        if (!_components.ContainsKey(componentType))
-            throw new InvalidOperationException(
-                $"Component {componentType.Name} not found.");
+        foreach (var component in replacements)
+        {
+            var componentType = component.GetType();
 
-        var changedCollection = _components.SetItem(componentType, replacement);
+            if (!_components.ContainsKey(componentType))
+            {
+                throw new InvalidOperationException(
+                    $"Component {componentType.Name} not found.");
+            }
+
+            newItems = newItems.Append(new(componentType, component));
+        }
+
+        var changedCollection = _components.SetItems(newItems);
 
         return new ComponentsCollection(changedCollection);
     }
