@@ -50,7 +50,7 @@ public sealed class InitialStateContextAccessor :
             return new InitialStateContext
             {
                 GameId = gameId,
-                Entities = new EntitiesCollection(snapshot.Entities),
+                Entities = snapshot.Entities.ToCollection(),
             };
         }
 

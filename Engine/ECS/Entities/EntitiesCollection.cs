@@ -8,7 +8,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
 
     public EntitiesCollection() { }
 
-    public EntitiesCollection(IEnumerable<EntityBase> entities)
+    private EntitiesCollection(IEnumerable<EntityBase> entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
 
@@ -16,6 +16,13 @@ public sealed class EntitiesCollection : IEntitiesCollection
             .ToDictionary(
                 g => g.Key,
                 g => (IDictionary)g.ToDictionary(e => e.Id));
+    }
+
+    private EntitiesCollection(Dictionary<Type, IDictionary> entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        _entities = entities;
     }
 
     public bool IsEmpty => _entities.Count == 0;
@@ -86,6 +93,8 @@ public sealed class EntitiesCollection : IEntitiesCollection
 
         return (IEnumerable<TEntity>)dict!.Values;
     }
+
+    public IEntitiesCollection ToCollection() => new EntitiesCollection(_entities);
 
     public IEnumerator<EntityBase> GetEnumerator() => 
         _entities.Values

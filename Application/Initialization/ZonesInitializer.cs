@@ -43,23 +43,26 @@ public sealed class ZonesInitializer : IGameEntityInitializer
 
         var zones = _zonesFactory.Create(
             zoneTemplateIds,
-            gameDescription.PlayerIds.Where(x => x != PlayerId.System).Count());
+            gameDescription.PlayerIds.Count(x => x != PlayerId.System));
 
-        var changedZones = AddLinksBetweenPlayersAndZones(
-            initialStateContext,
-            zones,
-            PlayerRole.Participant,
-            ZoneRole.Hand);
+        var changedZones = zones
+            .Concat(
+                AddLinksBetweenPlayersAndZones(
+                    initialStateContext,
+                    zones,
+                    PlayerRole.Participant,
+                    ZoneRole.Hand))
+            .Concat(
+                AddLinksBetweenPlayersAndZones(
+                    initialStateContext,
+                    zones,
+                    PlayerRole.Bank,
+                    ZoneRole.Deck))
+            .GroupBy(x => x.Id);
 
-        var changedZone2 = AddLinksBetweenPlayersAndZones(
-            initialStateContext,
-            zones,
-            PlayerRole.Bank,
-            ZoneRole.Deck);
-
-        foreach (var zone in changedZones.Concat(changedZone2))
+        foreach (var zone in changedZones)
         {
-            initialStateContext.Entities.Add(zone);
+            initialStateContext.Entities.Add(zone.Last());
         }
     }
 

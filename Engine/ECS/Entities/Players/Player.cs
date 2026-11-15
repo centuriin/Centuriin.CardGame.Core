@@ -8,9 +8,10 @@ public sealed class Player : EntityBase, IEquatable<Player>
     public static Player System { get; } =
         new(
             EntityId.Default,
+            (IEnumerable<ComponentBase>)
             [
-                new PlayerRoleComponent(PlayerRole.Bank),
-                PlayerIdentifierComponent.System,
+                new PlayerRoleComponent(PlayerRole.Bank), 
+                PlayerIdentifierComponent.System
             ]);
 
     public Player(EntityId id)
