@@ -11,10 +11,6 @@ public sealed class CardMovementSystem :
     ISystem,
     IConsumingSubscriber<CardDealtEvent>
 {
-    public CardMovementSystem()
-    {
-    }
-
     public void OnEvent(CardDealtEvent @event, IGameState gameState)
     {
         ArgumentNullException.ThrowIfNull(@event);
@@ -24,10 +20,10 @@ public sealed class CardMovementSystem :
         var newOwnerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
         var card = gameState.Entities.Get<Card>(@event.CardId);
-        card.Replace(
-            card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId),
-            card.Get<ZoneComponent>().ChangeZoneId(zone.Id));
 
-        gameState.Entities.Replace(card);
+        gameState.Entities.Replace(
+            card.Replace(
+                card.Get<OwnerComponent>().ChangeOwnerId(newOwnerId),
+                card.Get<ZoneComponent>().ChangeZoneId(zone.Id)));
     }
 }
