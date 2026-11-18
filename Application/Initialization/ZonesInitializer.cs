@@ -3,6 +3,7 @@ using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.ECS.Components;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Zones;
+using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
@@ -45,45 +46,42 @@ public sealed class ZonesInitializer : IGameEntityInitializer
             zoneTemplateIds,
             gameDescription.PlayerIds.Count(x => x != PlayerId.System));
 
-        var changedZones = zones
-            .Concat(
-                AddLinksBetweenPlayersAndZones(
-                    initialStateContext,
-                    zones,
-                    PlayerRole.Participant,
-                    ZoneRole.Hand))
-            .Concat(
-                AddLinksBetweenPlayersAndZones(
-                    initialStateContext,
-                    zones,
-                    PlayerRole.Bank,
-                    ZoneRole.Deck))
-            .GroupBy(x => x.Id);
+        AddLinksBetweenPlayersAndZones(
+            initialStateContext,
+            zones,
+            PlayerRole.Participant,
+            ZoneRole.Hand);
 
-        foreach (var zone in changedZones)
+        AddLinksBetweenPlayersAndZones(
+            initialStateContext,
+            zones,
+            PlayerRole.Bank,
+            ZoneRole.Deck);
+
+        foreach (var zone in zones)
         {
-            initialStateContext.Entities.Add(zone.Last());
+            initialStateContext.Entities.Add(zone);
         }
     }
 
-    private static IEnumerable<Zone> AddLinksBetweenPlayersAndZones(
+    private static void AddLinksBetweenPlayersAndZones(
         IInitialStateContext initialStateContext,
-        IReadOnlyCollection<Zone> zones,
+        IReadOnlyCollection<EditableEntity<Zone>> zones,
         PlayerRole playerRole,
         ZoneRole zoneRole)
     {
         var suitablePlayers = initialStateContext.Entities
             .Query<Player>()
-            .WithComponent<PlayerRoleComponent>(x => x.Role.HasFlag(playerRole));
+            .WithComponent((PlayerRoleComponent x) => x.Role.HasFlag(playerRole));
 
         var suitableZones = zones
-            .WithComponent<ZoneRoleComponent>(x => x.Role == zoneRole);
+            .WithComponent((ZoneRoleComponent x) => x.Role == zoneRole);
 
         foreach (var (zone, player) in suitableZones.Zip(suitablePlayers))
         {
-            var ownerId = ((Player)player).Id;
+            var ownerId = player.Id;
 
-            yield return ((Zone)zone).Add(new OwnerComponent(ownerId));
+            zone.Set(new OwnerComponent(ownerId));
         }
     }
 }

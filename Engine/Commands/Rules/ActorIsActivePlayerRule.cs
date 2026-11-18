@@ -12,7 +12,7 @@ public sealed class ActorIsActivePlayerRule : ICommandRule<ICommand>
 
         var actorEntityId = gameState.Entities
             .Query<Player>()
-            .WithComponent<PlayerIdentifierComponent>(x => x.PlayerId == command.Actor)
+            .WithComponent((PlayerIdentifierComponent x) => x.PlayerId == command.Actor)
             .Select(x => x.Id)
             .Single();
 

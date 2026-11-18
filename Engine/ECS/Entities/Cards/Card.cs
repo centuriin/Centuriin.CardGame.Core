@@ -22,40 +22,6 @@ public sealed class Card : EntityBase, IEquatable<Card>
     {
     }
 
-    private Card(EntityId id, ComponentsCollection components)
-        : base(id, components)
-    {
-
-    }
-
-    /// <inheritdoc/>
-    public override Card Add(params IEnumerable<ComponentBase> components)
-    {
-        ArgumentNullException.ThrowIfNull(components);
-
-        var changedCollection = Components.Add(components);
-
-        return new(Id, changedCollection);
-    }
-
-    /// <inheritdoc/>
-    public override Card Replace(params IEnumerable<ComponentBase> components)
-    {
-        ArgumentNullException.ThrowIfNull(components);
-
-        var changedCollection = Components.Replace(components);
-
-        return new(Id, changedCollection);
-    }
-
-    /// <inheritdoc/>
-    public override Card Remove<T>()
-    {
-        var changedCollection = Components.Remove<T>();
-
-        return new(Id, changedCollection);
-    }
-
     /// <inheritdoc/>
     public bool Equals(Card? other) =>
         other is not null

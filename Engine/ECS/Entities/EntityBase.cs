@@ -7,15 +7,12 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 /// </summary>
 public abstract class EntityBase
 {
+    private readonly ComponentsCollection _components = new();
+
     /// <summary>
     /// Instance id.
     /// </summary>
     public EntityId Id { get; }
-
-    /// <inheritdoc/>
-    public bool IsEmpty { get; }
-
-    protected ComponentsCollection Components { get; } = [];
 
     protected EntityBase(EntityId id)
     {
@@ -28,29 +25,32 @@ public abstract class EntityBase
         : this(id)
     {
         ArgumentNullException.ThrowIfNull(components);
-        Components = new ComponentsCollection(components);
+        _components = new ComponentsCollection(components);
     }
 
-    protected EntityBase(
-        EntityId id,
-        ComponentsCollection components)
-        : this(id)
+    /// <inheritdoc/>
+    public T Get<T>() where T : ComponentBase => _components.Get<T>();
+
+    /// <inheritdoc/>
+    public bool Has<T>() where T : ComponentBase => _components.Has<T>();
+
+    /// <summary>
+    /// Sets or resets components.
+    /// </summary>
+    /// <param name="components">
+    /// Components.
+    /// </param>
+    internal void Set(params IEnumerable<ComponentBase> components)
     {
-        Components = components;
+        ArgumentNullException.ThrowIfNull(components);
+        _components.Set(components);
     }
 
-    /// <inheritdoc/>
-    public abstract EntityBase Add(params IEnumerable<ComponentBase> components);
-
-    /// <inheritdoc/>
-    public abstract EntityBase Replace(params IEnumerable<ComponentBase> components);
-
-    /// <inheritdoc/>
-    public abstract EntityBase Remove<T>() where T : ComponentBase;
-
-    /// <inheritdoc/>
-    public T Get<T>() where T : ComponentBase => Components.Get<T>();
-
-    /// <inheritdoc/>
-    public bool Has<T>() where T : ComponentBase => Components.Has<T>();
+    /// <summary>
+    /// Removes component from entity.
+    /// </summary>
+    /// <typeparam name="T">
+    /// Component type.
+    /// </typeparam>
+    internal void Remove<T>() where T : ComponentBase => _components.Remove<T>();
 }

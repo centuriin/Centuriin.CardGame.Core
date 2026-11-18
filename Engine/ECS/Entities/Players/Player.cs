@@ -20,37 +20,6 @@ public sealed class Player : EntityBase, IEquatable<Player>
     public Player(EntityId id, IEnumerable<ComponentBase> components)
         : base(id, components) { }
 
-    private Player(EntityId id, ComponentsCollection components)
-        : base(id, components) { }
-
-    /// <inheritdoc/>
-    public override Player Add(params IEnumerable<ComponentBase> components)
-    {
-        ArgumentNullException.ThrowIfNull(components);
-
-        var changedCollection = Components.Add(components);
-
-        return new(Id, changedCollection);
-    }
-
-    /// <inheritdoc/>
-    public override Player Replace(params IEnumerable<ComponentBase> components)
-    {
-        ArgumentNullException.ThrowIfNull(components);
-
-        var changedCollection = Components.Replace(components);
-
-        return new(Id, changedCollection);
-    }
-
-    /// <inheritdoc/>
-    public override Player Remove<T>()
-    {
-        var changedCollection = Components.Remove<T>();
-
-        return new(Id, changedCollection);
-    }
-
     /// <inheritdoc/>
     public bool Equals(Player? other) =>
         other is not null

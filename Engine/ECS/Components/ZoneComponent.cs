@@ -5,30 +5,7 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Components;
 /// <summary>
 /// Space component.
 /// </summary>
-public sealed record class ZoneComponent : ComponentBase
-{
-    /// <summary>
-    /// Current space id.
-    /// </summary>
-    public EntityId CurrentZoneId { get; private set; }
-
-    /// <summary>
-    /// Creates new instance of <see cref="ZoneComponent"/>.
-    /// </summary>
-    /// <param name="spaceId">
-    /// Space id.
-    /// </param>
-    public ZoneComponent(EntityId spaceId)
-    {
-        CurrentZoneId = spaceId;
-    }
-
-    /// <summary>
-    /// Changes space id.
-    /// </summary>
-    /// <param name="newSpaceId">
-    /// New space id.
-    /// </param>
-    public ZoneComponent ChangeZoneId(EntityId newSpaceId) => 
-        this with { CurrentZoneId = newSpaceId };
-}
+/// <param name="CurrentZoneId">
+/// Current zone id.
+/// </param>
+public sealed record class ZoneComponent(EntityId CurrentZoneId) : ComponentBase;

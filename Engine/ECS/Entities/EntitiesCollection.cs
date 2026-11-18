@@ -6,9 +6,12 @@ public sealed class EntitiesCollection : IEntitiesCollection
 {
     private readonly Dictionary<Type, IDictionary> _entities = [];
 
+    /// <inheritdoc/>
+    public bool IsEmpty => _entities.Count == 0;
+
     public EntitiesCollection() { }
 
-    private EntitiesCollection(IEnumerable<EntityBase> entities)
+    public EntitiesCollection(IEnumerable<EntityBase> entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
 
@@ -18,61 +21,35 @@ public sealed class EntitiesCollection : IEntitiesCollection
                 g => (IDictionary)g.ToDictionary(e => e.Id));
     }
 
-    private EntitiesCollection(Dictionary<Type, IDictionary> entities)
+    /// <inheritdoc/>
+    public void Add(params IEnumerable<EntityBase> entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
 
-        _entities = entities;
-    }
-
-    public bool IsEmpty => _entities.Count == 0;
-
-    public void Add<TEntity>(TEntity entity)
-        where TEntity : EntityBase
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entityType = entity.GetType();
-
-        if (!_entities.TryGetValue(entityType, out var dict))
+        foreach (var entity in entities)
         {
-            _entities[entityType] = new Dictionary<EntityId, TEntity>()
+            var entityType = entity.GetType();
+
+            if (_entities.TryGetValue(entityType, out var value))
             {
-                { entity.Id, entity }
-            };
-
-            return;
+                ((IDictionary<EntityId, EntityBase>)value)[entity.Id] = entity;
+            }
+            else
+            {
+                _entities[entityType] = new Dictionary<EntityId, EntityBase>()
+                {
+                    { entity.Id, entity },
+                };
+            }
         }
-
-        var entityDict = (Dictionary<EntityId, TEntity>)dict;
-
-        if (entityDict.ContainsKey(entity.Id))
-        {
-            throw new InvalidOperationException(
-                $"Entity {entityType.Name} with id {entity.Id.Value} already exists.");
-        }
-
-        entityDict[entity.Id] = entity;
     }
 
-    public void Replace<TEntity>(TEntity replacement)
-        where TEntity : EntityBase
-    {
-        ArgumentNullException.ThrowIfNull(replacement);
+    /// <inheritdoc/>
+    public void Remove(EntityBase entity) => 
+        _ = ((IDictionary<EntityId, EntityBase>)_entities[entity.GetType()])
+            .Remove(entity.Id);
 
-        var entityType = replacement.GetType();
-
-        if (!_entities.TryGetValue(entityType, out var dict)
-            || !((Dictionary<EntityId, TEntity>)dict).ContainsKey(replacement.Id))
-        {
-            throw new InvalidOperationException(
-                $"Entity {entityType.Name} with id {replacement.Id.Value} not found.");
-        }
-
-        ((Dictionary<EntityId, TEntity>)dict)[replacement.Id] = replacement;
-    }
-
-    public TEntity Get<TEntity>(EntityId id)
+    public EditableEntity<TEntity> Get<TEntity>(EntityId id)
         where TEntity : EntityBase
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
@@ -80,10 +57,20 @@ public sealed class EntitiesCollection : IEntitiesCollection
             throw new InvalidOperationException();
         }
 
-        return ((IDictionary<EntityId, TEntity>)dict)[id];
+        return new((TEntity)((IDictionary<EntityId, EntityBase>)dict)[id]);
     }
 
-    public IEnumerable<TEntity> Query<TEntity>()
+    TEntity IReadOnlyEntitiesCollection.Get<TEntity>(EntityId id)
+    {
+        if (!_entities.TryGetValue(typeof(TEntity), out var dict))
+        {
+            throw new InvalidOperationException();
+        }
+
+        return (TEntity)((IDictionary<EntityId, EntityBase>)dict)[id];
+    }
+
+    public IEnumerable<EditableEntity<TEntity>> Query<TEntity>()
         where TEntity : EntityBase
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
@@ -91,10 +78,20 @@ public sealed class EntitiesCollection : IEntitiesCollection
             return [];
         }
 
-        return (IEnumerable<TEntity>)dict!.Values;
+        return ((IDictionary<EntityId, EntityBase>)dict).Values
+            .Cast<TEntity>()
+            .Select(x => new EditableEntity<TEntity>(x));
     }
 
-    public IEntitiesCollection ToCollection() => new EntitiesCollection(_entities);
+    IEnumerable<TEntity> IReadOnlyEntitiesCollection.Query<TEntity>()
+    {
+        if (!_entities.TryGetValue(typeof(TEntity), out var dict))
+        {
+            return [];
+        }
+
+        return ((IDictionary<EntityId, EntityBase>)dict).Values.Cast<TEntity>();
+    }
 
     public IEnumerator<EntityBase> GetEnumerator() => 
         _entities.Values
@@ -102,4 +99,5 @@ public sealed class EntitiesCollection : IEntitiesCollection
             .GetEnumerator();
     
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    
 }

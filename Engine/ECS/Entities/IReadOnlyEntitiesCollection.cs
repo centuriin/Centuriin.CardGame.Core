@@ -9,6 +9,4 @@ public interface IReadOnlyEntitiesCollection : IEnumerable<EntityBase>
 
     public IEnumerable<TEntity> Query<TEntity>()
         where TEntity : EntityBase;
-
-    public IEntitiesCollection ToCollection();
 }

@@ -5,7 +5,7 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public interface IZoneFactory
 {
-    public IReadOnlyCollection<Zone> Create(
+    public IReadOnlyCollection<EditableEntity<Zone>> Create(
         IReadOnlyCollection<ZoneTemplate> templates,
         int activePlayersCount);
 }

@@ -5,6 +5,6 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public interface ICardFactory
 {
-    public IReadOnlyCollection<Card> Create(
+    public IReadOnlyCollection<EditableEntity<Card>> Create(
         IReadOnlyCollection<CardTemplate> templates);
 }

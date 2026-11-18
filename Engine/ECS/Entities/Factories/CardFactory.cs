@@ -6,18 +6,18 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public sealed class CardFactory : ICardFactory
 {
-    public IReadOnlyCollection<Card> Create(
+    public IReadOnlyCollection<EditableEntity<Card>> Create(
         IReadOnlyCollection<CardTemplate> templates)
     {
-        var cards = new List<Card>(templates.Count);
+        var cards = new List<EditableEntity<Card>>(templates.Count);
 
         var entityId = EntityId.Default;
         foreach (var template in templates)
         {
             cards.Add(
-                new Card(
+                new(new Card(
                     ++entityId,
-                    [.. template.Components, new TemplateComponent(template.Id)]));
+                    [.. template.Components, new TemplateComponent(template.Id)])));
         }
 
         return cards;

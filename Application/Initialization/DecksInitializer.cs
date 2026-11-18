@@ -38,7 +38,7 @@ public sealed class DecksInitializer : IGameEntityInitializer
 
         var deckZones = initialStateContext.Entities
             .Query<Zone>()
-            .WithComponent<ZoneRoleComponent>(x => x.Role == ZoneRole.Deck);
+            .WithComponent((ZoneRoleComponent x) => x.Role == ZoneRole.Deck);
 
         foreach (var zone in deckZones)
         {
@@ -56,10 +56,11 @@ public sealed class DecksInitializer : IGameEntityInitializer
 
             foreach (var card in cards)
             {
-                initialStateContext.Entities.Add(
-                    card.Add(
-                        new ZoneComponent(zone.Id),
-                        new OwnerComponent(ownerId)));
+                card.Set(
+                    new ZoneComponent(zone.Id),
+                    new OwnerComponent(ownerId));
+
+                initialStateContext.Entities.Add(card);
             }
         }
     }

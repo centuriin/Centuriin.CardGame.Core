@@ -3,8 +3,4 @@
 /// <summary>
 /// Base class for components.
 /// </summary>
-public abstract record class ComponentBase
-{
-    /// <inheritdoc/>
-    public ComponentBase Copy() => this with { };
-}
+public abstract record class ComponentBase;

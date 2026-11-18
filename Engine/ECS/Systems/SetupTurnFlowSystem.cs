@@ -22,7 +22,7 @@ public sealed class SetupTurnFlowSystem :
 
         var orderedPlayerIds = readOnlyGameState.Entities
             .Query<Player>()
-            .WithComponent<PlayerRoleComponent>(x => x.Role == PlayerRole.Participant)
+            .WithComponent((PlayerRoleComponent x) => x.Role == PlayerRole.Participant)
             .Select(x => x.Id)
             .Shuffle()
             .ToList();

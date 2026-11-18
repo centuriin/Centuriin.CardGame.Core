@@ -2,9 +2,13 @@
 
 public interface IEntitiesCollection : IReadOnlyEntitiesCollection
 {
-    public void Add<TEntity>(TEntity entity)
+    public new EditableEntity<TEntity> Get<TEntity>(EntityId id)
         where TEntity : EntityBase;
 
-    public void Replace<TEntity>(TEntity replacement)
+    public void Add(params IEnumerable<EntityBase> entities);
+
+    public void Remove(EntityBase entity);
+
+    public new IEnumerable<EditableEntity<TEntity>> Query<TEntity>()
         where TEntity : EntityBase;
 }

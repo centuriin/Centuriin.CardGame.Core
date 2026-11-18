@@ -34,7 +34,7 @@ public sealed class DealerSystem :
 
         foreach (var zone in readOnlyGameState.Entities
             .Query<Zone>()
-            .WithComponent<HasPrimaryCards>())
+            .WithComponent<Zone, HasPrimaryCards>())
         {
             var cardCount = zone.Get<HasPrimaryCards>().Count;
             var zoneOwner = zone.Get<OwnerComponent>().CurrentOwnerId;

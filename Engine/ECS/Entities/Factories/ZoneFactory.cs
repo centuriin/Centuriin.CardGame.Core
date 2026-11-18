@@ -6,11 +6,11 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
 public sealed class ZoneFactory : IZoneFactory
 {
-    public IReadOnlyCollection<Zone> Create(
+    public IReadOnlyCollection<EditableEntity<Zone>> Create(
         IReadOnlyCollection<ZoneTemplate> templates,
         int activePlayersCount)
     {
-        var zones = new List<Zone>(templates.Count);
+        var zones = new List<EditableEntity<Zone>>(templates.Count);
 
         var entityId = EntityId.Default;
         foreach (var template in templates)
@@ -31,10 +31,11 @@ public sealed class ZoneFactory : IZoneFactory
         return zones;
     }
 
-    private static Zone CreateZone(
+    private static EditableEntity<Zone> CreateZone(
         ZoneTemplate template,
         EntityId zoneId)
         => new(
-            zoneId,
-            [.. template.Components, new TemplateComponent(template.Id)]);
+            new(
+                zoneId,
+                [.. template.Components, new TemplateComponent(template.Id)]));
 }
