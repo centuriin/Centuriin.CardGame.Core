@@ -10,6 +10,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Systems;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events;
 using Centuriin.CardGame.Core.Engine.Events.Dispatching;
 using Centuriin.CardGame.Core.Engine.Loading;
@@ -112,8 +113,10 @@ public static class Registrations
 
     private static IServiceCollection AddFactories(this IServiceCollection services) =>
         services
-            .AddScoped<IZoneFactory, ZoneFactory>()
-            .AddScoped<ICardFactory, CardFactory>()
+            .AddScoped<IEntityIdProvider, EntityIdProvider>()
+            .AddScoped<IEntityFactory<Zone, ZoneTemplate>, ZoneFactory>()
+            .AddScoped<IEntityFactory<Card, CardTemplate>, CardFactory>()
+            .AddScoped<IEntityFactory<Player, PlayerTemplate>, PlayerFactory>()
 
             .AddSingleton<IGameSessionFactory, GameSessionFactory>()
 

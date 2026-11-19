@@ -1,13 +1,21 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
-using Centuriin.CardGame.Core.Engine.ECS.Components.Players;
-using Centuriin.CardGame.Core.Engine.ECS.Entities;
+using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
 public sealed class PlayersInitializer : IGameEntityInitializer
 {
+    private readonly IEntityFactory<Player, PlayerTemplate> _factory;
+
+    public PlayersInitializer(IEntityFactory<Player, PlayerTemplate> factory)
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+        _factory = factory;
+    }
+
     public Task InitializeAsync(
         GameDescription gameDescription,
         IInitialStateContext initialStateContext,
@@ -18,7 +26,6 @@ public sealed class PlayersInitializer : IGameEntityInitializer
 
         token.ThrowIfCancellationRequested();
 
-        var entityId = new EntityId(1);
         foreach (var id in gameDescription.PlayerIds)
         {
             if (id == PlayerId.System)
@@ -27,14 +34,8 @@ public sealed class PlayersInitializer : IGameEntityInitializer
                 continue;
             }
 
-            var player = new Player(
-                entityId++, 
-                [
-                    new PlayerRoleComponent(PlayerRole.Participant),
-                    new PlayerIdentifierComponent(id)
-                ]);
-
-            initialStateContext.Entities.Add(player);
+            initialStateContext.Entities.Add(
+                _factory.Create(PlayerTemplate.CreateDefault(id)));
         }
 
         return Task.CompletedTask;

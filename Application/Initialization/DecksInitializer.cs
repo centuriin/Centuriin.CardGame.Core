@@ -3,9 +3,11 @@ using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.ECS.Components;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Zones;
+using Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
+using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
@@ -13,17 +15,17 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 public sealed class DecksInitializer : IGameEntityInitializer
 {
     private readonly IDecksRepository _decksRepository;
-    private readonly ICardFactory _cardsFactory;
+    private readonly IEntityFactory<Card, CardTemplate> _factory;
 
     public DecksInitializer(
         IDecksRepository decksRepository,
-        ICardFactory cardsRepository)
+        IEntityFactory<Card, CardTemplate> factory)
     {
         ArgumentNullException.ThrowIfNull(decksRepository);
         _decksRepository = decksRepository;
 
-        ArgumentNullException.ThrowIfNull(cardsRepository);
-        _cardsFactory = cardsRepository;
+        ArgumentNullException.ThrowIfNull(factory);
+        _factory = factory;
     }
 
     public async Task InitializeAsync(
@@ -52,16 +54,12 @@ public sealed class DecksInitializer : IGameEntityInitializer
                     .PlayerId,
                 token);
 
-            var cards = _cardsFactory.Create(deckTemplates);
-
-            foreach (var card in cards)
-            {
-                card.Set(
+            var cards = _factory.Create(deckTemplates)
+                .Select(x => x.Set(
                     new ZoneComponent(zone.Id),
-                    new OwnerComponent(ownerId));
+                    new OwnerComponent(ownerId)));
 
-                initialStateContext.Entities.Add(card);
-            }
+            initialStateContext.Entities.Add(cards);
         }
     }
 }

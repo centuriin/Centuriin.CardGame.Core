@@ -18,7 +18,12 @@ public readonly struct EditableEntity<TEntity>
     /// </summary>
     public EntityId Id => _entity.Id;
 
-    public EditableEntity(TEntity entity)
+    /// <summary>
+    /// Wrapped entity.
+    /// </summary>
+    public TEntity Entity => _entity;
+
+    internal EditableEntity(TEntity entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
         _entity = entity;
@@ -36,7 +41,14 @@ public readonly struct EditableEntity<TEntity>
     /// <param name="components">
     /// Components.
     /// </param>
-    public void Set(params IEnumerable<ComponentBase> components) => _entity.Set(components);
+    public EditableEntity<TEntity> Set(params IEnumerable<ComponentBase> components)
+    {
+        ArgumentNullException.ThrowIfNull(components);
+
+        _entity.Set(components);
+
+        return this;
+    }
 
     /// <summary>
     /// Removes component from entity.
@@ -44,7 +56,12 @@ public readonly struct EditableEntity<TEntity>
     /// <typeparam name="T">
     /// Component type.
     /// </typeparam>
-    public void Remove<T>() where T : ComponentBase => _entity.Remove<T>();
+    public EditableEntity<TEntity> Remove<T>() where T : ComponentBase
+    {
+        _entity.Remove<T>();
+
+        return this;
+    }
 
     public static implicit operator TEntity(EditableEntity<TEntity> c) => c._entity;
 }

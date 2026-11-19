@@ -4,22 +4,13 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
-public sealed class CardFactory : ICardFactory
+public sealed class CardFactory : EntityFactoryBase<Card, CardTemplate>
 {
-    public IReadOnlyCollection<EditableEntity<Card>> Create(
-        IReadOnlyCollection<CardTemplate> templates)
+    public CardFactory(IEntityIdProvider entityIdProvider) 
+        : base(entityIdProvider)
     {
-        var cards = new List<EditableEntity<Card>>(templates.Count);
-
-        var entityId = EntityId.Default;
-        foreach (var template in templates)
-        {
-            cards.Add(
-                new(new Card(
-                    ++entityId,
-                    [.. template.Components, new TemplateComponent(template.Id)])));
-        }
-
-        return cards;
     }
+
+    protected override Card CreateEntity(EntityId id, CardTemplate template)
+        => new(id, [.. template.Components, new TemplateComponent(template.Id)]);
 }

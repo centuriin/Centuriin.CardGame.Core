@@ -4,38 +4,13 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 
-public sealed class ZoneFactory : IZoneFactory
+public sealed class ZoneFactory : EntityFactoryBase<Zone, ZoneTemplate>
 {
-    public IReadOnlyCollection<EditableEntity<Zone>> Create(
-        IReadOnlyCollection<ZoneTemplate> templates,
-        int activePlayersCount)
+    public ZoneFactory(IEntityIdProvider entityIdProvider) 
+        : base(entityIdProvider)
     {
-        var zones = new List<EditableEntity<Zone>>(templates.Count);
-
-        var entityId = EntityId.Default;
-        foreach (var template in templates)
-        {
-            if (template.Scope is ZoneScope.Singleton)
-            {
-                zones.Add(CreateZone(template, ++entityId));
-            }
-            else if (template.Scope is ZoneScope.PerPlayer)
-            {
-                for (var i = 0; i < activePlayersCount; i++)
-                {
-                    zones.Add(CreateZone(template, ++entityId));
-                }
-            }
-        }
-
-        return zones;
     }
 
-    private static EditableEntity<Zone> CreateZone(
-        ZoneTemplate template,
-        EntityId zoneId)
-        => new(
-            new(
-                zoneId,
-                [.. template.Components, new TemplateComponent(template.Id)]));
+    protected override Zone CreateEntity(EntityId id, ZoneTemplate template) => 
+        new(id, [.. template.Components, new TemplateComponent(template.Id)]);
 }

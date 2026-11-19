@@ -5,10 +5,9 @@ namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
 
 public sealed class Player : EntityBase, IEquatable<Player>
 {
-    public static Player System { get; } =
+    public static Player System =>
         new(
             EntityId.Default,
-            (IEnumerable<ComponentBase>)
             [
                 new PlayerRoleComponent(PlayerRole.Bank), 
                 PlayerIdentifierComponent.System

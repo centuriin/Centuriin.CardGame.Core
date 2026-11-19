@@ -22,6 +22,11 @@ public sealed class EntitiesCollection : IEntitiesCollection
     }
 
     /// <inheritdoc/>
+    public void Add<TEntity>(params IEnumerable<EditableEntity<TEntity>> entities)
+        where TEntity : EntityBase
+        => Add(entities.Select(x => x.Entity));
+
+    /// <inheritdoc/>
     public void Add(params IEnumerable<EntityBase> entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -99,5 +104,4 @@ public sealed class EntitiesCollection : IEntitiesCollection
             .GetEnumerator();
     
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    
 }

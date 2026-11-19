@@ -15,17 +15,17 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 public sealed class ZonesInitializer : IGameEntityInitializer
 {
     private readonly ITemplatesRepository<ZoneTemplate> _zoneTemplatesRepository;
-    private readonly IZoneFactory _zonesFactory;
+    private readonly IEntityFactory<Zone, ZoneTemplate> _factory;
 
     public ZonesInitializer(
         ITemplatesRepository<ZoneTemplate> zoneTemplatesRepository,
-        IZoneFactory zonesFactory)
+        IEntityFactory<Zone, ZoneTemplate> factory)
     {
         ArgumentNullException.ThrowIfNull(zoneTemplatesRepository);
         _zoneTemplatesRepository = zoneTemplatesRepository;
 
-        ArgumentNullException.ThrowIfNull(zonesFactory);
-        _zonesFactory = zonesFactory;
+        ArgumentNullException.ThrowIfNull(factory);
+        _factory = factory;
     }
 
     public async Task InitializeAsync(
@@ -38,13 +38,24 @@ public sealed class ZonesInitializer : IGameEntityInitializer
 
         token.ThrowIfCancellationRequested();
 
-        var zoneTemplateIds = await _zoneTemplatesRepository.GetTemplatesAsync(
+        var zoneTemplates = await _zoneTemplatesRepository.GetTemplatesAsync(
             gameDescription.GameTypeId,
             token);
 
-        var zones = _zonesFactory.Create(
-            zoneTemplateIds,
-            gameDescription.PlayerIds.Count(x => x != PlayerId.System));
+        var activePlayersCount = gameDescription.PlayerIds
+            .Count(x => x != PlayerId.System);
+
+        var templates = zoneTemplates
+            .Select(x =>
+                (x.Scope) switch
+                {
+                    ZoneScope.PerPlayer => Enumerable.Repeat(x, activePlayersCount),
+                    _ => [x]
+                })
+            .SelectMany(x => x)
+            .ToList();
+
+        var zones = _factory.Create(templates);
 
         AddLinksBetweenPlayersAndZones(
             initialStateContext,
@@ -58,10 +69,7 @@ public sealed class ZonesInitializer : IGameEntityInitializer
             PlayerRole.Bank,
             ZoneRole.Deck);
 
-        foreach (var zone in zones)
-        {
-            initialStateContext.Entities.Add(zone);
-        }
+        initialStateContext.Entities.Add(zones);
     }
 
     private static void AddLinksBetweenPlayersAndZones(
