@@ -53,7 +53,7 @@ public abstract class GameBase : IGame
     {
         ArgumentNullException.ThrowIfNull(batch);
 
-        if (batch.GameVersion >= Version)
+        if (Version >= batch.GameVersion)
         {
             throw new InvalidOperationException(
                 $"Batch version {batch.GameVersion.Value} should be greater than" +

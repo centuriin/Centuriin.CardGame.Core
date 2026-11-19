@@ -6,7 +6,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
-public sealed class PlayersInitializer : IGameEntityInitializer
+public sealed class PlayersInitializer : IGameInitializer
 {
     private readonly IEntityFactory<Player, PlayerTemplate> _factory;
 

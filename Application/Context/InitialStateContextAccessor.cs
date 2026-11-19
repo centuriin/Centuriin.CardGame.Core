@@ -13,13 +13,13 @@ public sealed class InitialStateContextAccessor :
 {
     private readonly IGameDescriptionRepository _descriptionRepository;
     private readonly IGameSnapshotsRepository _snapshotsRepository;
-    private readonly IEnumerable<IGameEntityInitializer> _entityInitializers;
+    private readonly IEnumerable<IGameInitializer> _entityInitializers;
     private readonly ICoreLogger<InitialStateContextAccessor> _logger;
 
     public InitialStateContextAccessor(
         IGameDescriptionRepository descriptionRepository,
         IGameSnapshotsRepository snapshotsRepository,
-        IEnumerable<IGameEntityInitializer> entityInitializers,
+        IEnumerable<IGameInitializer> entityInitializers,
         ICoreLogger<InitialStateContextAccessor> logger)
     {
         ArgumentNullException.ThrowIfNull(descriptionRepository);

@@ -4,9 +4,9 @@ using Centuriin.CardGame.Core.Engine.Context;
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
 /// <summary>
-/// Describes game loader for game initialization before starting.
+/// Describes game initializer for game initialization before starting.
 /// </summary>
-public interface IGameEntityInitializer
+public interface IGameInitializer
 {
     public Task InitializeAsync(
         GameDescription gameDescription,

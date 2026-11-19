@@ -12,7 +12,7 @@ using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
-public sealed class DecksInitializer : IGameEntityInitializer
+public sealed class DecksInitializer : IGameInitializer
 {
     private readonly IDecksRepository _decksRepository;
     private readonly IEntityFactory<Card, CardTemplate> _factory;

@@ -62,9 +62,9 @@ public static class Registrations
 
     private static IServiceCollection AddInitialization(this IServiceCollection services) =>
         services
-            .AddScoped<IGameEntityInitializer, PlayersInitializer>()
-            .AddScoped<IGameEntityInitializer, ZonesInitializer>()
-            .AddScoped<IGameEntityInitializer, DecksInitializer>();
+            .AddScoped<IGameInitializer, PlayersInitializer>()
+            .AddScoped<IGameInitializer, ZonesInitializer>()
+            .AddScoped<IGameInitializer, DecksInitializer>();
 
     private static IServiceCollection AddLoading(this IServiceCollection services) =>
         services
