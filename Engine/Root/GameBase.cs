@@ -53,6 +53,13 @@ public abstract class GameBase : IGame
     {
         ArgumentNullException.ThrowIfNull(batch);
 
+        if (batch.GameVersion != Version)
+        {
+            throw new InvalidOperationException(
+                $"Batch version {batch.GameVersion.Value} should be greater than" +
+                $" current version {Version.Value}");
+        }
+
         ThrowIfNotRunning();
 
         foreach (var @event in batch)
@@ -66,6 +73,13 @@ public abstract class GameBase : IGame
     public IEngineResult Execute(ICommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        if (command.GameId != Id)
+        {
+            throw new InvalidOperationException(
+                $"Command game id {command.GameId.Value} should be equal to" +
+                $" current game id {Id.Value}");
+        }
 
         ThrowIfNotRunning();
 
