@@ -14,5 +14,18 @@ public readonly record struct GameVersion : IComparable<GameVersion>
 
     public int CompareTo(GameVersion other) => Value.CompareTo(other);
 
-    public static GameVersion operator ++(GameVersion version) => new(version.Value + 1);
+    public static GameVersion operator ++(GameVersion version) => 
+        new(version.Value + 1);
+
+    public static bool operator >(GameVersion first, GameVersion second) => 
+        first.Value > second.Value;
+
+    public static bool operator >=(GameVersion first, GameVersion second) =>
+        first.Value >= second.Value;
+
+    public static bool operator <(GameVersion first, GameVersion second) => 
+        first.Value > second.Value;
+
+    public static bool operator <=(GameVersion first, GameVersion second) =>
+        first.Value <= second.Value;
 }

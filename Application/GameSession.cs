@@ -64,7 +64,6 @@ public sealed class GameSession : IGameSession
         await _dispatcher.PublishAsync(applicationEvent, token);
     }
 
-
     /// <inheritdoc/>
     public async Task ExecuteAsync(ICommand command, CancellationToken token)
     {
