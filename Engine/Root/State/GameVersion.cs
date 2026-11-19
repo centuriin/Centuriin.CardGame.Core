@@ -1,6 +1,6 @@
 ﻿namespace Centuriin.CardGame.Core.Engine.Root.State;
 
-public readonly record struct GameVersion
+public readonly record struct GameVersion : IComparable<GameVersion>
 {
     public static GameVersion Default { get; } = new(0);
 
@@ -11,6 +11,8 @@ public readonly record struct GameVersion
         ArgumentOutOfRangeException.ThrowIfNegative(value);
         Value = value;
     }
+
+    public int CompareTo(GameVersion other) => Value.CompareTo(other);
 
     public static GameVersion operator ++(GameVersion version) => new(version.Value + 1);
 }

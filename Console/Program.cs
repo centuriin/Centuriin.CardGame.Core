@@ -156,6 +156,9 @@ public sealed class GameSnapshotRepo : IGameSnapshotsRepository
         public GameVersion Version => GameVersion.Default;
 
         public required IReadOnlyEntitiesCollection Entities { get; init; }
+
+        public EntityId LastEntityId => Entities.MaxBy(x => x.Id)?.Id
+            ?? EntityId.Default;
     }
 }
 

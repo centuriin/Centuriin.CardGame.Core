@@ -12,5 +12,7 @@ public interface IGameSnapshot
 
     public GameVersion Version { get; }
 
+    public EntityId LastEntityId { get; }
+
     public IReadOnlyEntitiesCollection Entities { get; }
 }

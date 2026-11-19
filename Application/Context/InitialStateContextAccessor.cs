@@ -88,6 +88,9 @@ public sealed class InitialStateContextAccessor :
     {
         public required GameId GameId { get; set; }
 
+        public EntityId LastEntityId => Entities.MaxBy(x => x.Id)?.Id
+            ?? EntityId.Default;
+
         public IEntitiesCollection Entities { get; set; } = new EntitiesCollection();
     }
 }
