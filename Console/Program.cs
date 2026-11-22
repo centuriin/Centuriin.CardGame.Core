@@ -1,4 +1,7 @@
-﻿using Centuriin.CardGame.Core.Application;
+﻿using System.Diagnostics;
+
+using Centuriin.CardGame.Core.Application;
+using Centuriin.CardGame.Core.Application.Events;
 using Centuriin.CardGame.Core.Console;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
@@ -68,6 +71,19 @@ var g2 = await startup.StartupGameAsync(
 g2.Dispose();
 
 // todo
+
+public sealed class CommonHandler : IApplicationHandler<IGameApplicationEvent>
+{
+    public async Task HandleAsync(IGameApplicationEvent @event, CancellationToken token)
+        =>  Debug.WriteLine($"Handled {@event.GetType().Name} from common handler");
+}
+
+public sealed class ConcreteHandler : IApplicationHandler<GameRunningEvent>
+{
+    public async Task HandleAsync(GameRunningEvent @event, CancellationToken token) 
+        => Debug.WriteLine($"Handled {@event.GetType().Name} from concrete handler");
+}
+
 public sealed record class FakeCommand(GameId GameId, PlayerId Actor) : ICommand
 {
     public IGameEvent YieldGameEvent() => new GameStartedEvent(GameId);

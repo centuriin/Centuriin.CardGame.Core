@@ -68,7 +68,7 @@ public sealed class AsyncDispatcherTests
         // Act
         var exception = Record.Exception(() =>
             dispatcher.Unregister(
-                Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict)));
+                Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();
@@ -85,25 +85,25 @@ public sealed class AsyncDispatcherTests
 
         var calls = new List<string>();
 
-        var general = new Mock<IAsyncSubscriber<IGameEvent>>(MockBehavior.Strict);
-        general.Setup(x => x.OnEventAsync(@event, token))
+        var general = new Mock<IApplicationHandler<IGameEvent>>(MockBehavior.Strict);
+        general.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls.Add("first"))
             .Returns(Task.CompletedTask);
 
-        var first = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        first.Setup(x => x.OnEventAsync(@event, token))
+        var first = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        first.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls.Add("second"))
             .Returns(Task.CompletedTask);
 
-        var second = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        second.Setup(x => x.OnEventAsync(@event, token))
+        var second = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        second.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls.Add("third"))
             .Returns(Task.CompletedTask);
 
         await using var dispatcher = new AsyncDispatcher<IGameEvent>();
         dispatcher.Register(general.Object);
         dispatcher.Register(first.Object);
-        dispatcher.Register(Mock.Of<IAsyncSubscriber<TurnEndedEvent>>(MockBehavior.Strict));
+        dispatcher.Register(Mock.Of<IApplicationHandler<TurnEndedEvent>>(MockBehavior.Strict));
         dispatcher.Register(second.Object);
 
         // Act
@@ -126,8 +126,8 @@ public sealed class AsyncDispatcherTests
 
         var calls = new List<string>();
 
-        var first = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        first.Setup(x => x.OnEventAsync(@event, token))
+        var first = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        first.Setup(x => x.HandleAsync(@event, token))
             .Returns(async () =>
             {
                 calls.Add("first started");
@@ -137,8 +137,8 @@ public sealed class AsyncDispatcherTests
                 calls.Add("first completed");
             });
 
-        var second = new Mock<IAsyncSubscriber<IGameEvent>>(MockBehavior.Strict);
-        second.Setup(x => x.OnEventAsync(@event, token))
+        var second = new Mock<IApplicationHandler<IGameEvent>>(MockBehavior.Strict);
+        second.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls.Add("second"))
             .Returns(Task.CompletedTask);
 
@@ -169,11 +169,11 @@ public sealed class AsyncDispatcherTests
 
         var @event = new GameStartedEvent(new GameId(Guid.NewGuid()));
 
-        var removed = Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
+        var removed = Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
 
         var calls = 0;
-        var remaining = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        remaining.Setup(x => x.OnEventAsync(@event, token))
+        var remaining = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        remaining.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls++)
             .Returns(Task.CompletedTask);
 
@@ -199,11 +199,11 @@ public sealed class AsyncDispatcherTests
 
         var @event = new GameStartedEvent(new GameId(Guid.NewGuid()));
 
-        var removed = Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
+        var removed = Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
 
         var calls = 0;
-        var replacement = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        replacement.Setup(x => x.OnEventAsync(@event, token))
+        var replacement = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        replacement.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls++)
             .Returns(Task.CompletedTask);
 
@@ -253,7 +253,7 @@ public sealed class AsyncDispatcherTests
         // Act
         var exception = Record.Exception(() =>
             dispatcher.Register(
-                Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict)));
+                Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<ObjectDisposedException>();
@@ -264,7 +264,7 @@ public sealed class AsyncDispatcherTests
     public async Task CanNotUnregisterAfterDisposeAsync()
     {
         // Arrange
-        var subscriber = Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
+        var subscriber = Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
 
         var dispatcher = new AsyncDispatcher<IGameEvent>();
         dispatcher.Register(subscriber);
@@ -287,7 +287,7 @@ public sealed class AsyncDispatcherTests
         var @event = new GameStartedEvent(new GameId(Guid.NewGuid()));
 
         var dispatcher = new AsyncDispatcher<IGameEvent>();
-        dispatcher.Register(Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict));
+        dispatcher.Register(Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict));
 
         await dispatcher.DisposeAsync();
 
@@ -305,7 +305,7 @@ public sealed class AsyncDispatcherTests
     {
         // Arrange
         var dispatcher = new AsyncDispatcher<IGameEvent>();
-        dispatcher.Register(Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict));
+        dispatcher.Register(Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict));
 
         await dispatcher.DisposeAsync();
 
@@ -325,14 +325,14 @@ public sealed class AsyncDispatcherTests
         var token = TestContext.Current.CancellationToken;
 
         var calls = 0;
-        var first = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        first.Setup(x => x.OnEventAsync(@event, token))
+        var first = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        first.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls++)
             .Returns(Task.FromException(new InvalidOperationException()));
 
         await using var dispatcher = new AsyncDispatcher<IGameEvent>();
         dispatcher.Register(first.Object);
-        dispatcher.Register(Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict));
+        dispatcher.Register(Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict));
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
@@ -356,14 +356,14 @@ public sealed class AsyncDispatcherTests
         var @event = new GameStartedEvent(new GameId(Guid.NewGuid()));
 
         var calls = 0;
-        var first = new Mock<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict);
-        first.Setup(x => x.OnEventAsync(@event, token))
+        var first = new Mock<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict);
+        first.Setup(x => x.HandleAsync(@event, token))
             .Callback(() => calls++)
             .Returns(() => Task.FromCanceled(token));
 
         await using var dispatcher = new AsyncDispatcher<IGameEvent>();
         dispatcher.Register(first.Object);
-        dispatcher.Register(Mock.Of<IAsyncSubscriber<GameStartedEvent>>(MockBehavior.Strict));
+        dispatcher.Register(Mock.Of<IApplicationHandler<GameStartedEvent>>(MockBehavior.Strict));
 
         await cancellation.CancelAsync();
 

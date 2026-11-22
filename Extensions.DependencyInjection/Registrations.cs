@@ -1,5 +1,8 @@
-﻿using Centuriin.CardGame.Core.Application;
+﻿using System.Reflection;
+
+using Centuriin.CardGame.Core.Application;
 using Centuriin.CardGame.Core.Application.Context;
+using Centuriin.CardGame.Core.Application.Events;
 using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
@@ -30,7 +33,8 @@ public static class Registrations
     public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
-            .AddSingleton(typeof(IAsyncDispatcher<>), typeof(AsyncDispatcher<>))
+            .AddApplicationDispatcher<IGameApplicationEvent>(
+                AppDomain.CurrentDomain.GetAssemblies())
 
             .AddScoped<IGameStartupService, GameStartupService>()
 
@@ -123,4 +127,38 @@ public static class Registrations
             .AddScoped<ISystemFactory, SystemFactory>()
             .AddScoped<ICommandRuleFactory, RuleFactory>()
             .AddScoped<IGameFactory, GameFactory>();
+
+    private static IServiceCollection AddApplicationDispatcher<TEvent>(
+        this IServiceCollection services,
+        params Assembly[] assemblies)
+    {
+        var modules = assemblies.Distinct().ToArray();
+
+        var contracts = modules
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type =>
+                type.IsClass
+                && !type.IsAbstract
+                && !type.ContainsGenericParameters
+                && typeof(TEvent)
+                    .IsAssignableFrom(type))
+            .Select(type =>
+                typeof(IApplicationHandler<>).MakeGenericType(type))
+            .ToArray();
+
+        services.Scan(scan => scan
+            .FromAssemblies(modules)
+            .AddClasses(classes => classes
+                .AssignableTo(typeof(IApplicationHandler<>))
+                .Where(type => !type.ContainsGenericParameters))
+            .As(handlerType => contracts.Where(
+                contract => contract.IsAssignableFrom(handlerType)))
+            .WithScopedLifetime());
+
+        services.AddSingleton<
+            IApplicationDispatcher<TEvent>,
+            ApplicationDispatcher<TEvent>>();
+
+        return services;
+    }
 }

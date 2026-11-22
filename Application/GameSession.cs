@@ -17,14 +17,14 @@ public sealed class GameSession : IGameSession
 
     private readonly IGame _game;
     private readonly IGameContextAccessor<IRestorationContext> _restorationContextAccessor;
-    private readonly IAsyncDispatcher<IGameApplicationEvent> _dispatcher;
+    private readonly IApplicationDispatcher<IGameApplicationEvent> _dispatcher;
 
     public GameId GameId => _game.Id;
 
     public GameSession(
         IGame game,
         IGameContextAccessor<IRestorationContext> restorationContextAccessor,
-        IAsyncDispatcher<IGameApplicationEvent> dispatcher)
+        IApplicationDispatcher<IGameApplicationEvent> dispatcher)
     {
         ArgumentNullException.ThrowIfNull(game);
         _game = game;
@@ -49,19 +49,21 @@ public sealed class GameSession : IGameSession
 
         var engineResult = _game.Start();
 
-        IGameApplicationEvent applicationEvent = engineResult switch
+        await (engineResult switch
         {
             ExecutedResult executed =>
-                new GameRunningEvent(_game.Id, executed.Batch),
+                _dispatcher.PublishAsync(
+                    new GameRunningEvent(_game.Id, executed.Batch),
+                    token),
 
             PreparedResult prepared =>
-                new GamePreparedEvent(_game.Id, prepared.GameVersion),
+                _dispatcher.PublishAsync(
+                    new GamePreparedEvent(_game.Id, prepared.GameVersion),
+                    token),
 
             _ => throw new InvalidOperationException(
                 $"Engine result type {engineResult.GetType().Name} can't be handled.")
-        };
-
-        await _dispatcher.PublishAsync(applicationEvent, token);
+        });
     }
 
     /// <inheritdoc/>
@@ -77,22 +79,32 @@ public sealed class GameSession : IGameSession
 
         var engineResult = _game.Execute(command);
 
-        IGameApplicationEvent applicationEvent = engineResult switch
+        await (engineResult switch
         {
             RejectedResult rejected =>
-                new GameCommandDeclinedEvent(_game.Id, rejected.GameVersion, command),
+                _dispatcher.PublishAsync(
+                    new GameCommandDeclinedEvent(
+                        _game.Id, 
+                        rejected.GameVersion, 
+                        command),
+                    token),
 
             ExecutedResult executed =>
-                new NewGameEventsBatchCreatedEvent(_game.Id, executed.Batch),
+                _dispatcher.PublishAsync(
+                    new NewGameEventsBatchCreatedEvent(_game.Id, executed.Batch),
+                    token),
 
             PreparedResult prepared =>
-                new GameCommandPreparedEvent(_game.Id, prepared.GameVersion, command),
+                _dispatcher.PublishAsync(
+                    new GameCommandPreparedEvent(
+                        _game.Id, 
+                        prepared.GameVersion, 
+                        command),
+                    token),
 
             _ => throw new InvalidOperationException(
                 $"Engine result type {engineResult.GetType().Name} can't be handled.")
-        };
-
-        await _dispatcher.PublishAsync(applicationEvent, token);
+        });
     }
 
     public async Task RestoreAsync(CancellationToken token)
