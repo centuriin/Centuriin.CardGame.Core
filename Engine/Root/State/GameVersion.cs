@@ -24,7 +24,7 @@ public readonly record struct GameVersion : IComparable<GameVersion>
         first.Value >= second.Value;
 
     public static bool operator <(GameVersion first, GameVersion second) => 
-        first.Value > second.Value;
+        first.Value < second.Value;
 
     public static bool operator <=(GameVersion first, GameVersion second) =>
         first.Value <= second.Value;

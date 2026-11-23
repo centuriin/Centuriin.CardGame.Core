@@ -7,6 +7,8 @@ namespace Centuriin.CardGame.Core.Engine.Root;
 
 public abstract class GameBase : IGame
 {
+    private const int VERSION_INCREMENT = 1;
+
     private readonly IGameState _state;
     private readonly IGameEventApplier _eventApplier;
     private readonly ICommandValidator _commandValidator;
@@ -53,7 +55,7 @@ public abstract class GameBase : IGame
     {
         ArgumentNullException.ThrowIfNull(batch);
 
-        if (Version >= batch.GameVersion)
+        if (batch.GameVersion.Value - Version.Value != VERSION_INCREMENT)
         {
             throw new InvalidOperationException(
                 $"Batch version {batch.GameVersion.Value} should be greater than" +
