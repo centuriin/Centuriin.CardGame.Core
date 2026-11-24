@@ -37,13 +37,12 @@ builder.Services
 
     .AddCardGameCore()
     .UseInMemoryStorage()
+    .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameProfile>>>(
+        [new(new(1), new MyTestProfile())])
 
-    .AddSingleton<IGameTypeRepository, GameTypeRepo>()
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
     .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
-    .AddSingleton<IGameProfilesRepository, GameProfileRepo>()
-
     ;
 
 var host = builder.Build();
@@ -59,7 +58,7 @@ var g1 = await startup.StartupGameAsync(
     CancellationToken.None);
 
 await g1.ExecuteAsync(
-    new FakeCommand(g1.GameId, descriptionRepo.FirstGame.GameSettings.PlayerIds[1]),
+    new FakeCommand(g1.GameId, descriptionRepo.FirstGame.PlayerIds[1]),
     CancellationToken.None);
 
 g1.Dispose();
@@ -98,18 +97,10 @@ public sealed class DecksRepo : IDecksRepository
         => [.. DefaultCardTemplatesRepository.Templates36.Values];
 }
 
-public sealed class GameTypeRepo : IGameTypeRepository
-{
-    public Task<GameTypeId> GetGameTypeIdByKey(string key) =>
-        Task.FromResult<GameTypeId>(new(1));
-}
-
 public sealed class GameDescriptionRepo : IGameDescriptionRepository
 {
     private sealed class Settings : IGameSettings
     {
-        public required IReadOnlyList<PlayerId> PlayerIds { get; init; }
-
         public bool Equals(IGameSettings? other) => true;
     }
 
@@ -117,19 +108,15 @@ public sealed class GameDescriptionRepo : IGameDescriptionRepository
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            new Settings()
-            {
-                PlayerIds = [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]
-            });
+            new Settings(),
+            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
     public GameDescription SecondGame { get; } =
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            new Settings()
-            {
-                PlayerIds = [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]
-            });
+            new Settings(),
+            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
     public Task AddAsync(GameDescription gameDescription, CancellationToken token) => throw new NotImplementedException();
 
@@ -189,11 +176,4 @@ public sealed class GameSnapshotRepo : IGameSnapshotsRepository
         public EntityId LastEntityId => Entities.MaxBy(x => x.Id)?.Id
             ?? EntityId.Default;
     }
-}
-
-public sealed class GameProfileRepo : IGameProfilesRepository
-{
-    public async ValueTask<IGameProfile> GetProfileAsync(
-        GameId gameId,
-        CancellationToken token) => new MyTestProfile();
 }

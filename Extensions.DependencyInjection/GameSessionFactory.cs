@@ -19,10 +19,10 @@ internal sealed class GameSessionFactory : IGameSessionFactory
     }
 
     public async ValueTask<IGameSession> CreateAsync(
-        GameDescription setup,
+        GameDescription description,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(setup);
+        ArgumentNullException.ThrowIfNull(description);
 
         var scope = _serviceScopeFactory.CreateScope();
 
@@ -32,7 +32,7 @@ internal sealed class GameSessionFactory : IGameSessionFactory
 
             // todo rework
 
-            var gameId = setup.GameId;
+            var gameId = description.GameId;
 
             var gameLoaders = services.GetServices<IGameLoader>();
 
@@ -48,6 +48,7 @@ internal sealed class GameSessionFactory : IGameSessionFactory
                 scope,
                 ActivatorUtilities.CreateInstance<GameSession>(
                     services,
+                    description.GameTypeId,
                     game));
 
             return session;

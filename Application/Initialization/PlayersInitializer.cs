@@ -26,7 +26,7 @@ public sealed class PlayersInitializer : IGameInitializer
 
         token.ThrowIfCancellationRequested();
 
-        foreach (var id in gameDescription.GameSettings.PlayerIds)
+        foreach (var id in gameDescription.PlayerIds)
         {
             if (id == PlayerId.System)
             {

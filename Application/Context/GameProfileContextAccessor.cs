@@ -1,16 +1,15 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Context;
 
 public sealed class GameProfileContextAccessor :
     IGameContextAccessor<IGameProfileContext>
 {
-    private readonly IGameProfilesRepository _profilesRepository;
+    private readonly IGameProfilesCache _profilesRepository;
 
-    public GameProfileContextAccessor(IGameProfilesRepository profilesRepository)
+    public GameProfileContextAccessor(IGameProfilesCache profilesRepository)
     {
         ArgumentNullException.ThrowIfNull(profilesRepository);
         _profilesRepository = profilesRepository;

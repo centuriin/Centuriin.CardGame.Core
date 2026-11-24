@@ -10,15 +10,21 @@ public sealed class GameDescription
 
     public IGameSettings GameSettings { get; }
 
+    public IReadOnlyList<PlayerId> PlayerIds { get; }
+
     public GameDescription(
         GameId gameId,
         GameTypeId gameTypeId, 
-        IGameSettings gameSettings)
+        IGameSettings gameSettings,
+        IReadOnlyList<PlayerId> playerIds)
     {
         GameId = gameId;
         GameTypeId = gameTypeId;
 
         ArgumentNullException.ThrowIfNull(gameSettings);
         GameSettings = gameSettings;
+
+        ArgumentNullException.ThrowIfNull(playerIds);
+        PlayerIds = playerIds;
     }
 }

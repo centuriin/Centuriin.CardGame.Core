@@ -16,6 +16,8 @@ internal sealed class ScopedGameSession : IGameSession
 
     public GameId GameId => _session.GameId;
 
+    public GameTypeId GameTypeId => _session.GameTypeId;
+
     public ScopedGameSession(IServiceScope scope, GameSession session)
     {
         ArgumentNullException.ThrowIfNull(scope);

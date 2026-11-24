@@ -5,6 +5,6 @@ namespace Centuriin.CardGame.Core.Application;
 public interface IGameSessionFactory
 {
     public ValueTask<IGameSession> CreateAsync(
-        GameDescription setup,
+        GameDescription description,
         CancellationToken token);
 }

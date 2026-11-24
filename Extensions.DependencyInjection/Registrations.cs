@@ -38,7 +38,11 @@ public static class Registrations
                 AppDomain.CurrentDomain.GetAssemblies())
 
             .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
+            .AddSingleton<IGameProfilesCache, InMemoryGameProfilesCache>()
             .AddScoped<IGameStartupService, GameStartupService>()
+            .AddScoped(
+                typeof(IGameModuleAdapter<>),
+                typeof(GameModuleAdapter<>))
 
             .AddContexts()
             .AddInitialization()

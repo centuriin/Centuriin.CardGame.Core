@@ -6,6 +6,8 @@ public interface IGameSession : IDisposable
 {
     public GameId GameId { get; }
 
+    public GameTypeId GameTypeId { get; }
+
     public Task StartAsync(CancellationToken token);
 
     public Task ExecuteAsync(ICommand command, CancellationToken token);

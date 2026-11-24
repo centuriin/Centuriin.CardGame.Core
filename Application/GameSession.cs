@@ -21,11 +21,16 @@ public sealed class GameSession : IGameSession
 
     public GameId GameId => _game.Id;
 
+    public GameTypeId GameTypeId { get; }
+
     public GameSession(
+        GameTypeId gameTypeId,
         IGame game,
         IGameContextAccessor<IRestorationContext> restorationContextAccessor,
         IApplicationDispatcher<IGameApplicationEvent> dispatcher)
     {
+        GameTypeId = gameTypeId;
+
         ArgumentNullException.ThrowIfNull(game);
         _game = game;
 
@@ -84,8 +89,8 @@ public sealed class GameSession : IGameSession
             RejectedResult rejected =>
                 _dispatcher.PublishAsync(
                     new GameCommandDeclinedEvent(
-                        _game.Id, 
-                        rejected.GameVersion, 
+                        _game.Id,
+                        rejected.GameVersion,
                         command),
                     token),
 
@@ -97,8 +102,8 @@ public sealed class GameSession : IGameSession
             PreparedResult prepared =>
                 _dispatcher.PublishAsync(
                     new GameCommandPreparedEvent(
-                        _game.Id, 
-                        prepared.GameVersion, 
+                        _game.Id,
+                        prepared.GameVersion,
                         command),
                     token),
 

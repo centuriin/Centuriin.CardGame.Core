@@ -20,7 +20,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Extensions.DependencyInjection\Extensions.DependencyInjection.csproj" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.15" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\Inftrastructure\Storage\Abstractions\Abstractions.csproj" />
 	</ItemGroup>
 </Project>

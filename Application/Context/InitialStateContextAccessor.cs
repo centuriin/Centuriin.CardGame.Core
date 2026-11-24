@@ -13,13 +13,13 @@ public sealed class InitialStateContextAccessor :
 {
     private readonly IGameDescriptionRepository _descriptionRepository;
     private readonly IGameSnapshotsRepository _snapshotsRepository;
-    private readonly IEnumerable<IGameInitializer> _entityInitializers;
+    private readonly IGameModuleAdapter<IGameInitializer> _gameInitializerAdapter;
     private readonly ICoreLogger<InitialStateContextAccessor> _logger;
 
     public InitialStateContextAccessor(
         IGameDescriptionRepository descriptionRepository,
         IGameSnapshotsRepository snapshotsRepository,
-        IEnumerable<IGameInitializer> entityInitializers,
+        IGameModuleAdapter<IGameInitializer> gameInitializer,
         ICoreLogger<InitialStateContextAccessor> logger)
     {
         ArgumentNullException.ThrowIfNull(descriptionRepository);
@@ -28,8 +28,8 @@ public sealed class InitialStateContextAccessor :
         ArgumentNullException.ThrowIfNull(snapshotsRepository);
         _snapshotsRepository = snapshotsRepository;
 
-        ArgumentNullException.ThrowIfNull(entityInitializers);
-        _entityInitializers = entityInitializers;
+        ArgumentNullException.ThrowIfNull(gameInitializer);
+        _gameInitializerAdapter = gameInitializer;
 
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
@@ -60,13 +60,10 @@ public sealed class InitialStateContextAccessor :
 
         var context = new InitialStateContext { GameId = gameId };
 
-        foreach (var initializer in _entityInitializers)
-        {
-            await initializer.InitializeAsync(
-                gameDescription,
-                context,
-                token);
-        }
+        var initializer = await _gameInitializerAdapter
+            .GetDependencyAsync(gameDescription.GameTypeId, token);
+
+        await initializer.InitializeAsync(gameDescription, context, token);
 
         await _snapshotsRepository.AddAsync(
             gameDescription.GameId,
