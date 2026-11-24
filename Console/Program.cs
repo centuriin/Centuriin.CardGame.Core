@@ -59,7 +59,7 @@ var g1 = await startup.StartupGameAsync(
     CancellationToken.None);
 
 await g1.ExecuteAsync(
-    new FakeCommand(g1.GameId, descriptionRepo.FirstGame.PlayerIds[1]),
+    new FakeCommand(g1.GameId, descriptionRepo.FirstGame.GameSettings.PlayerIds[1]),
     CancellationToken.None);
 
 g1.Dispose();
@@ -106,17 +106,30 @@ public sealed class GameTypeRepo : IGameTypeRepository
 
 public sealed class GameDescriptionRepo : IGameDescriptionRepository
 {
+    private sealed class Settings : IGameSettings
+    {
+        public required IReadOnlyList<PlayerId> PlayerIds { get; init; }
+
+        public bool Equals(IGameSettings? other) => true;
+    }
+
     public GameDescription FirstGame { get; } =
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
+            new Settings()
+            {
+                PlayerIds = [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]
+            });
 
     public GameDescription SecondGame { get; } =
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
+            new Settings()
+            {
+                PlayerIds = [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]
+            });
 
     public Task AddAsync(GameDescription gameDescription, CancellationToken token) => throw new NotImplementedException();
 

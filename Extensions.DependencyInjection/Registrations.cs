@@ -23,6 +23,7 @@ using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Engine.Root;
 using Centuriin.CardGame.Core.Engine.Root.State;
+using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +37,7 @@ public static class Registrations
             .AddApplicationDispatcher<IGameApplicationEvent>(
                 AppDomain.CurrentDomain.GetAssemblies())
 
+            .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
             .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddContexts()

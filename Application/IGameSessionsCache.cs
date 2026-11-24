@@ -4,7 +4,7 @@ namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositori
 
 public interface IGameSessionsCache
 {
-    public ValueTask<IGameSession> GetSessionByIdAsync(GameId gameId, CancellationToken token);
+    public ValueTask<IGameSession?> FindAsync(GameId gameId, CancellationToken token);
 
     public ValueTask AddAsync(IGameSession session, CancellationToken token);
 

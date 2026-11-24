@@ -42,7 +42,7 @@ public sealed class ZonesInitializer : IGameInitializer
             gameDescription.GameTypeId,
             token);
 
-        var activePlayersCount = gameDescription.PlayerIds
+        var activePlayersCount = gameDescription.GameSettings.PlayerIds
             .Count(x => x != PlayerId.System);
 
         var templates = zoneTemplates

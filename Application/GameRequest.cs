@@ -2,19 +2,18 @@
 
 namespace Centuriin.CardGame.Core.Application;
 
-public sealed class GameRequest<TGameMarker>
-    where TGameMarker : IGameMarker
+public sealed class GameRequest
 {
     public GameTypeId GameTypeId { get; }
 
     public PlayerId PlayerId { get; }
 
-    public IGameSettings<TGameMarker> Settings { get; }
+    public IGameSettings Settings { get; }
 
     public GameRequest(
         GameTypeId gameTypeId, 
         PlayerId playerId, 
-        IGameSettings<TGameMarker> settings)
+        IGameSettings settings)
     {
         GameTypeId = gameTypeId;
         PlayerId = playerId;

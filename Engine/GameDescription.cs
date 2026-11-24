@@ -1,4 +1,6 @@
-﻿namespace Centuriin.CardGame.Core.Engine;
+﻿using Centuriin.CardGame.Core.Application;
+
+namespace Centuriin.CardGame.Core.Engine;
 
 public sealed class GameDescription
 {
@@ -6,17 +8,17 @@ public sealed class GameDescription
 
     public GameTypeId GameTypeId { get; }
 
-    public IReadOnlyList<PlayerId> PlayerIds { get; }
+    public IGameSettings GameSettings { get; }
 
     public GameDescription(
         GameId gameId,
         GameTypeId gameTypeId, 
-        IReadOnlyList<PlayerId> playerIds)
+        IGameSettings gameSettings)
     {
         GameId = gameId;
         GameTypeId = gameTypeId;
 
-        ArgumentNullException.ThrowIfNull(playerIds);
-        PlayerIds = playerIds;
+        ArgumentNullException.ThrowIfNull(gameSettings);
+        GameSettings = gameSettings;
     }
 }

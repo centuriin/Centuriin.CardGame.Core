@@ -5,6 +5,6 @@ namespace Centuriin.CardGame.Core.Application;
 public interface IGameStartupService
 {
     public Task<IGameSession> StartupGameAsync(
-        GameDescription setup,
+        GameDescription description,
         CancellationToken token);
 }
