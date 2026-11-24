@@ -10,14 +10,14 @@ public sealed class InMemoryGameProfilesCache : IGameProfilesCache
 {
     private readonly ConcurrentDictionary<GameTypeId, IGameProfile> _gameProfiles;
 
-    private readonly IGameSessionsCache _sessionsCache;
+    private readonly IGameDescriptionRepository _descriptionRepository;
 
     public InMemoryGameProfilesCache(
-        IGameSessionsCache sessionsCache,
+        IGameDescriptionRepository sessionsCache,
         IEnumerable<KeyValuePair<GameTypeId, IGameProfile>> profiles)
     {
         ArgumentNullException.ThrowIfNull(sessionsCache);
-        _sessionsCache = sessionsCache;
+        _descriptionRepository = sessionsCache;
 
         ArgumentNullException.ThrowIfNull(profiles);
         _gameProfiles = new(profiles);
@@ -29,11 +29,11 @@ public sealed class InMemoryGameProfilesCache : IGameProfilesCache
     {
         token.ThrowIfCancellationRequested();
 
-        var session = await _sessionsCache.FindAsync(gameId, token)
+        var description = await _descriptionRepository.FindAsync(gameId, token)
             ?? throw new InvalidOperationException(
                 $"Session for game {gameId.Value} not found.");
 
-        return await GetProfileAsync(session.GameTypeId, token);
+        return await GetProfileAsync(description.GameTypeId, token);
     }
 
     public async ValueTask<IGameProfile> GetProfileAsync(

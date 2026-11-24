@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Centuriin.CardGame.Core.Application.Initialization;
+﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 
@@ -19,8 +15,8 @@ internal sealed class GameInitializer : IGameInitializer
     }
 
     public async Task InitializeAsync(
-        GameDescription gameDescription, 
-        IInitialStateContext initialStateContext, 
+        GameDescription gameDescription,
+        IInitialStateContext initialStateContext,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(gameDescription);

@@ -3,11 +3,17 @@ using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 
-namespace Centuriin.CardGame.Core.Console;
+namespace Centuriin.CardGame.Core.Drunkard;
 
-public sealed class MyTestProfile : IGameProfile
+public sealed class GameProfile : IGameProfile
 {
-    public string Key => "TEST";
+    internal const string KEY = "drunkard";
+
+    public static GameProfile Instance { get; } = new();
+
+    public string Key => KEY;
+
+    private GameProfile() { }
 
     public void Configure(IConfigurableGamePipeline configurableGamePipeLine)
     {
