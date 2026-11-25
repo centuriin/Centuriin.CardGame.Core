@@ -7,10 +7,14 @@ using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Systems;
 
+/// <summary>
+/// Produces a randomly ordered cyclic sequence of participant turns at game startup.
+/// </summary>
 public sealed class SetupTurnFlowSystem :
     ISystem,
     IProducingSubscriber<GameStartedEvent>
 {
+    /// <inheritdoc/>
     public void OnEvent(
         GameStartedEvent @event,
         IReadOnlyGameState readOnlyGameState,

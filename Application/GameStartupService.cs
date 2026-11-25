@@ -1,13 +1,24 @@
 ﻿using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application;
 
+/// <summary>
+/// Creates, caches, and starts game sessions.
+/// </summary>
 public sealed class GameStartupService : IGameStartupService
 {
     private readonly IGameSessionsCache _sessionsCache;
     private readonly IGameSessionFactory _sessionFactory;
 
+    /// <summary>
+    /// Initializes a new <see cref="GameStartupService"/> instance.
+    /// </summary>
+    /// <param name="sessionsCache">
+    /// The cache containing active game sessions.
+    /// </param>
+    /// <param name="sessionFactory">
+    /// The factory used to create game sessions.
+    /// </param>
     public GameStartupService(
         IGameSessionsCache sessionsCache,
         IGameSessionFactory sessionFactory)
@@ -19,6 +30,7 @@ public sealed class GameStartupService : IGameStartupService
         _sessionFactory = sessionFactory;
     }
 
+    /// <inheritdoc/>
     public async Task<IGameSession> StartupGameAsync(
         GameDescription description, 
         CancellationToken token)

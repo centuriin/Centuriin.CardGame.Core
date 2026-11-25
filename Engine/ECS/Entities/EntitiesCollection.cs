@@ -2,6 +2,9 @@
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities;
 
+/// <summary>
+/// Stores entities by their concrete type and identifier.
+/// </summary>
 public sealed class EntitiesCollection : IEntitiesCollection
 {
     private readonly Dictionary<Type, IDictionary> _entities = [];
@@ -9,8 +12,20 @@ public sealed class EntitiesCollection : IEntitiesCollection
     /// <inheritdoc/>
     public bool IsEmpty => _entities.Count == 0;
 
+    /// <summary>
+    /// Creates an empty entity collection.
+    /// </summary>
     public EntitiesCollection() { }
 
+    /// <summary>
+    /// Creates a collection containing the supplied entity instances.
+    /// </summary>
+    /// <param name="entities">
+    /// The entities to process.
+    /// </param>
+    /// <remarks>
+    /// The entity instances are shared with the source; they are not cloned.
+    /// </remarks>
     public EntitiesCollection(IEnumerable<EntityBase> entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -54,6 +69,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
         _ = ((IDictionary<EntityId, EntityBase>)_entities[entity.GetType()])
             .Remove(entity.Id);
 
+    /// <inheritdoc/>
     public EditableEntity<TEntity> Get<TEntity>(EntityId id)
         where TEntity : EntityBase
     {
@@ -65,6 +81,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return new((TEntity)((IDictionary<EntityId, EntityBase>)dict)[id]);
     }
 
+    /// <inheritdoc/>
     TEntity IReadOnlyEntitiesCollection.Get<TEntity>(EntityId id)
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
@@ -75,6 +92,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return (TEntity)((IDictionary<EntityId, EntityBase>)dict)[id];
     }
 
+    /// <inheritdoc/>
     public IEnumerable<EditableEntity<TEntity>> Query<TEntity>()
         where TEntity : EntityBase
     {
@@ -88,6 +106,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
             .Select(x => new EditableEntity<TEntity>(x));
     }
 
+    /// <inheritdoc/>
     IEnumerable<TEntity> IReadOnlyEntitiesCollection.Query<TEntity>()
     {
         if (!_entities.TryGetValue(typeof(TEntity), out var dict))
@@ -98,10 +117,12 @@ public sealed class EntitiesCollection : IEntitiesCollection
         return ((IDictionary<EntityId, EntityBase>)dict).Values.Cast<TEntity>();
     }
 
+    /// <inheritdoc/>
     public IEnumerator<EntityBase> GetEnumerator() => 
         _entities.Values
             .SelectMany(x => x.Values.OfType<EntityBase>())
             .GetEnumerator();
     
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

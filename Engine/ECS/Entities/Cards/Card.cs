@@ -17,6 +17,15 @@ public sealed class Card : EntityBase, IEquatable<Card>
     {
     }
 
+    /// <summary>
+    /// Initializes a new <see cref="Card"/> instance.
+    /// </summary>
+    /// <param name="id">
+    /// The entity identifier.
+    /// </param>
+    /// <param name="components">
+    /// The components assigned to the entity or template.
+    /// </param>
     public Card(EntityId id, IEnumerable<ComponentBase> components)
         : base(id, components)
     {

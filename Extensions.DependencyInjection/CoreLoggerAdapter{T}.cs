@@ -4,10 +4,22 @@ using MyEngine = Centuriin.CardGame.Core.Engine.Observability.Logging;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+/// <summary>
+/// Adapts Microsoft.Extensions.Logging to the engine logging contracts.
+/// </summary>
+/// <typeparam name="T">
+/// The type used as the logging category.
+/// </typeparam>
 internal sealed class CoreLoggerAdapter<T> : MyEngine.ICoreLogger<T>
 {
     private readonly ILogger<T> _logger;
 
+    /// <summary>
+    /// Initializes a new <see cref="CoreLoggerAdapter{T}"/> instance.
+    /// </summary>
+    /// <param name="logger">
+    /// The logger used for diagnostics.
+    /// </param>
     public CoreLoggerAdapter(ILogger<T> logger)
     {
         ArgumentNullException.ThrowIfNull(logger);

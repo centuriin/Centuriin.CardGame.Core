@@ -12,11 +12,23 @@ using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
+/// <summary>
+/// Creates cards from deck templates and places them in their owners' deck zones.
+/// </summary>
 public sealed class DecksInitializer : IGameInitializer
 {
     private readonly IDecksRepository _decksRepository;
     private readonly IEntityFactory<Card, CardTemplate> _factory;
 
+    /// <summary>
+    /// Initializes a new <see cref="DecksInitializer"/> instance.
+    /// </summary>
+    /// <param name="decksRepository">
+    /// The repository used to retrieve deck templates.
+    /// </param>
+    /// <param name="factory">
+    /// The factory used to create the required entities or rules.
+    /// </param>
     public DecksInitializer(
         IDecksRepository decksRepository,
         IEntityFactory<Card, CardTemplate> factory)
@@ -28,6 +40,7 @@ public sealed class DecksInitializer : IGameInitializer
         _factory = factory;
     }
 
+    /// <inheritdoc/>
     public async Task InitializeAsync(
         GameDescription gameDescription,
         IInitialStateContext initialStateContext,

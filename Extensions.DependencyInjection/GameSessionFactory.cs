@@ -7,17 +7,27 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+/// <summary>
+/// Loads and creates an authoritative game in a dedicated dependency injection scope.
+/// </summary>
 internal sealed class GameSessionFactory : IGameSessionFactory
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
+    /// <summary>
+    /// Initializes a new <see cref="GameSessionFactory"/> instance.
+    /// </summary>
+    /// <param name="serviceScopeFactory">
+    /// The factory used to create a dedicated scope for each session.
+    /// </param>
     public GameSessionFactory(
-        IServiceScopeFactory serviceProvider)
+        IServiceScopeFactory serviceScopeFactory)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        _serviceScopeFactory = serviceProvider;
+        ArgumentNullException.ThrowIfNull(serviceScopeFactory);
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
+    /// <inheritdoc/>
     public async ValueTask<IGameSession> CreateAsync(
         GameDescription description,
         CancellationToken token)

@@ -1,7 +1,7 @@
 ﻿namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 
 /// <summary>
-/// Тип карты.
+/// Ранг карты.
 /// </summary>
 public enum CardRank : byte
 {

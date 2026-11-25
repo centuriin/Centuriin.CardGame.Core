@@ -18,7 +18,7 @@ using Centuriin.CardGame.Core.Engine.Events;
 using Centuriin.CardGame.Core.Engine.Events.Dispatching;
 using Centuriin.CardGame.Core.Engine.Loading;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Engine.Root;
@@ -29,8 +29,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+/// <summary>
+/// Registers the engine, application services, and game-scoped factories.
+/// </summary>
 public static class Registrations
 {
+    /// <summary>
+    /// Registers the common engine services, application services, contexts, and factories.
+    /// </summary>
+    /// <param name="services">
+    /// The service collection to configure.
+    /// </param>
+    /// <returns>
+    /// The service collection for further configuration.
+    /// </returns>
+    /// <remarks>
+    /// The host must also register game profiles, game-specific initializers, the required repositories,
+    /// and logging services. A restoration context accessor is required when restoration is used.
+    /// </remarks>
     public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
@@ -110,7 +126,7 @@ public static class Registrations
             .AddScoped(typeof(GameEventDispatcher))
             .AddScoped<IConsumingSubscriberDispatcher>(sp =>
                 sp.GetRequiredService<GameEventDispatcher>())
-            .AddScoped<IProducingSubcriberDispatcher>(sp =>
+            .AddScoped<IProducingSubscriberDispatcher>(sp =>
                 sp.GetRequiredService<GameEventDispatcher>())
 
             .AddScoped(typeof(GameState))

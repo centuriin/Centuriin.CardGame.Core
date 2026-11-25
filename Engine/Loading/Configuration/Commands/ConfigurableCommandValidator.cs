@@ -3,8 +3,11 @@ using System.Collections.Immutable;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
 
-namespace Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
+namespace Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 
+/// <summary>
+/// Builds per-command validation rules and appends general rules when frozen.
+/// </summary>
 internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidator
 {
     private bool _isFrozen;
@@ -13,6 +16,12 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
 
     private readonly Dictionary<Type, Func<ICommandRuleFactory, ICommandRule>> _generalRules = [];
 
+    /// <summary>
+    /// Prevents further configuration and combines command-specific and general rule factories.
+    /// </summary>
+    /// <returns>
+    /// The completed configurations in their configured order.
+    /// </returns>
     public IReadOnlyDictionary<Type, ImmutableList<Func<ICommandRuleFactory, ICommandRule>>> Freeze()
     {
         _isFrozen = true;
@@ -22,6 +31,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
             v => v.Value.Rules.Concat(_generalRules.Values).ToImmutableList());
     }
 
+    /// <inheritdoc/>
     public IConfigurableCommandValidator AddGeneralRule<TRule>() where TRule : ICommandRule<ICommand>
     {
         ThrowIfFrozen();
@@ -35,6 +45,7 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
         return this;
     }
 
+    /// <inheritdoc/>
     public IConfigurableCommandValidation<TCommand> AddValidation<TCommand>()
         where TCommand : ICommand
     {
@@ -59,15 +70,27 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
         if (_isFrozen)
         {
             throw new InvalidOperationException(
-                "Can not change frozen configuration.");
+                "Cannot change a frozen configuration.");
         }
     }
 
+    /// <summary>
+    /// Configures validation rules for a particular command type.
+    /// </summary>
     private interface IConfigurableCommandValidation
     {
+        /// <summary>
+        /// Gets the factories used to create this command's validation rules.
+        /// </summary>
         public List<Func<ICommandRuleFactory, ICommandRule>> Rules { get; }
     }
 
+    /// <summary>
+    /// Collects the rule factories associated with one command type.
+    /// </summary>
+    /// <typeparam name="TCommand">
+    /// The concrete command type.
+    /// </typeparam>
     private sealed class ConfigurableCommandValidation<TCommand> :
         IConfigurableCommandValidation<TCommand>,
         IConfigurableCommandValidation
@@ -77,12 +100,18 @@ internal sealed class ConfigurableCommandValidator : IConfigurableCommandValidat
 
         private readonly List<Func<ICommandRuleFactory, ICommandRule>> _rules = [];
 
+        /// <summary>
+        /// Gets the owner of this command validation configuration.
+        /// </summary>
         public required ConfigurableCommandValidator Configurable { get; init; }
 
+        /// <inheritdoc/>
         public IConfigurableCommandValidator CommandValidator => Configurable;
 
+        /// <inheritdoc/>
         public List<Func<ICommandRuleFactory, ICommandRule>> Rules => _rules;
 
+        /// <inheritdoc/>
         public IConfigurableCommandValidation<TCommand> AddRule<TRule>()
             where TRule : ICommandRule<TCommand>
         {

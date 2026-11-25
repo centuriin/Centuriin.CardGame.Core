@@ -2,16 +2,22 @@
 
 namespace Centuriin.CardGame.Core.Engine;
 
+/// <summary>
+/// Maintains the active player, queued turns, and an optional repeating player cycle.
+/// </summary>
 public sealed class TurnAutomat : ITurnAutomat
 {
     private List<EntityId> _players = [];
     private LinkedList<EntityId> _playersQueue = [];
 
+    /// <inheritdoc/>
     public bool IsCycled => _players.Count != 0;
 
+    /// <inheritdoc/>
     public EntityId ActivePlayer => _playersQueue.First?.Value
         ?? throw new InvalidOperationException();
 
+    /// <inheritdoc/>
     public void SetCycle(IReadOnlyCollection<EntityId> playerIds)
     {
         ArgumentNullException.ThrowIfNull(playerIds);
@@ -19,8 +25,10 @@ public sealed class TurnAutomat : ITurnAutomat
         _playersQueue = new LinkedList<EntityId>(_players);
     }
 
+    /// <inheritdoc/>
     public void DropCycle() => _players.Clear();
 
+    /// <inheritdoc/>
     public void MoveNext()
     {
         _playersQueue.RemoveFirst();
@@ -28,6 +36,7 @@ public sealed class TurnAutomat : ITurnAutomat
         FillCycleIfNeeded();
     }
 
+    /// <inheritdoc/>
     public void SetNext(params IReadOnlyCollection<EntityId> players)
     {
         ArgumentNullException.ThrowIfNull(players);
@@ -52,6 +61,7 @@ public sealed class TurnAutomat : ITurnAutomat
         }
     }
 
+    /// <inheritdoc/>
     public void DropQueueAfter(EntityId playerId)
     {
         var node = _playersQueue.Find(playerId)
@@ -63,7 +73,8 @@ public sealed class TurnAutomat : ITurnAutomat
         }
     }
 
-    public IEnumerable<EntityId> GetEnumarable() => _playersQueue;
+    /// <inheritdoc/>
+    public IEnumerable<EntityId> GetEnumerable() => _playersQueue;
 
     private void FillCycleIfNeeded()
     {

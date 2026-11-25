@@ -7,6 +7,9 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
 namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
 
+/// <summary>
+/// Provides the demonstration zone templates for the Drunkard prototype.
+/// </summary>
 internal sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplate>
 {
     // For drunkard
@@ -44,6 +47,7 @@ internal sealed class ZoneTemplatesRepository : ITemplatesRepository<ZoneTemplat
         }
         .ToFrozenDictionary();
 
+    /// <inheritdoc/>
     public async Task<IReadOnlyCollection<ZoneTemplate>> GetTemplatesAsync(
         GameTypeId gameTypeId,
         CancellationToken token) => DrunkardZones.Values;

@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
 // Todo: maybe need to create other DI collection for game 
+/// <summary>
+/// Owns a game session and the dependency injection scope used by that session.
+/// </summary>
 internal sealed class ScopedGameSession : IGameSession
 {
     private bool _isDisposed;
@@ -14,10 +17,21 @@ internal sealed class ScopedGameSession : IGameSession
     private readonly IServiceScope _scope;
     private readonly GameSession _session;
 
+    /// <inheritdoc/>
     public GameId GameId => _session.GameId;
 
+    /// <inheritdoc/>
     public GameTypeId GameTypeId => _session.GameTypeId;
 
+    /// <summary>
+    /// Initializes a new <see cref="ScopedGameSession"/> instance.
+    /// </summary>
+    /// <param name="scope">
+    /// The dependency injection scope owned by the session.
+    /// </param>
+    /// <param name="session">
+    /// The game session associated with the operation.
+    /// </param>
     public ScopedGameSession(IServiceScope scope, GameSession session)
     {
         ArgumentNullException.ThrowIfNull(scope);
@@ -27,6 +41,7 @@ internal sealed class ScopedGameSession : IGameSession
         _session = session;
     }
 
+    /// <inheritdoc/>
     public async Task StartAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -36,6 +51,7 @@ internal sealed class ScopedGameSession : IGameSession
         await _session.StartAsync(token);
     }
 
+    /// <inheritdoc/>
     public async Task ExecuteAsync(ICommand command, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -47,6 +63,7 @@ internal sealed class ScopedGameSession : IGameSession
         await _session.ExecuteAsync(command, token);
     }
 
+    /// <inheritdoc/>
     public async Task RestoreAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -56,6 +73,7 @@ internal sealed class ScopedGameSession : IGameSession
         await _session.RestoreAsync(token);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (_isDisposed)

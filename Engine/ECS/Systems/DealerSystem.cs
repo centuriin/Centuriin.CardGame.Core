@@ -10,10 +10,14 @@ using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Systems;
 
+/// <summary>
+/// Produces the initial card-dealing events for zones that request starting cards.
+/// </summary>
 public sealed class DealerSystem :
     ISystem,
     IProducingSubscriber<GameStartedEvent>
 {
+    /// <inheritdoc/>
     public void OnEvent(
         GameStartedEvent @event,
         IReadOnlyGameState readOnlyGameState,

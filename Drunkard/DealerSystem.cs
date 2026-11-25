@@ -2,6 +2,9 @@
 
 namespace Centuriin.CardGame.Core.Drunkard;
 
+/// <summary>
+/// Reserves the Drunkard-specific dealing system implementation.
+/// </summary>
 internal sealed class DealerSystem : ISystem //, IDealerSystem
 {
     //private const int PLAYERS_COUNT = 2;

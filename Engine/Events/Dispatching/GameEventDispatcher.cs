@@ -4,7 +4,10 @@ using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Engine.Events.Dispatching;
 
-public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsumingSubscriberDispatcher
+/// <summary>
+/// Delivers domain events to registered state-changing and event-producing subscribers.
+/// </summary>
+public sealed class GameEventDispatcher : IProducingSubscriberDispatcher, IConsumingSubscriberDispatcher
 {
     private bool _disposed;
 
@@ -15,6 +18,18 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
     private readonly IGameEventBusWriter _eventBusWriter;
     private readonly ICoreLogger<GameEventDispatcher> _logger;
 
+    /// <summary>
+    /// Initializes a new <see cref="GameEventDispatcher"/> instance.
+    /// </summary>
+    /// <param name="gameState">
+    /// The game state used by the operation.
+    /// </param>
+    /// <param name="eventBusWriter">
+    /// The queue writer used to publish successor events.
+    /// </param>
+    /// <param name="logger">
+    /// The logger used for diagnostics.
+    /// </param>
     public GameEventDispatcher(
         IGameState gameState,
         IGameEventBusWriter eventBusWriter,
@@ -129,7 +144,7 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
     }
 
     /// <inheritdoc/>
-    void IProducingSubcriberDispatcher.Publish(IGameEvent @event)
+    void IProducingSubscriberDispatcher.Publish(IGameEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -166,7 +181,9 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Clears event subscriptions and prevents further use of the dispatcher.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
@@ -180,28 +197,68 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         _disposed = true;
     }
 
+    /// <summary>
+    /// Delivers an event to a group of event-producing subscribers.
+    /// </summary>
     private interface IProducingSubscriberGroup
     {
+        /// <summary>
+        /// Delivers the event to this group's subscribers in registration order.
+        /// </summary>
+        /// <param name="event">
+        /// The domain or application event to process.
+        /// </param>
+        /// <param name="readOnlyGameState">
+        /// The current game state available for reading.
+        /// </param>
+        /// <param name="eventBusWriter">
+        /// The queue writer used to publish successor events.
+        /// </param>
         public void Deliver(
             IGameEvent @event,
             IReadOnlyGameState readOnlyGameState,
             IGameEventBusWriter eventBusWriter);
     }
 
+    /// <summary>
+    /// Delivers an event to a group of state-changing subscribers.
+    /// </summary>
     private interface IConsumingSubscriberGroup
     {
+        /// <summary>
+        /// Delivers the event to this group's subscribers in registration order.
+        /// </summary>
+        /// <param name="event">
+        /// The domain or application event to process.
+        /// </param>
+        /// <param name="readOnlyGameState">
+        /// The current game state available for reading.
+        /// </param>
         public void Deliver(
             IGameEvent @event,
             IGameState readOnlyGameState);
     }
 
+    /// <summary>
+    /// Stores and invokes event-producing subscribers for an event type.
+    /// </summary>
+    /// <typeparam name="TEvent">
+    /// The event type handled by this contract.
+    /// </typeparam>
     private sealed class ProducingSubscribersGroup<TEvent> : IProducingSubscriberGroup
         where TEvent : IGameEvent
     {
+        /// <summary>
+        /// Gets the logger used when delivering events.
+        /// </summary>
         public required ICoreLogger Logger { get; init; }
 
+        /// <summary>
+        /// Gets the subscribers in delivery order.
+        /// </summary>
         public List<IProducingSubscriber<TEvent>> Subscribers { get; } = [];
 
+        /// <inheritdoc/>
         public void Deliver(
             IGameEvent @event,
             IReadOnlyGameState readOnlyGameState,
@@ -222,13 +279,26 @@ public sealed class GameEventDispatcher : IProducingSubcriberDispatcher, IConsum
         }
     }
 
+    /// <summary>
+    /// Stores and invokes state-changing subscribers for an event type.
+    /// </summary>
+    /// <typeparam name="TEvent">
+    /// The event type handled by this contract.
+    /// </typeparam>
     private sealed class ConsumingSubscribersGroup<TEvent> : IConsumingSubscriberGroup
         where TEvent : IGameEvent
     {
+        /// <summary>
+        /// Gets the logger used when delivering events.
+        /// </summary>
         public required ICoreLogger Logger { get; init; }
 
+        /// <summary>
+        /// Gets the subscribers in delivery order.
+        /// </summary>
         public List<IConsumingSubscriber<TEvent>> Subscribers { get; } = [];
 
+        /// <inheritdoc/>
         public void Deliver(
             IGameEvent @event,
             IGameState readOnlyGameState)

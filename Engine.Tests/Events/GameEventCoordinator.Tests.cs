@@ -21,7 +21,7 @@ public sealed class GameEventCoordinatorTests
         var exception = Record.Exception(() =>
             new GameEventCoordinator(
                 Mock.Of<IGameEventBus>(MockBehavior.Strict),
-                Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+                Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
                 Mock.Of<IConsumingSubscriberDispatcher>(MockBehavior.Strict)));
 
         // Assert
@@ -36,7 +36,7 @@ public sealed class GameEventCoordinatorTests
         var exception = Record.Exception(() =>
             new GameEventCoordinator(
                 null!,
-                Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+                Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
                 Mock.Of<IConsumingSubscriberDispatcher>(MockBehavior.Strict)));
 
         // Assert
@@ -66,7 +66,7 @@ public sealed class GameEventCoordinatorTests
         var exception = Record.Exception(() =>
             new GameEventCoordinator(
                 Mock.Of<IGameEventBus>(MockBehavior.Strict),
-                Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+                Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
                 null!));
 
         // Assert
@@ -86,7 +86,7 @@ public sealed class GameEventCoordinatorTests
 
         var coordinator = new GameEventCoordinator(
             Mock.Of<IGameEventBus>(MockBehavior.Strict),
-            Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+            Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
             consuming.Object);
 
         // Act
@@ -103,7 +103,7 @@ public sealed class GameEventCoordinatorTests
         // Arrange
         var coordinator = new GameEventCoordinator(
             Mock.Of<IGameEventBus>(MockBehavior.Strict),
-            Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+            Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
             Mock.Of<IConsumingSubscriberDispatcher>(MockBehavior.Strict));
 
         // Act
@@ -127,7 +127,7 @@ public sealed class GameEventCoordinatorTests
         consuming.Setup(x => x.Publish(@event))
             .Callback(() => calls.Add("consume"));
 
-        var producing = new Mock<IProducingSubcriberDispatcher>(MockBehavior.Strict);
+        var producing = new Mock<IProducingSubscriberDispatcher>(MockBehavior.Strict);
         producing.Setup(x => x.Publish(@event))
             .Callback(() => calls.Add("produce"));
 
@@ -182,7 +182,7 @@ public sealed class GameEventCoordinatorTests
         consuming.Setup(x => x.Publish(It.IsAny<IGameEvent>()))
             .Callback<IGameEvent>(@event => calls.Add(("consume", @event)));
 
-        var producing = new Mock<IProducingSubcriberDispatcher>(MockBehavior.Strict);
+        var producing = new Mock<IProducingSubscriberDispatcher>(MockBehavior.Strict);
         producing.Setup(x => x.Publish(It.IsAny<IGameEvent>()))
             .Callback<IGameEvent>(@event => calls.Add(("produce", @event)));
 
@@ -234,7 +234,7 @@ public sealed class GameEventCoordinatorTests
             .Callback(() => consumingCalls++);
 
         var producingCalls = 0;
-        var producing = new Mock<IProducingSubcriberDispatcher>(MockBehavior.Strict);
+        var producing = new Mock<IProducingSubscriberDispatcher>(MockBehavior.Strict);
         producing.Setup(x => x.Publish(It.IsAny<IGameEvent>()))
             .Callback(() => producingCalls++);
 
@@ -262,7 +262,7 @@ public sealed class GameEventCoordinatorTests
         // Arrange
         var coordinator = new GameEventCoordinator(
             Mock.Of<IGameEventBus>(MockBehavior.Strict),
-            Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+            Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
             Mock.Of<IConsumingSubscriberDispatcher>(MockBehavior.Strict));
 
         // Act
@@ -286,7 +286,7 @@ public sealed class GameEventCoordinatorTests
 
         var coordinator = new GameEventCoordinator(
             Mock.Of<IGameEventBus>(MockBehavior.Strict),
-            Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+            Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
             consuming.Object);
 
         // Act
@@ -310,7 +310,7 @@ public sealed class GameEventCoordinatorTests
 
         var coordinator = new GameEventCoordinator(
             Mock.Of<IGameEventBus>(MockBehavior.Strict),
-            Mock.Of<IProducingSubcriberDispatcher>(MockBehavior.Strict),
+            Mock.Of<IProducingSubscriberDispatcher>(MockBehavior.Strict),
             consuming.Object);
 
         // Act
@@ -333,7 +333,7 @@ public sealed class GameEventCoordinatorTests
         consuming.Setup(x => x.Publish(@event))
             .Callback(() => consumingCalls++);
 
-        var producing = new Mock<IProducingSubcriberDispatcher>(MockBehavior.Strict);
+        var producing = new Mock<IProducingSubscriberDispatcher>(MockBehavior.Strict);
         producing.Setup(x => x.Publish(@event))
             .Throws<InvalidOperationException>();
 

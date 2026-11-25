@@ -12,11 +12,23 @@ using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
+/// <summary>
+/// Creates zones from templates and assigns hand and deck owners.
+/// </summary>
 public sealed class ZonesInitializer : IGameInitializer
 {
     private readonly ITemplatesRepository<ZoneTemplate> _zoneTemplatesRepository;
     private readonly IEntityFactory<Zone, ZoneTemplate> _factory;
 
+    /// <summary>
+    /// Initializes a new <see cref="ZonesInitializer"/> instance.
+    /// </summary>
+    /// <param name="zoneTemplatesRepository">
+    /// The repository used to retrieve zone templates.
+    /// </param>
+    /// <param name="factory">
+    /// The factory used to create the required entities or rules.
+    /// </param>
     public ZonesInitializer(
         ITemplatesRepository<ZoneTemplate> zoneTemplatesRepository,
         IEntityFactory<Zone, ZoneTemplate> factory)
@@ -28,6 +40,7 @@ public sealed class ZonesInitializer : IGameInitializer
         _factory = factory;
     }
 
+    /// <inheritdoc/>
     public async Task InitializeAsync(
         GameDescription gameDescription,
         IInitialStateContext initialStateContext,

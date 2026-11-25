@@ -1,10 +1,12 @@
 ﻿using System.Collections.Concurrent;
 
 using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application;
 
+/// <summary>
+/// Stores game sessions in a concurrent in-memory dictionary.
+/// </summary>
 public sealed class InMemoryGameSessionsCache : IGameSessionsCache
 {
     private readonly ConcurrentDictionary<GameId, IGameSession> _sessions = [];

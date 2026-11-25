@@ -5,6 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+/// <summary>
+/// Resolves a keyed dependency using the game type's profile key.
+/// </summary>
+/// <typeparam name="TDependency">
+/// The game-specific dependency type to resolve.
+/// </typeparam>
 internal sealed class GameModuleAdapter<TDependency> :
     IGameModuleAdapter<TDependency>
     where TDependency : notnull
@@ -12,6 +18,15 @@ internal sealed class GameModuleAdapter<TDependency> :
     private readonly IGameProfilesCache _profilesCache;
     private readonly IServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Initializes a new <see cref="GameModuleAdapter{TDependency}"/> instance.
+    /// </summary>
+    /// <param name="profilesRepository">
+    /// The cache used to resolve game profiles.
+    /// </param>
+    /// <param name="serviceProvider">
+    /// The service provider used to create dependencies.
+    /// </param>
     public GameModuleAdapter(
         IGameProfilesCache profilesRepository,
         IServiceProvider serviceProvider)

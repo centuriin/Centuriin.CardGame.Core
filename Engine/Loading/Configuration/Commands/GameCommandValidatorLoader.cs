@@ -2,8 +2,11 @@
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Context;
 
-namespace Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
+namespace Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 
+/// <summary>
+/// Loads a game profile's command validation rules into the validator.
+/// </summary>
 public sealed class GameCommandValidatorLoader : IGameLoader
 {
     private readonly IGameContextAccessor<IGameProfileContext> _profileContextAccessor;
@@ -12,6 +15,18 @@ public sealed class GameCommandValidatorLoader : IGameLoader
 
     private readonly ConfigurableCommandValidator _configurableValidator = new();
 
+    /// <summary>
+    /// Initializes a new <see cref="GameCommandValidatorLoader"/> instance.
+    /// </summary>
+    /// <param name="profileContextAccessor">
+    /// The accessor used to load the game profile.
+    /// </param>
+    /// <param name="factory">
+    /// The factory used to create the required entities or rules.
+    /// </param>
+    /// <param name="validator">
+    /// The command validator to configure.
+    /// </param>
     public GameCommandValidatorLoader(
         IGameContextAccessor<IGameProfileContext> profileContextAccessor,
         ICommandRuleFactory factory,

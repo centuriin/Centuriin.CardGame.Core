@@ -3,7 +3,7 @@
 namespace Centuriin.CardGame.Core.Engine.ECS.Components;
 
 /// <summary>
-/// Space component.
+/// Identifies the zone containing a card.
 /// </summary>
 /// <param name="CurrentZoneId">
 /// Current zone id.

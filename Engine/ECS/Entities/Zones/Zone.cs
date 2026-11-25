@@ -2,12 +2,30 @@
 
 namespace Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 
+/// <summary>
+/// Represents a card location, such as a deck, hand, or table slot.
+/// </summary>
 public sealed class Zone : EntityBase, IEquatable<Zone>
 {
+    /// <summary>
+    /// Initializes a new <see cref="Zone"/> instance.
+    /// </summary>
+    /// <param name="id">
+    /// The entity identifier.
+    /// </param>
     public Zone(EntityId id) : base(id)
     {
     }
 
+    /// <summary>
+    /// Initializes a new <see cref="Zone"/> instance.
+    /// </summary>
+    /// <param name="id">
+    /// The entity identifier.
+    /// </param>
+    /// <param name="components">
+    /// The components assigned to the entity or template.
+    /// </param>
     public Zone(EntityId id, IEnumerable<ComponentBase> components)
         : base(id, components)
     {

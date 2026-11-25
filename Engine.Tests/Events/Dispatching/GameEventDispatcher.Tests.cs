@@ -212,7 +212,7 @@ public sealed class GameEventDispatcherTests
         dispatcher.Register(Mock.Of<IConsumingSubscriber<GameStartedEvent>>(MockBehavior.Strict));
 
         // Act
-        ((IProducingSubcriberDispatcher)dispatcher).Publish(@event);
+        ((IProducingSubscriberDispatcher)dispatcher).Publish(@event);
 
         // Assert
         calls.Should().Equal("general", "first", "second");
@@ -233,7 +233,7 @@ public sealed class GameEventDispatcherTests
 
         // Act
         var exception = Record.Exception(() =>
-            ((IProducingSubcriberDispatcher)dispatcher).Publish(@event));
+            ((IProducingSubscriberDispatcher)dispatcher).Publish(@event));
 
         // Assert
         exception.Should().BeNull();
@@ -269,7 +269,7 @@ public sealed class GameEventDispatcherTests
         // Act
         dispatcher.Unregister(removed);
 
-        ((IProducingSubcriberDispatcher)dispatcher).Publish(@event);
+        ((IProducingSubscriberDispatcher)dispatcher).Publish(@event);
 
         // Assert
         calls.Should().Be(1);
@@ -304,13 +304,13 @@ public sealed class GameEventDispatcherTests
         // Act
         dispatcher.Unregister(removed);
 
-        ((IProducingSubcriberDispatcher)dispatcher).Publish(@event);
+        ((IProducingSubscriberDispatcher)dispatcher).Publish(@event);
 
         var exception = Record.Exception(() =>
             dispatcher.Unregister(removed));
 
         dispatcher.Register(replacement.Object);
-        ((IProducingSubcriberDispatcher)dispatcher).Publish(@event);
+        ((IProducingSubscriberDispatcher)dispatcher).Publish(@event);
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();
@@ -330,7 +330,7 @@ public sealed class GameEventDispatcherTests
 
         // Act
         var exception = Record.Exception(() =>
-            ((IProducingSubcriberDispatcher)dispatcher).Publish(null!));
+            ((IProducingSubscriberDispatcher)dispatcher).Publish(null!));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -353,7 +353,7 @@ public sealed class GameEventDispatcherTests
 
         // Act
         var exception = Record.Exception(() =>
-            ((IProducingSubcriberDispatcher)dispatcher).Publish(@event));
+            ((IProducingSubscriberDispatcher)dispatcher).Publish(@event));
 
         // Assert
         exception.Should().BeOfType<ObjectDisposedException>();
@@ -388,7 +388,7 @@ public sealed class GameEventDispatcherTests
 
         // Act
         var exception = Record.Exception(() =>
-            ((IProducingSubcriberDispatcher)dispatcher).Publish(@event));
+            ((IProducingSubscriberDispatcher)dispatcher).Publish(@event));
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>();
@@ -429,7 +429,7 @@ public sealed class GameEventDispatcherTests
         dispatcher.Register(subscriber.Object);
 
         // Act
-        ((IProducingSubcriberDispatcher)dispatcher).Publish(@event);
+        ((IProducingSubscriberDispatcher)dispatcher).Publish(@event);
 
         // Assert
         calls.Should().Be(1);

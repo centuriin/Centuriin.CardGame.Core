@@ -4,10 +4,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 
+/// <summary>
+/// Resolves application event handlers in a scope and invokes them sequentially.
+/// </summary>
+/// <typeparam name="TEvent">
+/// The event type handled by this contract.
+/// </typeparam>
 internal sealed class ApplicationDispatcher<TEvent> : IApplicationDispatcher<TEvent>
 {
     private readonly IServiceScopeFactory _scopeFactory;
 
+    /// <summary>
+    /// Initializes a new <see cref="ApplicationDispatcher{TEvent}"/> instance.
+    /// </summary>
+    /// <param name="scopeFactory">
+    /// The factory used to create dependency injection scopes.
+    /// </param>
     public ApplicationDispatcher(IServiceScopeFactory scopeFactory)
     {
         ArgumentNullException.ThrowIfNull(scopeFactory);

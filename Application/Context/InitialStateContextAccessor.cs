@@ -7,6 +7,9 @@ using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Context;
 
+/// <summary>
+/// Loads entity state from a snapshot or initializes and stores the initial entities.
+/// </summary>
 public sealed class InitialStateContextAccessor :
     IGameContextAccessor<IInitialStateContext>,
     IGameContextAccessor<IReadOnlyInitialStateContext>
@@ -16,6 +19,21 @@ public sealed class InitialStateContextAccessor :
     private readonly IGameModuleAdapter<IGameInitializer> _gameInitializerAdapter;
     private readonly ICoreLogger<InitialStateContextAccessor> _logger;
 
+    /// <summary>
+    /// Initializes a new <see cref="InitialStateContextAccessor"/> instance.
+    /// </summary>
+    /// <param name="descriptionRepository">
+    /// The repository used to retrieve game descriptions.
+    /// </param>
+    /// <param name="snapshotsRepository">
+    /// The repository used to load and store snapshots.
+    /// </param>
+    /// <param name="gameInitializer">
+    /// The module adapter used to resolve the game initializer.
+    /// </param>
+    /// <param name="logger">
+    /// The logger used for diagnostics.
+    /// </param>
     public InitialStateContextAccessor(
         IGameDescriptionRepository descriptionRepository,
         IGameSnapshotsRepository snapshotsRepository,
@@ -35,6 +53,7 @@ public sealed class InitialStateContextAccessor :
         _logger = logger;
     }
 
+    /// <inheritdoc/>
     public async Task<IInitialStateContext> GetContextAsync(
         GameId gameId,
         CancellationToken token)
@@ -76,11 +95,15 @@ public sealed class InitialStateContextAccessor :
         return context;
     }
 
+    /// <inheritdoc/>
     async Task<IReadOnlyInitialStateContext> IGameContextAccessor<IReadOnlyInitialStateContext>.GetContextAsync(
         GameId gameId,
         CancellationToken token)
         => await GetContextAsync(gameId, token);
 
+    /// <summary>
+    /// Holds mutable entities while a game is being initialized.
+    /// </summary>
     private sealed class InitialStateContext : IInitialStateContext
     {
         public required GameId GameId { get; set; }

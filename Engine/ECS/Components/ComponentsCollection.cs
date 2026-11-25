@@ -3,7 +3,7 @@
 namespace Centuriin.CardGame.Core.Engine.ECS.Components;
 
 /// <summary>
-/// Components collection.
+/// Stores one component per concrete component type.
 /// </summary>
 public sealed class ComponentsCollection : IEnumerable<ComponentBase>
 {
@@ -14,8 +14,17 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     /// </summary>
     public bool IsEmpty => _components.Count == 0;
 
+    /// <summary>
+    /// Initializes a new <see cref="ComponentsCollection"/> instance.
+    /// </summary>
     public ComponentsCollection() { }
 
+    /// <summary>
+    /// Initializes a new <see cref="ComponentsCollection"/> instance.
+    /// </summary>
+    /// <param name="components">
+    /// The components assigned to the entity or template.
+    /// </param>
     public ComponentsCollection(
         IEnumerable<ComponentBase> components)
     {
@@ -24,10 +33,10 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     }
 
     /// <summary>
-    /// Sets or resets components.
+    /// Adds components, replacing any existing components of the same concrete types.
     /// </summary>
     /// <param name="components">
-    /// Components.
+    /// The components to add or replace.
     /// </param>
     public void Set(params IEnumerable<ComponentBase> components)
     {
@@ -40,7 +49,7 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     }
 
     /// <summary>
-    /// Gets component by type.
+    /// Retrieves the component of the requested concrete type.
     /// </summary>
     /// <typeparam name="T">
     /// Concrete component type.
@@ -49,7 +58,7 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     /// Component of <typeparamref name="T"/>.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// When component not found.
+    /// The requested component is not present.
     /// </exception>
     public T Get<T>() where T : ComponentBase
     {
@@ -61,19 +70,19 @@ public sealed class ComponentsCollection : IEnumerable<ComponentBase>
     }
 
     /// <summary>
-    /// Checks component contains.
+    /// Checks whether a component of the requested concrete type is present.
     /// </summary>
     /// <typeparam name="T">
     /// Concrete type of component.
     /// </typeparam>
     /// <returns>
-    /// <see langword="true"/> if exists, otherwise - <see langword="false"/>.
+    /// <see langword="true"/> when the component exists; otherwise, <see langword="false"/>.
     /// </returns>
     public bool Has<T>() where T : ComponentBase =>
         _components.ContainsKey(typeof(T));
 
     /// <summary>
-    /// Removes component by type.
+    /// Removes the component of the requested concrete type, when present.
     /// </summary>
     /// <typeparam name="T">
     /// Concrete type.

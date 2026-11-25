@@ -8,6 +8,9 @@ using Centuriin.CardGame.Core.Engine.Root;
 
 namespace Centuriin.CardGame.Core.Application;
 
+/// <summary>
+/// Coordinates engine operations and publishes application notifications for a game session.
+/// </summary>
 public sealed class GameSession : IGameSession
 {
     private bool _isDisposed;
@@ -19,10 +22,27 @@ public sealed class GameSession : IGameSession
     private readonly IGameContextAccessor<IRestorationContext> _restorationContextAccessor;
     private readonly IApplicationDispatcher<IGameApplicationEvent> _dispatcher;
 
+    /// <inheritdoc/>
     public GameId GameId => _game.Id;
 
+    /// <inheritdoc/>
     public GameTypeId GameTypeId { get; }
 
+    /// <summary>
+    /// Initializes a new <see cref="GameSession"/> instance.
+    /// </summary>
+    /// <param name="gameTypeId">
+    /// The identifier of the game type.
+    /// </param>
+    /// <param name="game">
+    /// The game instance associated with the operation.
+    /// </param>
+    /// <param name="restorationContextAccessor">
+    /// The accessor used to load recorded restoration events.
+    /// </param>
+    /// <param name="dispatcher">
+    /// The dispatcher used to publish application notifications.
+    /// </param>
     public GameSession(
         GameTypeId gameTypeId,
         IGame game,
@@ -44,6 +64,7 @@ public sealed class GameSession : IGameSession
         _activityContext = _sessionActivity?.Context ?? default;
     }
 
+    /// <inheritdoc/>
     public async Task StartAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -112,6 +133,7 @@ public sealed class GameSession : IGameSession
         });
     }
 
+    /// <inheritdoc/>
     public async Task RestoreAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -127,6 +149,7 @@ public sealed class GameSession : IGameSession
             token);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (_isDisposed)

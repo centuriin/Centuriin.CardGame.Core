@@ -1,28 +1,40 @@
 ﻿using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commads;
+using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 
 namespace Centuriin.CardGame.Core.Drunkard;
 
+/// <summary>
+/// Configures the systems and command validation used by the Drunkard prototype.
+/// </summary>
 public sealed class GameProfile : IGameProfile
 {
+    /// <summary>
+    /// The dependency injection key used by the Drunkard module.
+    /// </summary>
     internal const string KEY = "drunkard";
 
+    /// <summary>
+    /// Gets the shared instance.
+    /// </summary>
     public static GameProfile Instance { get; } = new();
 
+    /// <inheritdoc/>
     public string Key => KEY;
 
     private GameProfile() { }
 
-    public void Configure(IConfigurableGamePipeline configurableGamePipeLine)
+    /// <inheritdoc/>
+    public void Configure(IConfigurableGamePipeline configurableGamePipeline)
     {
-        ArgumentNullException.ThrowIfNull(configurableGamePipeLine);
+        ArgumentNullException.ThrowIfNull(configurableGamePipeline);
 
-        _ = configurableGamePipeLine
+        _ = configurableGamePipeline
             .UseDefaultProfile();
     }
 
+    /// <inheritdoc/>
     public void Configure(IConfigurableCommandValidator configurableCommandValidations)
     {
         ArgumentNullException.ThrowIfNull(configurableCommandValidations);

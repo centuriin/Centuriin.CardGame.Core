@@ -4,18 +4,36 @@ using Centuriin.CardGame.Core.Engine.Events.Dispatching;
 
 namespace Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 
+/// <summary>
+/// Creates configured game systems and registers their event subscriptions.
+/// </summary>
 public sealed class GamePipelineLoader : IGameLoader
 {
     private readonly IGameContextAccessor<IGameProfileContext> _profileContextAccessor;
     private readonly IConsumingSubscriberDispatcher _consumingDispatcher;
-    private readonly IProducingSubcriberDispatcher _producingDispatcher;
+    private readonly IProducingSubscriberDispatcher _producingDispatcher;
     private readonly ISystemFactory _systemFactory;
     private readonly ConfigurableGamePipeline _configurableGamePipeline = new();
 
+    /// <summary>
+    /// Initializes a new <see cref="GamePipelineLoader"/> instance.
+    /// </summary>
+    /// <param name="profileContextAccessor">
+    /// The accessor used to load the game profile.
+    /// </param>
+    /// <param name="consumingDispatcher">
+    /// The dispatcher used to invoke state-changing subscribers.
+    /// </param>
+    /// <param name="producingDispatcher">
+    /// The dispatcher used to invoke event-producing subscribers.
+    /// </param>
+    /// <param name="systemFactory">
+    /// The factory used to create configured game systems.
+    /// </param>
     public GamePipelineLoader(
         IGameContextAccessor<IGameProfileContext> profileContextAccessor,
         IConsumingSubscriberDispatcher consumingDispatcher,
-        IProducingSubcriberDispatcher producingDispatcher,
+        IProducingSubscriberDispatcher producingDispatcher,
         ISystemFactory systemFactory)
     {
         ArgumentNullException.ThrowIfNull(profileContextAccessor);
@@ -31,6 +49,7 @@ public sealed class GamePipelineLoader : IGameLoader
         _systemFactory = systemFactory;
     }
 
+    /// <inheritdoc/>
     public async Task LoadAsync(GameId gameId, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
