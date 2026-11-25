@@ -28,7 +28,7 @@ public readonly record struct GameVersion : IComparable<GameVersion>
     }
 
     /// <inheritdoc/>
-    public int CompareTo(GameVersion other) => Value.CompareTo(other);
+    public int CompareTo(GameVersion other) => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Returns the next sequential value.

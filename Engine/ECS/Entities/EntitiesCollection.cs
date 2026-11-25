@@ -10,7 +10,7 @@ public sealed class EntitiesCollection : IEntitiesCollection
     private readonly Dictionary<Type, IDictionary> _entities = [];
 
     /// <inheritdoc/>
-    public bool IsEmpty => _entities.Count == 0;
+    public bool IsEmpty => _entities.Values.All(entities => entities.Count == 0);
 
     /// <summary>
     /// Creates an empty entity collection.
