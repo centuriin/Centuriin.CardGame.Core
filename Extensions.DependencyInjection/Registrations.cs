@@ -118,19 +118,19 @@ public static class Registrations
 
             .AddScoped<ICommandValidator, CommandValidator>()
 
-            .AddScoped(typeof(GameEventCoordinator))
+            .AddScoped<GameEventCoordinator>()
             .AddScoped<IGameEventApplier>(sp =>
                 sp.GetRequiredService<GameEventCoordinator>())
             .AddScoped<IGameEventProducer>(sp =>
                 sp.GetRequiredService<GameEventCoordinator>())
 
-            .AddScoped(typeof(GameEventDispatcher))
+            .AddScoped<GameEventDispatcher>()
             .AddScoped<IConsumingSubscriberDispatcher>(sp =>
                 sp.GetRequiredService<GameEventDispatcher>())
             .AddScoped<IProducingSubscriberDispatcher>(sp =>
                 sp.GetRequiredService<GameEventDispatcher>())
 
-            .AddScoped(typeof(GameState))
+            .AddScoped<GameState>()
             .AddScoped<IGameState, GameState>(sp =>
                 sp.GetRequiredService<GameState>())
             .AddScoped<IReadOnlyGameState>(sp =>
