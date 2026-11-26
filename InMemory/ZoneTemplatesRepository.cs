@@ -4,8 +4,9 @@ using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Zones;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
+using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
-namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
+namespace Centuriin.CardGame.Core.Infrastructure.Storage.InMemory;
 
 /// <summary>
 /// Provides the demonstration zone templates for the Drunkard prototype.

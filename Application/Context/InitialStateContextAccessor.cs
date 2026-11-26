@@ -1,7 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
-using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
@@ -16,7 +15,7 @@ public sealed class InitialStateContextAccessor :
 {
     private readonly IGameDescriptionRepository _descriptionRepository;
     private readonly IGameSnapshotsRepository _snapshotsRepository;
-    private readonly IGameModuleAdapter<IGameInitializer> _gameInitializerAdapter;
+    private readonly IGameInitializer _gameInitializer;
     private readonly ICoreLogger<InitialStateContextAccessor> _logger;
 
     /// <summary>
@@ -37,7 +36,7 @@ public sealed class InitialStateContextAccessor :
     public InitialStateContextAccessor(
         IGameDescriptionRepository descriptionRepository,
         IGameSnapshotsRepository snapshotsRepository,
-        IGameModuleAdapter<IGameInitializer> gameInitializer,
+        IGameInitializer gameInitializer,
         ICoreLogger<InitialStateContextAccessor> logger)
     {
         ArgumentNullException.ThrowIfNull(descriptionRepository);
@@ -47,7 +46,7 @@ public sealed class InitialStateContextAccessor :
         _snapshotsRepository = snapshotsRepository;
 
         ArgumentNullException.ThrowIfNull(gameInitializer);
-        _gameInitializerAdapter = gameInitializer;
+        _gameInitializer = gameInitializer;
 
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
@@ -66,27 +65,18 @@ public sealed class InitialStateContextAccessor :
         {
             _logger.LogDebug("State context loaded from game snapshot");
 
-            return new InitialStateContext
-            {
-                GameId = gameId,
-                Entities = new EntitiesCollection(snapshot.Entities)
-            };
+            return await _gameInitializer.InitializeAsync(snapshot, token);
         }
 
-        var gameDescription = await _descriptionRepository.FindAsync(gameId, token)
+        var description = await _descriptionRepository.FindAsync(gameId, token)
             ?? throw new InvalidOperationException(
                 $"Can't find game description for game: {gameId.Value}");
 
-        var context = new InitialStateContext { GameId = gameId };
-
-        var initializer = await _gameInitializerAdapter
-            .GetDependencyAsync(gameDescription.GameTypeId, token);
-
-        await initializer.InitializeAsync(gameDescription, context, token);
+        var context = await _gameInitializer.InitializeAsync(description, token);
 
         await _snapshotsRepository.AddAsync(
-            gameDescription.GameId,
-            gameDescription.GameTypeId,
+            description.GameId,
+            description.GameTypeId,
             context,
             token);
 
@@ -100,17 +90,4 @@ public sealed class InitialStateContextAccessor :
         GameId gameId,
         CancellationToken token)
         => await GetContextAsync(gameId, token);
-
-    /// <summary>
-    /// Holds mutable entities while a game is being initialized.
-    /// </summary>
-    private sealed class InitialStateContext : IInitialStateContext
-    {
-        public required GameId GameId { get; set; }
-
-        public EntityId LastEntityId => Entities.MaxBy(x => x.Id)?.Id
-            ?? EntityId.Default;
-
-        public IEntitiesCollection Entities { get; set; } = new EntitiesCollection();
-    }
 }

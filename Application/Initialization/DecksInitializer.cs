@@ -3,6 +3,7 @@ using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.ECS.Components;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Players;
 using Centuriin.CardGame.Core.Engine.ECS.Components.Zones;
+using Centuriin.CardGame.Core.Engine.ECS.Entities;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Factories;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Players;
@@ -15,7 +16,7 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 /// <summary>
 /// Creates cards from deck templates and places them in their owners' deck zones.
 /// </summary>
-public sealed class DecksInitializer : IGameInitializer
+public sealed class DecksInitializer : IEntityInitializer
 {
     private readonly IDecksRepository _decksRepository;
     private readonly IEntityFactory<Card, CardTemplate> _factory;
@@ -41,17 +42,19 @@ public sealed class DecksInitializer : IGameInitializer
     }
 
     /// <inheritdoc/>
-    public async Task InitializeAsync(
-        GameDescription gameDescription,
-        IInitialStateContext initialStateContext,
+    public async Task<IReadOnlyCollection<EntityBase>> InitializeAsync(
+        GameDescription description,
+        IReadOnlyInitialStateContext context,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(gameDescription);
-        ArgumentNullException.ThrowIfNull(initialStateContext);
+        ArgumentNullException.ThrowIfNull(description);
+        ArgumentNullException.ThrowIfNull(context);
 
         token.ThrowIfCancellationRequested();
 
-        var deckZones = initialStateContext.Entities
+        var result = new List<Card>();
+
+        var deckZones = context.Entities
             .Query<Zone>()
             .WithComponent((ZoneRoleComponent x) => x.Role == ZoneRole.Deck);
 
@@ -60,8 +63,8 @@ public sealed class DecksInitializer : IGameInitializer
             var ownerId = zone.Get<OwnerComponent>().CurrentOwnerId;
 
             var deckTemplates = await _decksRepository.GetDeckTemplatesAsync(
-                gameDescription.GameTypeId,
-                initialStateContext.Entities
+                description.GameTypeId,
+                context.Entities
                     .Get<Player>(ownerId)
                     .Get<PlayerIdentifierComponent>()
                     .PlayerId,
@@ -70,9 +73,12 @@ public sealed class DecksInitializer : IGameInitializer
             var cards = _factory.Create(deckTemplates)
                 .Select(x => x.Set(
                     new ZoneComponent(zone.Id),
-                    new OwnerComponent(ownerId)));
+                    new OwnerComponent(ownerId)))
+                .Select(x => x.Entity);
 
-            initialStateContext.Entities.Add(cards);
+            result.AddRange(cards);
         }
+
+        return result;
     }
 }

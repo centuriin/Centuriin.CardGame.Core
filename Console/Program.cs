@@ -14,7 +14,6 @@ using Centuriin.CardGame.Core.Engine.Root;
 using Centuriin.CardGame.Core.Engine.Root.State;
 using Centuriin.CardGame.Core.Extensions.DependencyInjection;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
 using Centuriin.CardGame.Core.Infrastructure.Storage.InMemory;
 
 using Microsoft.Extensions.DependencyInjection;

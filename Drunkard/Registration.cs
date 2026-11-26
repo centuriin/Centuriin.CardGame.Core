@@ -1,7 +1,4 @@
-﻿using Centuriin.CardGame.Core.Application.Initialization;
-using Centuriin.CardGame.Core.Drunkard.Initialization;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Centuriin.CardGame.Core.Drunkard;
 
@@ -23,7 +20,6 @@ public static class Registration
     /// The host must also associate the game type identifier with <see cref="GameProfile.Instance"/>.
     /// </remarks>
     public static IServiceCollection AddDrunkard(this IServiceCollection services)
-        => services
-            .AddKeyedScoped<IGameInitializer, GameInitializer>(
-                GameProfile.KEY);
+        => services;
+    //.AddKeyedScoped<IGameInitializer, GameInitializer>(GameProfile.KEY);
 }

@@ -1,6 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
 
 using Microsoft.Extensions.DependencyInjection;
 

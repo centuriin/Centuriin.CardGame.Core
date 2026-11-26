@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
+using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
@@ -11,11 +12,8 @@ public interface IGameInitializer
     /// <summary>
     /// Populates the initial entity context for a game.
     /// </summary>
-    /// <param name="gameDescription">
+    /// <param name="description">
     /// The game description containing players, type, and settings.
-    /// </param>
-    /// <param name="initialStateContext">
-    /// The mutable context to populate with initial entities.
     /// </param>
     /// <param name="token">
     /// The cancellation token for the operation.
@@ -23,8 +21,11 @@ public interface IGameInitializer
     /// <returns>
     /// A task that completes when the operation finishes.
     /// </returns>
-    public Task InitializeAsync(
-        GameDescription gameDescription,
-        IInitialStateContext initialStateContext,
+    public Task<IInitialStateContext> InitializeAsync(
+        GameDescription description,
+        CancellationToken token);
+
+    public Task<IInitialStateContext> InitializeAsync(
+        IGameSnapshot snapshot,
         CancellationToken token);
 }

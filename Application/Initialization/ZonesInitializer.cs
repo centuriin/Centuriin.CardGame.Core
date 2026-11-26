@@ -15,7 +15,7 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 /// <summary>
 /// Creates zones from templates and assigns hand and deck owners.
 /// </summary>
-public sealed class ZonesInitializer : IGameInitializer
+public sealed class ZonesInitializer : IEntityInitializer
 {
     private readonly ITemplatesRepository<ZoneTemplate> _zoneTemplatesRepository;
     private readonly IEntityFactory<Zone, ZoneTemplate> _factory;
@@ -41,21 +41,21 @@ public sealed class ZonesInitializer : IGameInitializer
     }
 
     /// <inheritdoc/>
-    public async Task InitializeAsync(
-        GameDescription gameDescription,
-        IInitialStateContext initialStateContext,
+    public async Task<IReadOnlyCollection<EntityBase>> InitializeAsync(
+        GameDescription description,
+        IReadOnlyInitialStateContext context,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(gameDescription);
-        ArgumentNullException.ThrowIfNull(initialStateContext);
+        ArgumentNullException.ThrowIfNull(description);
+        ArgumentNullException.ThrowIfNull(context);
 
         token.ThrowIfCancellationRequested();
 
         var zoneTemplates = await _zoneTemplatesRepository.GetTemplatesAsync(
-            gameDescription.GameTypeId,
+            description.GameTypeId,
             token);
 
-        var activePlayersCount = gameDescription.PlayerIds
+        var activePlayersCount = description.PlayerIds
             .Count(x => x != PlayerId.System);
 
         var templates = zoneTemplates
@@ -71,27 +71,27 @@ public sealed class ZonesInitializer : IGameInitializer
         var zones = _factory.Create(templates);
 
         AddLinksBetweenPlayersAndZones(
-            initialStateContext,
+            context,
             zones,
             PlayerRole.Participant,
             ZoneRole.Hand);
 
         AddLinksBetweenPlayersAndZones(
-            initialStateContext,
+            context,
             zones,
             PlayerRole.Bank,
             ZoneRole.Deck);
 
-        initialStateContext.Entities.Add(zones);
+        return [.. zones.Select(x => x.Entity)];
     }
 
     private static void AddLinksBetweenPlayersAndZones(
-        IInitialStateContext initialStateContext,
+        IReadOnlyInitialStateContext context,
         IReadOnlyCollection<EditableEntity<Zone>> zones,
         PlayerRole playerRole,
         ZoneRole zoneRole)
     {
-        var suitablePlayers = initialStateContext.Entities
+        var suitablePlayers = context.Entities
             .Query<Player>()
             .WithComponent((PlayerRoleComponent x) => x.Role.HasFlag(playerRole));
 

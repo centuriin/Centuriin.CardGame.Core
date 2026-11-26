@@ -4,7 +4,7 @@ using Centuriin.CardGame.Core.Engine.ECS.Components.Cards;
 using Centuriin.CardGame.Core.Engine.ECS.Entities.Cards;
 using Centuriin.CardGame.Core.Engine.ECS.Templates;
 
-namespace Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories.InMemory;
+namespace Centuriin.CardGame.Core.Infrastructure.Storage.InMemory;
 
 /// <summary>
 /// Provides standard 36-card deck templates held in memory.

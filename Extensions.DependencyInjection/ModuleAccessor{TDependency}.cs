@@ -1,4 +1,5 @@
 ﻿using Centuriin.CardGame.Core.Application;
+using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -11,15 +12,14 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 /// <typeparam name="TDependency">
 /// The game-specific dependency type to resolve.
 /// </typeparam>
-internal sealed class GameModuleAdapter<TDependency> :
-    IGameModuleAdapter<TDependency>
+internal sealed class ModuleAccessor<TDependency> : IModulable<TDependency>
     where TDependency : notnull
 {
     private readonly IGameProfilesCache _profilesCache;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
-    /// Initializes a new <see cref="GameModuleAdapter{TDependency}"/> instance.
+    /// Initializes a new <see cref="ModuleAccessor{TDependency}"/> instance.
     /// </summary>
     /// <param name="profilesRepository">
     /// The cache used to resolve game profiles.
@@ -27,7 +27,7 @@ internal sealed class GameModuleAdapter<TDependency> :
     /// <param name="serviceProvider">
     /// The service provider used to create dependencies.
     /// </param>
-    public GameModuleAdapter(
+    public ModuleAccessor(
         IGameProfilesCache profilesRepository,
         IServiceProvider serviceProvider)
     {
@@ -39,7 +39,7 @@ internal sealed class GameModuleAdapter<TDependency> :
     }
 
     /// <inheritdoc/>
-    public async ValueTask<TDependency> GetDependencyAsync(
+    public async ValueTask<TDependency> ResolveSingleAsync(
         GameTypeId gameTypeId,
         CancellationToken token)
     {
@@ -50,5 +50,19 @@ internal sealed class GameModuleAdapter<TDependency> :
             token);
 
         return _serviceProvider.GetRequiredKeyedService<TDependency>(profile.Key);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IEnumerable<TDependency>> ResolveCollectionAsync(
+        GameTypeId gameTypeId,
+        CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+
+        var profile = await _profilesCache.GetProfileAsync(
+            gameTypeId,
+            token);
+
+        return _serviceProvider.GetKeyedServices<TDependency>(profile.Key);
     }
 }

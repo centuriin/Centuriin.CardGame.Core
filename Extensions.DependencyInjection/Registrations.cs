@@ -4,6 +4,7 @@ using Centuriin.CardGame.Core.Application;
 using Centuriin.CardGame.Core.Application.Context;
 using Centuriin.CardGame.Core.Application.Events;
 using Centuriin.CardGame.Core.Application.Initialization;
+using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
@@ -56,9 +57,8 @@ public static class Registrations
             .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
             .AddSingleton<IGameProfilesCache, InMemoryGameProfilesCache>()
             .AddScoped<IGameStartupService, GameStartupService>()
-            .AddScoped(
-                typeof(IGameModuleAdapter<>),
-                typeof(GameModuleAdapter<>))
+
+            .AddScoped(typeof(IModulable<>), typeof(ModuleAccessor<>))
 
             .AddContexts()
             .AddInitialization()
@@ -87,10 +87,11 @@ public static class Registrations
                 GameProfileContextAccessor>("scoped");
 
     private static IServiceCollection AddInitialization(this IServiceCollection services) =>
-        services
-            .AddScoped<IGameInitializer, PlayersInitializer>()
-            .AddScoped<IGameInitializer, ZonesInitializer>()
-            .AddScoped<IGameInitializer, DecksInitializer>();
+        services // Todo rework
+            .AddScoped<IGameInitializer, GameInitializer>()
+            .AddKeyedScoped<IEntityInitializer, PlayersInitializer>("drunkard")
+            .AddKeyedScoped<IEntityInitializer, ZonesInitializer>("drunkard")
+            .AddKeyedScoped<IEntityInitializer, DecksInitializer>("drunkard");
 
     private static IServiceCollection AddLoading(this IServiceCollection services) =>
         services
