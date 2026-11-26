@@ -103,10 +103,7 @@ public static class Registrations
 
             .AddScoped<IGameLoader, GamePipelineLoader>()
             .AddScoped<IGameLoader, GameCommandValidatorLoader>()
-            .AddScoped<IGameLoader, EntitiesLoader>()
-                .AddScoped<IEntityLoader, EntityLoader<Player>>()
-                .AddScoped<IEntityLoader, EntityLoader<Zone>>()
-                .AddScoped<IEntityLoader, EntityLoader<Card>>();
+            .AddScoped<IGameLoader, EntitiesLoader>();
 
     private static IServiceCollection AddGameLoop(this IServiceCollection services) =>
         services

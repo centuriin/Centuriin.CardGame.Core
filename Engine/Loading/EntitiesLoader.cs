@@ -13,7 +13,6 @@ public sealed class EntitiesLoader : IGameLoader
     private readonly IEntityIdProvider _entityIdProvider;
 
     private readonly IGameContextAccessor<IReadOnlyInitialStateContext> _gameContextAccessor;
-    private readonly IEnumerable<IEntityLoader> _entityLoaders;
 
     /// <summary>
     /// Initializes a new <see cref="EntitiesLoader"/> instance.
@@ -27,14 +26,10 @@ public sealed class EntitiesLoader : IGameLoader
     /// <param name="gameContextAccessor">
     /// The accessor used to load initial entity state.
     /// </param>
-    /// <param name="entityLoaders">
-    /// The loaders used to copy the supported entity types.
-    /// </param>
     public EntitiesLoader(
         IGameState gameState,
         IEntityIdProvider entityIdProvider,
-        IGameContextAccessor<IReadOnlyInitialStateContext> gameContextAccessor,
-        IEnumerable<IEntityLoader> entityLoaders)
+        IGameContextAccessor<IReadOnlyInitialStateContext> gameContextAccessor)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         _gameState = gameState;
@@ -44,9 +39,6 @@ public sealed class EntitiesLoader : IGameLoader
 
         ArgumentNullException.ThrowIfNull(gameContextAccessor);
         _gameContextAccessor = gameContextAccessor;
-
-        ArgumentNullException.ThrowIfNull(entityLoaders);
-        _entityLoaders = entityLoaders;
     }
 
     /// <inheritdoc/>
@@ -56,10 +48,7 @@ public sealed class EntitiesLoader : IGameLoader
 
         var context = await _gameContextAccessor.GetContextAsync(gameId, token);
 
-        foreach (var loader in _entityLoaders)
-        {
-            loader.Load(context.Entities, _gameState);
-        }
+        _gameState.Entities.Add(context.Entities);
 
         _entityIdProvider.SetInitialId(context.LastEntityId);
     }
