@@ -8,14 +8,14 @@ public interface IConfigurableModuleDependencies
     /// <summary>
     /// Registers a dependency by its concrete type.
     /// </summary>
-    /// <typeparam name="TDependency">
+    /// <typeparam name="TImplementation">
     /// The dependency type.
     /// </typeparam>
     /// <returns>
     /// This dependency builder.
     /// </returns>
-    public IConfigurableModuleDependencies Add<TDependency>()
-        where TDependency : class;
+    public IConfigurableModuleDependencies Add<TImplementation>()
+        where TImplementation : class;
 
     /// <summary>
     /// Registers an implementation for a dependency contract.

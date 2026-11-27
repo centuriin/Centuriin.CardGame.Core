@@ -16,13 +16,13 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 /// <summary>
 /// Creates cards from deck templates and places them in their owners' deck zones.
 /// </summary>
-public sealed class DecksInitializer : IEntityInitializer
+public sealed class DefaultDecksInitializer : IEntityInitializer
 {
     private readonly IDecksRepository _decksRepository;
     private readonly IEntityFactory<Card, CardTemplate> _factory;
 
     /// <summary>
-    /// Initializes a new <see cref="DecksInitializer"/> instance.
+    /// Initializes a new <see cref="DefaultDecksInitializer"/> instance.
     /// </summary>
     /// <param name="decksRepository">
     /// The repository used to retrieve deck templates.
@@ -30,7 +30,7 @@ public sealed class DecksInitializer : IEntityInitializer
     /// <param name="factory">
     /// The factory used to create the required entities or rules.
     /// </param>
-    public DecksInitializer(
+    public DefaultDecksInitializer(
         IDecksRepository decksRepository,
         IEntityFactory<Card, CardTemplate> factory)
     {

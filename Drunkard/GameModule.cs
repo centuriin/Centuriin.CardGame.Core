@@ -26,10 +26,8 @@ public sealed class GameModule : IGameModule, IGameProfile
 
 
     /// <inheritdoc/>
-    public void Configure(IConfigurableModuleDependencies dependencies)
-    {
+    public void Configure(IConfigurableModuleDependencies dependencies) => 
         ArgumentNullException.ThrowIfNull(dependencies);
-    }
 
     /// <inheritdoc/>
     public void Configure(IConfigurableEntityInitializers initializers)
@@ -37,9 +35,9 @@ public sealed class GameModule : IGameModule, IGameProfile
         ArgumentNullException.ThrowIfNull(initializers);
 
         _ = initializers
-            .Add<PlayersInitializer>()
-            .Add<ZonesInitializer>()
-            .Add<DecksInitializer>();
+            .Add<DefaultPlayersInitializer>()
+            .Add<DefaultZonesInitializer>()
+            .Add<DefaultDecksInitializer>();
     }
 
     /// <inheritdoc/>

@@ -10,17 +10,17 @@ namespace Centuriin.CardGame.Core.Application.Initialization;
 /// <summary>
 /// Creates participant entities and the system player from a game description.
 /// </summary>
-public sealed class PlayersInitializer : IEntityInitializer
+public sealed class DefaultPlayersInitializer : IEntityInitializer
 {
     private readonly IEntityFactory<Player, PlayerTemplate> _factory;
 
     /// <summary>
-    /// Initializes a new <see cref="PlayersInitializer"/> instance.
+    /// Initializes a new <see cref="DefaultPlayersInitializer"/> instance.
     /// </summary>
     /// <param name="factory">
     /// The factory used to create the required entities or rules.
     /// </param>
-    public PlayersInitializer(IEntityFactory<Player, PlayerTemplate> factory)
+    public DefaultPlayersInitializer(IEntityFactory<Player, PlayerTemplate> factory)
     {
         ArgumentNullException.ThrowIfNull(factory);
         _factory = factory;
