@@ -17,6 +17,9 @@ public sealed class GameProfileContextAccessor :
     /// <summary>
     /// Initializes a new <see cref="GameProfileContextAccessor"/> instance.
     /// </summary>
+    /// <param name="descriptionRepository">
+    /// The repository used to find the game's type.
+    /// </param>
     /// <param name="profilesRepository">
     /// The cache used to resolve game profiles.
     /// </param>

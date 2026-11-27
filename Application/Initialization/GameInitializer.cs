@@ -6,10 +6,19 @@ using Centuriin.CardGame.Core.Engine.Root.State;
 
 namespace Centuriin.CardGame.Core.Application.Initialization;
 
+/// <summary>
+/// Builds initial state from the module's entity initializers or an existing snapshot.
+/// </summary>
 public sealed class GameInitializer : IGameInitializer
 {
     private readonly IModulable<IEntityInitializer> _modulable;
 
+    /// <summary>
+    /// Initializes a new <see cref="GameInitializer"/> instance.
+    /// </summary>
+    /// <param name="modulable">
+    /// The accessor used to resolve the module's entity initializers in execution order.
+    /// </param>
     public GameInitializer(IModulable<IEntityInitializer> modulable)
     {
         ArgumentNullException.ThrowIfNull(modulable);

@@ -7,17 +7,17 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 namespace Centuriin.CardGame.Core.Infrastructure.Storage.InMemory;
 
 /// <summary>
-/// Provides standard 36-card deck templates held in memory.
+/// Provides standard 52-card and 36-card deck templates held in memory.
 /// </summary>
 public sealed class DefaultCardTemplatesRepository
 {
     /// <summary>
-    /// Gets the 36 standard card templates indexed by template identifier.
+    /// Gets the 52 standard card templates indexed by template identifier.
     /// </summary>
-    public static FrozenDictionary<TemplateId, CardTemplate> Templates36 { get; } =
+    public static FrozenDictionary<TemplateId, CardTemplate> Templates52 { get; } =
         Enumerable.Range(1, 4)
             .Select(suit =>
-                Enumerable.Range(6, 9)
+                Enumerable.Range(2, 13)
                     .Select(rank =>
                         new CardTemplate(
                             new TemplateId(14 * suit + rank),
@@ -27,4 +27,12 @@ public sealed class DefaultCardTemplatesRepository
                             ])))
             .SelectMany(x => x)
             .ToFrozenDictionary(k => k.Id);
+
+    /// <summary>
+    /// Gets the 36 standard card templates indexed by template identifier.
+    /// </summary>
+    public static FrozenDictionary<TemplateId, CardTemplate> Templates36 { get; } =
+        Templates52.Values
+            .Where(template => template.Components.OfType<RankComponent>().Single().Rank >= CardRank.Six)
+            .ToFrozenDictionary(template => template.Id);
 }

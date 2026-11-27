@@ -19,12 +19,24 @@ public interface IGameInitializer
     /// The cancellation token for the operation.
     /// </param>
     /// <returns>
-    /// A task that completes when the operation finishes.
+    /// The initialized state of the new game.
     /// </returns>
     public Task<IInitialStateContext> InitializeAsync(
         GameDescription description,
         CancellationToken token);
 
+    /// <summary>
+    /// Restores the initial entity context from a saved game snapshot.
+    /// </summary>
+    /// <param name="snapshot">
+    /// The snapshot containing the game identifier and entities.
+    /// </param>
+    /// <param name="token">
+    /// The cancellation token for the operation.
+    /// </param>
+    /// <returns>
+    /// The initial state restored from the snapshot.
+    /// </returns>
     public Task<IInitialStateContext> InitializeAsync(
         IGameSnapshot snapshot,
         CancellationToken token);
