@@ -23,7 +23,6 @@ using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
 using Centuriin.CardGame.Core.Engine.Root;
 using Centuriin.CardGame.Core.Engine.Root.State;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,9 +39,6 @@ public static class Registrations
     /// <param name="services">
     /// The service collection to configure.
     /// </param>
-    /// <param name="modulesFactory">
-    /// The factory supplying the host's game type mappings before the service provider is built.
-    /// </param>
     /// <returns>
     /// The service collection for further configuration.
     /// </returns>
@@ -53,16 +49,10 @@ public static class Registrations
     /// </remarks>
     public static IServiceCollection AddCardGameCore(
         this IServiceCollection services,
-        Func<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>> modulesFactory)
+        IEnumerable<KeyValuePair<GameTypeId, IGameModule>> modules)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(modulesFactory);
-
-        var modulesByType = modulesFactory().ToDictionary();
-        var modules = modulesByType.Values
-            .Distinct()
-            .ToDictionary(module => module.Key, StringComparer.Ordinal)
-            .Values;
+        ArgumentNullException.ThrowIfNull(modules);
 
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
@@ -71,7 +61,7 @@ public static class Registrations
 
             .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
             .AddSingleton<IGameModulesCache, InMemoryGameModulesCache>()
-            .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>>(modulesByType)
+            .AddSingleton(modules)
             .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddScoped(typeof(IModulable<>), typeof(ModuleAccessor<>))
@@ -84,7 +74,7 @@ public static class Registrations
 
             .AddFactories();
 
-        foreach (var module in modules)
+        foreach (var (_, module) in modules)
         {
             module.Configure(new ConfigurableModuleDependencies(services));
             module.Configure(new ConfigurableEntityInitializers(services, module.Key));

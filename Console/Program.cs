@@ -36,7 +36,7 @@ builder.Services
     .Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
 
-    .AddCardGameCore(() => [new(new(1), new Drunkard.GameModule())])
+    .AddCardGameCore([new(new(1), new Drunkard.GameModule())])
     .UseInMemoryStorage()
 
     .AddSingleton<IDecksRepository, DecksRepo>()
