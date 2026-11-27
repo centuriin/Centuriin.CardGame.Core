@@ -4,12 +4,12 @@ using Centuriin.CardGame.Core.Engine;
 namespace Centuriin.CardGame.Core.Application;
 
 /// <summary>
-/// Resolves registered profiles by game or game type.
+/// Resolves modules associated with the host's game types.
 /// </summary>
 public interface IGameModulesCache
 {
     /// <summary>
-    /// Retrieves the profile associated with a game or game type.
+    /// Retrieves the module assigned to a game type by the host.
     /// </summary>
     /// <param name="gameTypeId">
     /// The identifier of the game type.
@@ -18,7 +18,7 @@ public interface IGameModulesCache
     /// The cancellation token for the operation.
     /// </param>
     /// <returns>
-    /// The registered profile for the selected game type.
+    /// The module assigned to the selected game type.
     /// </returns>
     public ValueTask<IGameModule> GetModuleAsync(
         GameTypeId gameTypeId,

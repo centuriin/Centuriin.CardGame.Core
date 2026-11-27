@@ -1,4 +1,6 @@
-﻿using Centuriin.CardGame.Core.Application.Modulation;
+﻿using Centuriin.CardGame.Core.Application.Initialization;
+using Centuriin.CardGame.Core.Application.Initialization.Configuration;
+using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
@@ -7,7 +9,7 @@ using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 namespace Centuriin.CardGame.Core.Drunkard;
 
 /// <summary>
-/// Configures the systems and command validation used by the Drunkard prototype.
+/// Configures dependencies, initialization, and the engine profile of Drunkard.
 /// </summary>
 public sealed class GameModule : IGameModule, IGameProfile
 {
@@ -16,18 +18,33 @@ public sealed class GameModule : IGameModule, IGameProfile
     /// </summary>
     internal const string KEY = "drunkard";
 
-    /// <summary>
-    /// Gets the shared instance.
-    /// </summary>
-    public static GameModule Instance { get; } = new();
-
     /// <inheritdoc/>
     public string Key => KEY;
 
     /// <inheritdoc/>
     public IGameProfile GameProfile => this;
 
-    private GameModule() { }
+    /// <summary>
+    /// Initializes a new module for startup discovery.
+    /// </summary>
+    public GameModule() { }
+
+    /// <inheritdoc/>
+    public void Configure(IConfigurableModuleDependencies dependencies)
+    {
+        ArgumentNullException.ThrowIfNull(dependencies);
+    }
+
+    /// <inheritdoc/>
+    public void Configure(IConfigurableEntityInitializers initializers)
+    {
+        ArgumentNullException.ThrowIfNull(initializers);
+
+        _ = initializers
+            .Add<PlayersInitializer>()
+            .Add<ZonesInitializer>()
+            .Add<DecksInitializer>();
+    }
 
     /// <inheritdoc/>
     public void Configure(IConfigurableGamePipeline configurableGamePipeline)

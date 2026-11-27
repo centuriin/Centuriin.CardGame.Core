@@ -18,7 +18,6 @@ using Centuriin.CardGame.Core.Engine.ECS.Templates;
 using Centuriin.CardGame.Core.Engine.Events;
 using Centuriin.CardGame.Core.Engine.Events.Dispatching;
 using Centuriin.CardGame.Core.Engine.Loading;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 using Centuriin.CardGame.Core.Engine.Observability.Logging;
@@ -41,21 +40,31 @@ public static class Registrations
     /// <param name="services">
     /// The service collection to configure.
     /// </param>
+    /// <param name="modules">
+    /// The module instances discovered before building the service provider.
+    /// </param>
     /// <returns>
     /// The service collection for further configuration.
     /// </returns>
     /// <remarks>
-    /// The host must also register game profiles, game-specific initializers, the required repositories,
-    /// and logging services. A restoration context accessor is required when restoration is used.
+    /// The host must also register its game type mapping repository, other repositories, and logging services.
+    /// A restoration context accessor is required when restoration is used.
     /// </remarks>
-    public static IServiceCollection AddCardGameCore(this IServiceCollection services) =>
+    public static IServiceCollection AddCardGameCore(
+        this IServiceCollection services,
+        IReadOnlyCollection<IGameModule> modules)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(modules);
+
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
             .AddApplicationDispatcher<IGameApplicationEvent>(
                 AppDomain.CurrentDomain.GetAssemblies())
 
             .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
-            .AddSingleton<IGameModulesCache, InMemoryGameProfilesCache>()
+            .AddScoped<IGameModulesCache, InMemoryGameModulesCache>()
+            .AddSingleton<IEnumerable<IGameModule>>(modules)
             .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddScoped(typeof(IModulable<>), typeof(ModuleAccessor<>))
@@ -67,6 +76,15 @@ public static class Registrations
             .AddGameLoop()
 
             .AddFactories();
+
+        foreach (var module in modules)
+        {
+            module.Configure(new ConfigurableModuleDependencies(services));
+            module.Configure(new ConfigurableEntityInitializers(services, module.Key));
+        }
+
+        return services;
+    }
 
     private static IServiceCollection AddContexts(this IServiceCollection services) =>
         services
@@ -87,20 +105,11 @@ public static class Registrations
                 GameProfileContextAccessor>("scoped");
 
     private static IServiceCollection AddInitialization(this IServiceCollection services) =>
-        services // Todo rework
-            .AddScoped<IGameInitializer, GameInitializer>()
-            .AddKeyedScoped<IEntityInitializer, PlayersInitializer>("drunkard")
-            .AddKeyedScoped<IEntityInitializer, ZonesInitializer>("drunkard")
-            .AddKeyedScoped<IEntityInitializer, DecksInitializer>("drunkard");
+        services
+            .AddScoped<IGameInitializer, GameInitializer>();
 
     private static IServiceCollection AddLoading(this IServiceCollection services) =>
         services
-            .Scan(s => s
-                .FromApplicationDependencies()
-                .AddClasses(c => c.AssignableTo<IGameProfile>(), publicOnly: true)
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime())
-
             .AddScoped<IGameLoader, GamePipelineLoader>()
             .AddScoped<IGameLoader, GameCommandValidatorLoader>()
             .AddScoped<IGameLoader, EntitiesLoader>();
