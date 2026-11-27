@@ -1,5 +1,4 @@
 using Centuriin.CardGame.Core.Application.Initialization;
-using Centuriin.CardGame.Core.Application.Initialization.Configuration;
 
 using Microsoft.Extensions.DependencyInjection;
 

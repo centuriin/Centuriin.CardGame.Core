@@ -1,4 +1,4 @@
-namespace Centuriin.CardGame.Core.Application.Initialization.Configuration;
+namespace Centuriin.CardGame.Core.Application.Initialization;
 
 /// <summary>
 /// Declares the entity initializers of a game module in execution order.

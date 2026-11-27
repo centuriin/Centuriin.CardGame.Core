@@ -1,5 +1,4 @@
 ﻿using Centuriin.CardGame.Core.Application.Initialization;
-using Centuriin.CardGame.Core.Application.Initialization.Configuration;
 using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
