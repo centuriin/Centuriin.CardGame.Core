@@ -1,6 +1,7 @@
 ﻿using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Context;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
+using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application.Context;
 
@@ -10,7 +11,8 @@ namespace Centuriin.CardGame.Core.Application.Context;
 public sealed class GameProfileContextAccessor :
     IGameContextAccessor<IGameProfileContext>
 {
-    private readonly IGameProfilesCache _profilesRepository;
+    private readonly IGameDescriptionRepository _descriptionRepository;
+    private readonly IGameModulesCache _profilesRepository;
 
     /// <summary>
     /// Initializes a new <see cref="GameProfileContextAccessor"/> instance.
@@ -18,8 +20,13 @@ public sealed class GameProfileContextAccessor :
     /// <param name="profilesRepository">
     /// The cache used to resolve game profiles.
     /// </param>
-    public GameProfileContextAccessor(IGameProfilesCache profilesRepository)
+    public GameProfileContextAccessor(
+        IGameDescriptionRepository descriptionRepository,
+        IGameModulesCache profilesRepository)
     {
+        ArgumentNullException.ThrowIfNull(descriptionRepository);
+        _descriptionRepository = descriptionRepository;
+
         ArgumentNullException.ThrowIfNull(profilesRepository);
         _profilesRepository = profilesRepository;
     }
@@ -31,12 +38,18 @@ public sealed class GameProfileContextAccessor :
     {
         token.ThrowIfCancellationRequested();
 
-        var profile = await _profilesRepository.GetProfileAsync(gameId, token);
+        var description = await _descriptionRepository.FindAsync(gameId, token)
+            ?? throw new InvalidOperationException(
+                $"Can't find description for game {gameId.Value}.");
+
+        var module = await _profilesRepository.GetModuleAsync(
+            description.GameTypeId, 
+            token);
 
         return new Context
         {
             GameId = gameId,
-            Profile = profile
+            Profile = module.GameProfile
         };
     }
 

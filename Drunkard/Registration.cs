@@ -17,7 +17,7 @@ public static class Registration
     /// The service collection for further configuration.
     /// </returns>
     /// <remarks>
-    /// The host must also associate the game type identifier with <see cref="GameProfile.Instance"/>.
+    /// The host must also associate the game type identifier with <see cref="GameModule.Instance"/>.
     /// </remarks>
     public static IServiceCollection AddDrunkard(this IServiceCollection services)
         => services;

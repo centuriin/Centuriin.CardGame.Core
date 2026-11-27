@@ -15,7 +15,7 @@ namespace Centuriin.CardGame.Core.Extensions.DependencyInjection;
 internal sealed class ModuleAccessor<TDependency> : IModulable<TDependency>
     where TDependency : notnull
 {
-    private readonly IGameProfilesCache _profilesCache;
+    private readonly IGameModulesCache _profilesCache;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
@@ -28,7 +28,7 @@ internal sealed class ModuleAccessor<TDependency> : IModulable<TDependency>
     /// The service provider used to create dependencies.
     /// </param>
     public ModuleAccessor(
-        IGameProfilesCache profilesRepository,
+        IGameModulesCache profilesRepository,
         IServiceProvider serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(profilesRepository);
@@ -45,7 +45,7 @@ internal sealed class ModuleAccessor<TDependency> : IModulable<TDependency>
     {
         token.ThrowIfCancellationRequested();
 
-        var profile = await _profilesCache.GetProfileAsync(
+        var profile = await _profilesCache.GetModuleAsync(
             gameTypeId,
             token);
 
@@ -59,7 +59,7 @@ internal sealed class ModuleAccessor<TDependency> : IModulable<TDependency>
     {
         token.ThrowIfCancellationRequested();
 
-        var profile = await _profilesCache.GetProfileAsync(
+        var profile = await _profilesCache.GetModuleAsync(
             gameTypeId,
             token);
 

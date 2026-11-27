@@ -19,13 +19,6 @@ internal sealed class DefaultProfile : IGameProfile
     public static DefaultProfile Instance { get; } = new();
 
     /// <inheritdoc/>
-    /// <exception cref="NotSupportedException">
-    /// The default profile is a reusable configuration and does not expose a module key.
-    /// </exception>
-    public string Key =>
-        throw new NotSupportedException("The default profile does not expose a module key.");
-
-    /// <inheritdoc/>
     public void Configure(IConfigurableGamePipeline configurableGamePipeline)
     {
         ArgumentNullException.ThrowIfNull(configurableGamePipeline);

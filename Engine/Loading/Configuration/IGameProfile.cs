@@ -9,11 +9,6 @@ namespace Centuriin.CardGame.Core.Engine.Loading.Configuration;
 public interface IGameProfile
 {
     /// <summary>
-    /// Gets the module key used to resolve game-specific dependencies.
-    /// </summary>
-    public string Key { get; }
-
-    /// <summary>
     /// Configures the game's systems and their selected event subscriptions.
     /// </summary>
     /// <param name="configurableGamePipeline">

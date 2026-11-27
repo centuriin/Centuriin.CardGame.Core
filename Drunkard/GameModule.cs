@@ -1,4 +1,5 @@
-﻿using Centuriin.CardGame.Core.Engine.Commands.Rules;
+﻿using Centuriin.CardGame.Core.Application.Modulation;
+using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
@@ -8,7 +9,7 @@ namespace Centuriin.CardGame.Core.Drunkard;
 /// <summary>
 /// Configures the systems and command validation used by the Drunkard prototype.
 /// </summary>
-public sealed class GameProfile : IGameProfile
+public sealed class GameModule : IGameModule, IGameProfile
 {
     /// <summary>
     /// The dependency injection key used by the Drunkard module.
@@ -18,12 +19,15 @@ public sealed class GameProfile : IGameProfile
     /// <summary>
     /// Gets the shared instance.
     /// </summary>
-    public static GameProfile Instance { get; } = new();
+    public static GameModule Instance { get; } = new();
 
     /// <inheritdoc/>
     public string Key => KEY;
 
-    private GameProfile() { }
+    /// <inheritdoc/>
+    public IGameProfile GameProfile => this;
+
+    private GameModule() { }
 
     /// <inheritdoc/>
     public void Configure(IConfigurableGamePipeline configurableGamePipeline)

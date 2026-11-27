@@ -2,6 +2,7 @@
 
 using Centuriin.CardGame.Core.Application;
 using Centuriin.CardGame.Core.Application.Events;
+using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Drunkard;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
@@ -39,8 +40,8 @@ builder.Services
     .AddCardGameCore()
     .AddDrunkard()
     .UseInMemoryStorage()
-    .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameProfile>>>(
-        [new(new(1), Drunkard.GameProfile.Instance)])
+    .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>>(
+        [new(new(1), Drunkard.GameModule.Instance)])
 
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()

@@ -1,67 +1,43 @@
 ﻿using System.Collections.Concurrent;
 
+using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application;
 
 /// <summary>
 /// Stores registered profiles in memory and resolves game types from descriptions.
 /// </summary>
-public sealed class InMemoryGameProfilesCache : IGameProfilesCache
+public sealed class InMemoryGameProfilesCache : IGameModulesCache
 {
-    private readonly ConcurrentDictionary<GameTypeId, IGameProfile> _gameProfiles;
-
-    private readonly IGameDescriptionRepository _descriptionRepository;
+    private readonly ConcurrentDictionary<GameTypeId, IGameModule> _gameModules;
 
     /// <summary>
     /// Initializes a new <see cref="InMemoryGameProfilesCache"/> instance.
     /// </summary>
-    /// <param name="descriptionRepository">
-    /// The repository used to retrieve game descriptions.
-    /// </param>
-    /// <param name="profiles">
+    /// <param name="modules">
     /// The profiles indexed by game type identifier.
     /// </param>
     public InMemoryGameProfilesCache(
-        IGameDescriptionRepository descriptionRepository,
-        IEnumerable<KeyValuePair<GameTypeId, IGameProfile>> profiles)
+        IEnumerable<KeyValuePair<GameTypeId, IGameModule>> modules)
     {
-        ArgumentNullException.ThrowIfNull(descriptionRepository);
-        _descriptionRepository = descriptionRepository;
-
-        ArgumentNullException.ThrowIfNull(profiles);
-        _gameProfiles = new(profiles);
+        ArgumentNullException.ThrowIfNull(modules);
+        _gameModules = new(modules);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IGameProfile> GetProfileAsync(
-        GameId gameId,
-        CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-
-        var description = await _descriptionRepository.FindAsync(gameId, token)
-            ?? throw new InvalidOperationException(
-                $"Description for game {gameId.Value} not found.");
-
-        return await GetProfileAsync(description.GameTypeId, token);
-    }
-
-    /// <inheritdoc/>
-    public async ValueTask<IGameProfile> GetProfileAsync(
+    public async ValueTask<IGameModule> GetModuleAsync(
         GameTypeId gameTypeId,
         CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        if (!_gameProfiles.TryGetValue(gameTypeId, out var profile))
+        if (!_gameModules.TryGetValue(gameTypeId, out var module))
         {
             throw new InvalidOperationException(
-                $"Game profile for type {gameTypeId.Value} not found.");
+                $"Game module for type {gameTypeId.Value} not found.");
         }
 
-        return profile;
+        return module;
     }
 }
