@@ -39,11 +39,14 @@ public static class Registrations
     /// <param name="services">
     /// The service collection to configure.
     /// </param>
+    /// <param name="modules">
+    /// The host's mappings from game types to module instances.
+    /// </param>
     /// <returns>
     /// The service collection for further configuration.
     /// </returns>
     /// <remarks>
-    /// The factory is invoked once during registration so modules can declare their dependencies.
+    /// Modules declare their dependencies during registration, before the service provider is built.
     /// The host must also register repositories and logging services.
     /// A restoration context accessor is required when restoration is used.
     /// </remarks>

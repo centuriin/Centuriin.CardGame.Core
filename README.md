@@ -43,7 +43,7 @@ dotnet run --project Application.Tests/Application.Tests.csproj --no-build -- --
 - Реализованы сущности игроков, карт и зон, компоненты, валидация команд, конфигурация систем и доставка событий.
 - Ведущая игра (`MasterGame`) генерирует и применяет события; реплика (`ReplicaGame`) подготавливает команды для внешнего исполнения и применяет полученные пакеты событий.
 - Применение записанных событий отделено от генерации последующих событий. Начальная раздача и порядок игроков пока используют случайное перемешивание без задаваемого seed.
-- `Drunkard` пока использует `FakeCommand`; полный игровой цикл и определение победителя ещё не реализованы.
+- `Drunkard` создаёт колоду из 36 или 52 карт по настройке `GameSettings.DeckType`: шаблоны полной колоды фильтруются до создания сущностей. Пока используется `FakeCommand`; полный игровой цикл и определение победителя ещё не реализованы.
 - `UseInMemoryStorage()` регистрирует репозиторий шаблонов зон. Репозитории колод, описаний партий и снимков в примере регистрируются отдельно в `Console/Program.cs`.
 - Сохранение истории, восстановление и создание реплик ещё дорабатываются. Консольный пример демонстрирует подключение и запуск сессий.
 
@@ -103,9 +103,9 @@ The test projects use xUnit v3 and Microsoft.Testing.Platform.
 - Player, card, and zone entities, components, command validation, system configuration, and event dispatch are implemented.
 - The authoritative game (`MasterGame`) produces and applies events; a replica (`ReplicaGame`) prepares commands for external execution and applies received event batches.
 - Applying recorded events is separate from producing successor events. Initial dealing and player order currently use random shuffling without a configurable seed.
-- `Drunkard` currently uses `FakeCommand`; a complete game loop and winner determination are not implemented yet.
+- `Drunkard` creates a 36-card or 52-card deck according to `GameSettings.DeckType`, filtering full-deck templates before creating entities. It currently uses `FakeCommand`; a complete game loop and winner determination are not implemented yet.
 - `UseInMemoryStorage()` registers the zone template repository. The example registers deck, game description, and snapshot repositories separately in `Console/Program.cs`.
-- The host passes a factory of `GameTypeId → IGameModule` mappings to `AddCardGameCore`. It runs once during service registration, before DI is built. Modules declare ordinary scoped dependencies and entity initializers registered as keyed scoped services under the module's key. The cache receives the prepared mappings; the host assigns game type identifiers. One module instance can serve several game types.
+- The host passes `GameTypeId → IGameModule` mappings to `AddCardGameCore`. Modules declare ordinary scoped dependencies and entity initializers registered as keyed scoped services under the module's key before DI is built. The cache receives the prepared mappings; the host assigns game type identifiers.
 - History persistence, restoration, and replica creation are still being developed. The console example demonstrates registration and session startup.
 
 XML documentation is included in the C# sources. Implementations inherit contract documentation through `<inheritdoc/>`; library builds produce XML documentation files.

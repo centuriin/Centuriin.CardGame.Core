@@ -90,28 +90,23 @@ public sealed class DecksRepo : IDecksRepository
         GameTypeId gameTypeId,
         PlayerId playerId,
         CancellationToken token)
-        => [.. DefaultCardTemplatesRepository.Templates36.Values];
+        => [.. DefaultCardTemplatesRepository.Templates52.Values];
 }
 
 public sealed class GameDescriptionRepo : IGameDescriptionRepository
 {
-    private sealed class Settings : IGameSettings
-    {
-        public bool Equals(IGameSettings? other) => true;
-    }
-
     public GameDescription FirstGame { get; } =
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            new Settings(),
+            new Drunkard.GameSettings(Drunkard.DeckType.Deck36),
             [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
     public GameDescription SecondGame { get; } =
         new(
             new(Guid.CreateVersion7()),
             new(1),
-            new Settings(),
+            new Drunkard.GameSettings(Drunkard.DeckType.Deck52),
             [PlayerId.System, new(Guid.NewGuid()), new(Guid.NewGuid())]);
 
     public Task AddAsync(GameDescription gameDescription, CancellationToken token) => throw new NotImplementedException();

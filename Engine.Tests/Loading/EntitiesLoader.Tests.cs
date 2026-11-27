@@ -23,8 +23,7 @@ public sealed class EntitiesLoaderTests
             new EntitiesLoader(
                 Mock.Of<IGameState>(MockBehavior.Strict),
                 Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict),
-                []));
+                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeNull();
@@ -39,8 +38,7 @@ public sealed class EntitiesLoaderTests
             new EntitiesLoader(
                 null!,
                 Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict),
-                []));
+                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -55,8 +53,7 @@ public sealed class EntitiesLoaderTests
             new EntitiesLoader(
                 Mock.Of<IGameState>(MockBehavior.Strict),
                 null!,
-                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict),
-                []));
+                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict)));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
@@ -71,38 +68,19 @@ public sealed class EntitiesLoaderTests
             new EntitiesLoader(
                 Mock.Of<IGameState>(MockBehavior.Strict),
                 Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-                null!,
-                []));
-
-        // Assert
-        exception.Should().BeOfType<ArgumentNullException>();
-    }
-
-    [Fact(DisplayName = "Cannot be created without an entity loader collection.")]
-    [Trait("Category", "Unit")]
-    public void CanNotBeCreatedWithoutEntityLoaders()
-    {
-        // Act
-        var exception = Record.Exception(() =>
-            new EntitiesLoader(
-                Mock.Of<IGameState>(MockBehavior.Strict),
-                Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-                Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict),
                 null!));
 
         // Assert
         exception.Should().BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "Can load all supported entities before restoring the identifier sequence.")]
+    [Fact(DisplayName = "Can load initial entities before restoring the identifier sequence.")]
     [Trait("Category", "Unit")]
     public async Task CanLoadEntitiesAndRestoreIdentifierAsync()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var gameId = new GameId(Guid.NewGuid());
-
-        var state = Mock.Of<IGameState>(MockBehavior.Strict);
 
         var entities = Mock.Of<IReadOnlyEntitiesCollection>(MockBehavior.Strict);
 
@@ -117,29 +95,28 @@ public sealed class EntitiesLoaderTests
             .ReturnsAsync(context.Object);
 
         var calls = new List<string>();
-        var first = new Mock<IEntityLoader>(MockBehavior.Strict);
-        first.Setup(x => x.Load(entities, state))
-            .Callback(() => calls.Add("first"));
+        var destination = new Mock<IEntitiesCollection>(MockBehavior.Strict);
+        destination.Setup(x => x.Add(entities))
+            .Callback(() => calls.Add("entities"));
 
-        var second = new Mock<IEntityLoader>(MockBehavior.Strict);
-        second.Setup(x => x.Load(entities, state))
-            .Callback(() => calls.Add("second"));
+        var state = new Mock<IGameState>(MockBehavior.Strict);
+        state.SetupGet(x => x.Entities)
+            .Returns(destination.Object);
 
         var provider = new Mock<IEntityIdProvider>(MockBehavior.Strict);
         provider.Setup(x => x.SetInitialId(new EntityId(42)))
             .Callback(() => calls.Add("identifier"));
 
         var loader = new EntitiesLoader(
-            state,
+            state.Object,
             provider.Object,
-            accessor.Object,
-            [first.Object, second.Object]);
+            accessor.Object);
 
         // Act
         await loader.LoadAsync(gameId, token);
 
         // Assert
-        calls.Should().Equal("first", "second", "identifier");
+        calls.Should().Equal("entities", "identifier");
     }
 
     [Fact(DisplayName = "Cannot load entities after cancellation or access any dependencies.")]
@@ -153,8 +130,7 @@ public sealed class EntitiesLoaderTests
         var loader = new EntitiesLoader(
             Mock.Of<IGameState>(MockBehavior.Strict),
             Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-            Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict),
-            [Mock.Of<IEntityLoader>(MockBehavior.Strict)]);
+            Mock.Of<IGameContextAccessor<IReadOnlyInitialStateContext>>(MockBehavior.Strict));
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
@@ -181,8 +157,7 @@ public sealed class EntitiesLoaderTests
         var loader = new EntitiesLoader(
             Mock.Of<IGameState>(MockBehavior.Strict),
             Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-            accessor.Object,
-            [Mock.Of<IEntityLoader>(MockBehavior.Strict)]);
+            accessor.Object);
 
         // Act
         var exception = await Record.ExceptionAsync(() =>
@@ -192,15 +167,13 @@ public sealed class EntitiesLoaderTests
         exception.Should().BeSameAs(failure);
     }
 
-    [Fact(DisplayName = "Can stop loading on the first entity loader failure without resetting identifiers.")]
+    [Fact(DisplayName = "Can propagate an entity loading failure without resetting identifiers.")]
     [Trait("Category", "Unit")]
-    public async Task CanPropagateEntityLoaderFailureAsync()
+    public async Task CanPropagateEntityLoadingFailureAsync()
     {
         // Arrange
         var gameId = new GameId(Guid.NewGuid());
         var token = TestContext.Current.CancellationToken;
-
-        var state = Mock.Of<IGameState>(MockBehavior.Strict);
 
         var entities = Mock.Of<IReadOnlyEntitiesCollection>(MockBehavior.Strict);
 
@@ -214,15 +187,18 @@ public sealed class EntitiesLoaderTests
         accessor.Setup(x => x.GetContextAsync(gameId, token))
             .ReturnsAsync(context.Object);
 
-        var first = new Mock<IEntityLoader>(MockBehavior.Strict);
-        first.Setup(x => x.Load(entities, state))
+        var destination = new Mock<IEntitiesCollection>(MockBehavior.Strict);
+        destination.Setup(x => x.Add(entities))
             .Throws(failure);
 
+        var state = new Mock<IGameState>(MockBehavior.Strict);
+        state.SetupGet(x => x.Entities)
+            .Returns(destination.Object);
+
         var loader = new EntitiesLoader(
-            state,
+            state.Object,
             Mock.Of<IEntityIdProvider>(MockBehavior.Strict),
-            accessor.Object,
-            [first.Object, Mock.Of<IEntityLoader>(MockBehavior.Strict)]);
+            accessor.Object);
 
         // Act
         var exception = await Record.ExceptionAsync(() =>

@@ -7,7 +7,7 @@ namespace Centuriin.CardGame.Core.Drunkard;
 /// <summary>
 /// Stores the deck selection for a Drunkard game.
 /// </summary>
-internal sealed class GameSettings : IGameSettings
+public sealed class GameSettings : IGameSettings
 {
     /// <summary>
     /// Gets the selected standard deck size.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Selects the standard deck size for Drunkard.
 /// </summary>
-internal enum DeckType
+public enum DeckType
 {
     /// <summary>
     /// No value has been selected.

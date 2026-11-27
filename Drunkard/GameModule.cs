@@ -1,5 +1,6 @@
 ﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Application.Modulation;
+using Centuriin.CardGame.Core.Drunkard.Initialization;
 using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
@@ -36,7 +37,7 @@ public sealed class GameModule : IGameModule, IGameProfile
         _ = initializers
             .Add<DefaultPlayersInitializer>()
             .Add<DefaultZonesInitializer>()
-            .Add<DefaultDecksInitializer>();
+            .Add<DeckInitializer>();
     }
 
     /// <inheritdoc/>
