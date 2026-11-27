@@ -24,10 +24,6 @@ public sealed class GameModule : IGameModule, IGameProfile
     /// <inheritdoc/>
     public IGameProfile GameProfile => this;
 
-    /// <summary>
-    /// Initializes a new module for startup discovery.
-    /// </summary>
-    public GameModule() { }
 
     /// <inheritdoc/>
     public void Configure(IConfigurableModuleDependencies dependencies)

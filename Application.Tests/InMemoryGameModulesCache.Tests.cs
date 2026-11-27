@@ -1,6 +1,5 @@
 using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 using FluentAssertions;
 
@@ -12,6 +11,19 @@ namespace Centuriin.CardGame.Core.Application.Tests;
 
 public sealed class InMemoryGameModulesCacheTests
 {
+    [Fact(DisplayName = "Cannot create a module cache without game type mappings.")]
+    [Trait("Category", "Unit")]
+    public void CanNotCreateWithoutModules()
+    {
+        // Act
+        var exception = Record.Exception(() =>
+            new InMemoryGameModulesCache(null!));
+
+        // Assert
+        exception.Should().BeOfType<ArgumentNullException>()
+            .Which.ParamName.Should().Be("modules");
+    }
+
     [Theory(DisplayName = "Can resolve a module using the host's game type mapping.")]
     [InlineData(1)]
     [InlineData(501)]
@@ -22,21 +34,15 @@ public sealed class InMemoryGameModulesCacheTests
         var gameTypeId = new GameTypeId(value);
         var token = TestContext.Current.CancellationToken;
 
-        var module = new Mock<IGameModule>(MockBehavior.Strict);
-        module.SetupGet(x => x.Key)
-            .Returns("fake");
+        var module = Mock.Of<IGameModule>(MockBehavior.Strict);
 
-        var gameTypes = new Mock<IGameTypeModulesRepository>(MockBehavior.Strict);
-        gameTypes.Setup(x => x.FindModuleKeyAsync(gameTypeId, token))
-            .ReturnsAsync("fake");
-
-        var cache = new InMemoryGameModulesCache([module.Object], gameTypes.Object);
+        var cache = new InMemoryGameModulesCache([new(gameTypeId, module)]);
 
         // Act
         var result = await cache.GetModuleAsync(gameTypeId, token);
 
         // Assert
-        result.Should().BeSameAs(module.Object);
+        result.Should().BeSameAs(module);
     }
 
     [Fact(DisplayName = "Can map several game types to the same module.")]
@@ -48,59 +54,43 @@ public sealed class InMemoryGameModulesCacheTests
         var secondType = new GameTypeId(42);
         var token = TestContext.Current.CancellationToken;
 
-        var module = new Mock<IGameModule>(MockBehavior.Strict);
-        module.SetupGet(x => x.Key)
-            .Returns("fake");
+        var module = Mock.Of<IGameModule>(MockBehavior.Strict);
 
-        var gameTypes = new Mock<IGameTypeModulesRepository>(MockBehavior.Strict);
-        gameTypes.Setup(x => x.FindModuleKeyAsync(firstType, token))
-            .ReturnsAsync("fake");
-        gameTypes.Setup(x => x.FindModuleKeyAsync(secondType, token))
-            .ReturnsAsync("fake");
-
-        var cache = new InMemoryGameModulesCache([module.Object], gameTypes.Object);
+        var cache = new InMemoryGameModulesCache(
+            [new(firstType, module), new(secondType, module)]);
 
         // Act
         var first = await cache.GetModuleAsync(firstType, token);
         var second = await cache.GetModuleAsync(secondType, token);
 
         // Assert
-        first.Should().BeSameAs(module.Object);
-        second.Should().BeSameAs(module.Object);
+        first.Should().BeSameAs(module);
+        second.Should().BeSameAs(module);
     }
 
-    [Fact(DisplayName = "Can resolve a game type added after the module cache was created.")]
+    [Fact(DisplayName = "Can resolve different modules for different game types.")]
     [Trait("Category", "Unit")]
-    public async Task CanResolveNewGameTypeAsync()
+    public async Task CanResolveDifferentModulesAsync()
     {
         // Arrange
         var firstType = new GameTypeId(1);
-        var newType = new GameTypeId(42);
+        var secondType = new GameTypeId(42);
         var token = TestContext.Current.CancellationToken;
 
-        var mappings = new Dictionary<GameTypeId, string> { [firstType] = "fake" };
+        var firstModule = Mock.Of<IGameModule>(MockBehavior.Strict);
 
-        var module = new Mock<IGameModule>(MockBehavior.Strict);
-        module.SetupGet(x => x.Key)
-            .Returns("fake");
+        var secondModule = Mock.Of<IGameModule>(MockBehavior.Strict);
 
-        var mappingCalls = 0;
-        var gameTypes = new Mock<IGameTypeModulesRepository>(MockBehavior.Strict);
-        gameTypes.Setup(x => x.FindModuleKeyAsync(It.IsAny<GameTypeId>(), token))
-            .Callback(() => mappingCalls++)
-            .Returns<GameTypeId, CancellationToken>((id, _) =>
-                Task.FromResult(mappings.GetValueOrDefault(id)));
-
-        var cache = new InMemoryGameModulesCache([module.Object], gameTypes.Object);
-        _ = await cache.GetModuleAsync(firstType, token);
+        var cache = new InMemoryGameModulesCache(
+            [new(firstType, firstModule), new(secondType, secondModule)]);
 
         // Act
-        mappings.Add(newType, "fake");
-        var result = await cache.GetModuleAsync(newType, token);
+        var first = await cache.GetModuleAsync(firstType, token);
+        var second = await cache.GetModuleAsync(secondType, token);
 
         // Assert
-        result.Should().BeSameAs(module.Object);
-        mappingCalls.Should().Be(2);
+        first.Should().BeSameAs(firstModule);
+        second.Should().BeSameAs(secondModule);
     }
 
     [Fact(DisplayName = "Cannot resolve an unregistered game type.")]
@@ -111,11 +101,7 @@ public sealed class InMemoryGameModulesCacheTests
         var gameTypeId = new GameTypeId(42);
         var token = TestContext.Current.CancellationToken;
 
-        var gameTypes = new Mock<IGameTypeModulesRepository>(MockBehavior.Strict);
-        gameTypes.Setup(x => x.FindModuleKeyAsync(gameTypeId, token))
-            .ReturnsAsync((string?)null);
-
-        var cache = new InMemoryGameModulesCache([], gameTypes.Object);
+        var cache = new InMemoryGameModulesCache([]);
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
@@ -123,29 +109,30 @@ public sealed class InMemoryGameModulesCacheTests
 
         // Assert
         exception.Should().BeOfType<InvalidOperationException>()
-            .Which.Message.Should().Contain("not registered");
+            .Which.Message.Should().Contain(gameTypeId.Value.ToString()).And.Contain("not found");
     }
 
-    [Fact(DisplayName = "Cannot resolve a game type whose module is not installed.")]
+    [Fact(DisplayName = "Cannot resolve a module when cancellation is requested.")]
     [Trait("Category", "Unit")]
-    public async Task CanNotResolveUninstalledModuleAsync()
+    public async Task CanNotResolveWhenCancelledAsync()
     {
         // Arrange
-        var gameTypeId = new GameTypeId(42);
-        var token = TestContext.Current.CancellationToken;
+        var gameTypeId = new GameTypeId(1);
 
-        var gameTypes = new Mock<IGameTypeModulesRepository>(MockBehavior.Strict);
-        gameTypes.Setup(x => x.FindModuleKeyAsync(gameTypeId, token))
-            .ReturnsAsync("missing");
+        var module = Mock.Of<IGameModule>(MockBehavior.Strict);
 
-        var cache = new InMemoryGameModulesCache([], gameTypes.Object);
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            TestContext.Current.CancellationToken);
+        await cancellation.CancelAsync();
+
+        var cache = new InMemoryGameModulesCache([new(gameTypeId, module)]);
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await cache.GetModuleAsync(gameTypeId, token));
+            await cache.GetModuleAsync(gameTypeId, cancellation.Token));
 
         // Assert
-        exception.Should().BeOfType<InvalidOperationException>()
-            .Which.Message.Should().Contain("missing").And.Contain("not installed");
+        exception.Should().BeOfType<OperationCanceledException>()
+            .Which.CancellationToken.Should().Be(cancellation.Token);
     }
 }

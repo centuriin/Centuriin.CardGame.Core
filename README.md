@@ -45,7 +45,6 @@ dotnet run --project Application.Tests/Application.Tests.csproj --no-build -- --
 - Применение записанных событий отделено от генерации последующих событий. Начальная раздача и порядок игроков пока используют случайное перемешивание без задаваемого seed.
 - `Drunkard` пока использует `FakeCommand`; полный игровой цикл и определение победителя ещё не реализованы.
 - `UseInMemoryStorage()` регистрирует репозиторий шаблонов зон. Репозитории колод, описаний партий и снимков в примере регистрируются отдельно в `Console/Program.cs`.
-- При запуске в DLL каталога `Modules` обнаруживаются реализации `IGameModule` и создаются через открытый конструктор без параметров. Модуль объявляет обычные scoped-зависимости и инициализаторы с его ключом. Соответствие серверных `GameTypeId` ключам модулей читается во время работы через `IGameTypeModulesRepository`, который реализует хост. Новые типы игр могут использовать уже установленный модуль без пересборки DI; новые DLL подхватываются при следующем запуске. Консольный пример копирует модуль Drunkard в этот каталог и использует демонстрационный репозиторий.
 - Сохранение истории, восстановление и создание реплик ещё дорабатываются. Консольный пример демонстрирует подключение и запуск сессий.
 
 XML-документация находится в исходниках C#. Реализации наследуют документацию контрактов через `<inheritdoc/>`; при сборке библиотек создаются XML-файлы документации.
@@ -106,7 +105,7 @@ The test projects use xUnit v3 and Microsoft.Testing.Platform.
 - Applying recorded events is separate from producing successor events. Initial dealing and player order currently use random shuffling without a configurable seed.
 - `Drunkard` currently uses `FakeCommand`; a complete game loop and winner determination are not implemented yet.
 - `UseInMemoryStorage()` registers the zone template repository. The example registers deck, game description, and snapshot repositories separately in `Console/Program.cs`.
-- At startup, `IGameModule` implementations in DLLs under `Modules` are discovered and created through public parameterless constructors. Modules declare ordinary scoped dependencies and initializers registered under their key. The host implements `IGameTypeModulesRepository` to supply current game type mappings at runtime. New game types can use an installed module without rebuilding DI; new DLLs are picked up on the next startup. The console example copies Drunkard into this directory and uses a demonstration mapping repository.
+- The host passes a factory of `GameTypeId → IGameModule` mappings to `AddCardGameCore`. It runs once during service registration, before DI is built. Modules declare ordinary scoped dependencies and entity initializers registered as keyed scoped services under the module's key. The cache receives the prepared mappings; the host assigns game type identifiers. One module instance can serve several game types.
 - History persistence, restoration, and replica creation are still being developed. The console example demonstrates registration and session startup.
 
 XML documentation is included in the C# sources. Implementations inherit contract documentation through `<inheritdoc/>`; library builds produce XML documentation files.

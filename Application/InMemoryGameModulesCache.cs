@@ -1,57 +1,41 @@
-﻿using System.Collections.Concurrent;
-
-using Centuriin.CardGame.Core.Application.Modulation;
+﻿using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Engine;
-using Centuriin.CardGame.Core.Infrastructure.Storage.Abstractions.Repositories;
 
 namespace Centuriin.CardGame.Core.Application;
 
 /// <summary>
-/// Stores discovered module instances and resolves the host's current game type mappings.
+/// Stores the host's mapping from game types to module instances.
 /// </summary>
 public sealed class InMemoryGameModulesCache : IGameModulesCache
 {
-    private readonly ConcurrentDictionary<string, IGameModule> _gameModules;
-    private readonly IGameTypeModulesRepository _gameTypes;
+    private readonly Dictionary<GameTypeId, IGameModule> _gameModules;
 
     /// <summary>
     /// Initializes a new <see cref="InMemoryGameModulesCache"/> instance.
     /// </summary>
     /// <param name="modules">
-    /// The module instances discovered at startup.
-    /// </param>
-    /// <param name="gameTypes">
-    /// The repository containing the host's current game type mappings.
+    /// The game type mappings supplied by the host.
     /// </param>
     public InMemoryGameModulesCache(
-        IEnumerable<IGameModule> modules,
-        IGameTypeModulesRepository gameTypes)
+        IEnumerable<KeyValuePair<GameTypeId, IGameModule>> modules)
     {
         ArgumentNullException.ThrowIfNull(modules);
-        _gameModules = new(
-            modules.Select(module => KeyValuePair.Create(module.Key, module)),
-            StringComparer.Ordinal);
-
-        ArgumentNullException.ThrowIfNull(gameTypes);
-        _gameTypes = gameTypes;
+        _gameModules = new(modules);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IGameModule> GetModuleAsync(
+    public ValueTask<IGameModule> GetModuleAsync(
         GameTypeId gameTypeId,
         CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        var moduleKey = await _gameTypes.FindModuleKeyAsync(gameTypeId, token)
-            ?? throw new InvalidOperationException($"Game type {gameTypeId.Value} is not registered.");
-
-        if (!_gameModules.TryGetValue(moduleKey, out var module))
+        if (!_gameModules.TryGetValue(gameTypeId, out var module))
         {
             throw new InvalidOperationException(
-                $"Game module {moduleKey} for type {gameTypeId.Value} is not installed.");
+                $"Game module for type {gameTypeId.Value} not found.");
         }
 
-        return module;
+        return ValueTask.FromResult(module);
     }
 }

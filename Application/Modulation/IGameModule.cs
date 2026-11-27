@@ -6,9 +6,6 @@ namespace Centuriin.CardGame.Core.Application.Modulation;
 /// <summary>
 /// Describes a game module and declares its dependencies.
 /// </summary>
-/// <remarks>
-/// Discoverable modules expose a public parameterless constructor.
-/// </remarks>
 public interface IGameModule
 {
     /// <summary>

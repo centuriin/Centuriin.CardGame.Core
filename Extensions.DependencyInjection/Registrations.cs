@@ -40,22 +40,29 @@ public static class Registrations
     /// <param name="services">
     /// The service collection to configure.
     /// </param>
-    /// <param name="modules">
-    /// The module instances discovered before building the service provider.
+    /// <param name="modulesFactory">
+    /// The factory supplying the host's game type mappings before the service provider is built.
     /// </param>
     /// <returns>
     /// The service collection for further configuration.
     /// </returns>
     /// <remarks>
-    /// The host must also register its game type mapping repository, other repositories, and logging services.
+    /// The factory is invoked once during registration so modules can declare their dependencies.
+    /// The host must also register repositories and logging services.
     /// A restoration context accessor is required when restoration is used.
     /// </remarks>
     public static IServiceCollection AddCardGameCore(
         this IServiceCollection services,
-        IReadOnlyCollection<IGameModule> modules)
+        Func<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>> modulesFactory)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(modules);
+        ArgumentNullException.ThrowIfNull(modulesFactory);
+
+        var modulesByType = modulesFactory().ToDictionary();
+        var modules = modulesByType.Values
+            .Distinct()
+            .ToDictionary(module => module.Key, StringComparer.Ordinal)
+            .Values;
 
         services
             .AddSingleton(typeof(ICoreLogger<>), typeof(CoreLoggerAdapter<>))
@@ -63,8 +70,8 @@ public static class Registrations
                 AppDomain.CurrentDomain.GetAssemblies())
 
             .AddSingleton<IGameSessionsCache, InMemoryGameSessionsCache>()
-            .AddScoped<IGameModulesCache, InMemoryGameModulesCache>()
-            .AddSingleton<IEnumerable<IGameModule>>(modules)
+            .AddSingleton<IGameModulesCache, InMemoryGameModulesCache>()
+            .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>>(modulesByType)
             .AddScoped<IGameStartupService, GameStartupService>()
 
             .AddScoped(typeof(IModulable<>), typeof(ModuleAccessor<>))

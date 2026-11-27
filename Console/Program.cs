@@ -2,7 +2,6 @@
 
 using Centuriin.CardGame.Core.Application;
 using Centuriin.CardGame.Core.Application.Events;
-using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Drunkard;
 using Centuriin.CardGame.Core.Engine;
 using Centuriin.CardGame.Core.Engine.Commands;
@@ -37,24 +36,23 @@ builder.Services
     .Services
     .AddSerilog(x => x.ReadFrom.Configuration(builder.Configuration))
 
-    .AddCardGameCore()
-    .AddDrunkard()
+    .AddCardGameCore(() => [new(new(1), new Drunkard.GameModule())])
     .UseInMemoryStorage()
-    .AddSingleton<IEnumerable<KeyValuePair<GameTypeId, IGameModule>>>(
-        [new(new(1), Drunkard.GameModule.Instance)])
 
     .AddSingleton<IDecksRepository, DecksRepo>()
     .AddSingleton<IGameSnapshotsRepository, GameSnapshotRepo>()
     .AddSingleton<IGameDescriptionRepository, GameDescriptionRepo>()
     ;
 
-var host = builder.Build();
+using var host = builder.Build();
 
 await host.StartAsync();
 
 var descriptionRepo = (GameDescriptionRepo)host.Services.GetRequiredService<IGameDescriptionRepository>();
 
-var startup = host.Services.GetRequiredService<IGameStartupService>();
+using var scope = host.Services.CreateScope();
+
+var startup = scope.ServiceProvider.GetRequiredService<IGameStartupService>();
 
 var g1 = await startup.StartupGameAsync(
     descriptionRepo.FirstGame,
