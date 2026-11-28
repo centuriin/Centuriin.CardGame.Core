@@ -1,32 +1,23 @@
 ﻿using Centuriin.CardGame.Core.Application.Initialization;
 using Centuriin.CardGame.Core.Application.Modulation;
 using Centuriin.CardGame.Core.Drunkard.Initialization;
-using Centuriin.CardGame.Core.Engine.Commands.Rules;
 using Centuriin.CardGame.Core.Engine.Loading.Configuration;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration.Commands;
-using Centuriin.CardGame.Core.Engine.Loading.Configuration.Pipeline;
 
 namespace Centuriin.CardGame.Core.Drunkard;
 
 /// <summary>
 /// Configures dependencies, initialization, and the engine profile of Drunkard.
 /// </summary>
-public sealed class GameModule : IGameModule, IGameProfile
+public sealed class GameModule : IGameModule
 {
-    /// <summary>
-    /// The dependency injection key used by the Drunkard module.
-    /// </summary>
-    internal const string KEY = "drunkard";
+    /// <inheritdoc/>
+    public string Key => "drunkard";
 
     /// <inheritdoc/>
-    public string Key => KEY;
+    public IGameProfile GameProfile { get; } = new GameProfile();
 
     /// <inheritdoc/>
-    public IGameProfile GameProfile => this;
-
-
-    /// <inheritdoc/>
-    public void Configure(IConfigurableModuleDependencies dependencies) => 
+    public void Configure(IConfigurableModuleDependencies dependencies) =>
         ArgumentNullException.ThrowIfNull(dependencies);
 
     /// <inheritdoc/>
@@ -38,25 +29,5 @@ public sealed class GameModule : IGameModule, IGameProfile
             .Add<DefaultPlayersInitializer>()
             .Add<DefaultZonesInitializer>()
             .Add<DeckInitializer>();
-    }
-
-    /// <inheritdoc/>
-    public void Configure(IConfigurableGamePipeline configurableGamePipeline)
-    {
-        ArgumentNullException.ThrowIfNull(configurableGamePipeline);
-
-        _ = configurableGamePipeline
-            .UseDefaultProfile();
-    }
-
-    /// <inheritdoc/>
-    public void Configure(IConfigurableCommandValidator configurableCommandValidations)
-    {
-        ArgumentNullException.ThrowIfNull(configurableCommandValidations);
-
-        _ = configurableCommandValidations
-            .AddGeneralRule<ActorIsActivePlayerRule>()
-            .AddValidation<FakeCommand>()
-                .AddRule<ActorIsActivePlayerRule>();
     }
 }
